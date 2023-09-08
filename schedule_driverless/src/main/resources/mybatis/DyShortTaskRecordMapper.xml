@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyShortTaskRecordMapper">
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.DyShortTaskRecord">
+        <id column="ID" jdbcType="DECIMAL" property="id" />
+        <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+        <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType" />
+        <result column="TASK_ID" jdbcType="DECIMAL" property="taskId" />
+        <result column="STATION_ID" jdbcType="DECIMAL" property="stationId" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="BEGIN_TIME" jdbcType="VARCHAR" property="beginTime" />
+        <result column="END_TIME" jdbcType="VARCHAR" property="endTime" />
+    </resultMap>
+
+    <select id="getShortTaskByStationId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    *
+    from DY_SHORT_TASK_RECORD
+    where STATION_ID = #{stationId,jdbcType=DECIMAL} and ROUTE_ID = #{routeId,jdbcType=DECIMAL}
+  </select>
+</mapper>

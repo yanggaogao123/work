@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyStationChargeRecordMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.DyStationChargeRecord">
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="BUS_ID" jdbcType="DECIMAL" property="busId" />
+    <result column="BUS_NAME" jdbcType="VARCHAR" property="busName" />
+    <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType" />
+    <result column="TASK_ID" jdbcType="DECIMAL" property="taskId" />
+    <result column="FROM_STATION_ID" jdbcType="DECIMAL" property="fromStationId" />
+    <result column="TO_STATION_ID" jdbcType="DECIMAL" property="toStationId" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="SERVICE_NAME" jdbcType="VARCHAR" property="serviceName" />
+    <result column="TASK_NAME" jdbcType="VARCHAR" property="taskName" />
+    <result column="DIRECTION" jdbcType="VARCHAR" property="direction" />
+    <result column="TYPE" jdbcType="VARCHAR" property="type" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ROUTE_ID, BUS_ID, BUS_NAME, SERVICE_TYPE, TASK_ID, FROM_STATION_ID, TO_STATION_ID, 
+    UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DY_STATION_CHARGE_RECORD
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from DY_STATION_CHARGE_RECORD
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.bs.DyStationChargeRecord">
+    insert into DY_STATION_CHARGE_RECORD (ID, ROUTE_ID, BUS_ID, 
+      BUS_NAME, SERVICE_TYPE, TASK_ID, 
+      FROM_STATION_ID, TO_STATION_ID, UPDATE_TIME
+      )
+    values (#{id,jdbcType=DECIMAL}, #{routeId,jdbcType=DECIMAL}, #{busId,jdbcType=DECIMAL}, 
+      #{busName,jdbcType=VARCHAR}, #{serviceType,jdbcType=VARCHAR}, #{taskId,jdbcType=DECIMAL}, 
+      #{fromStationId,jdbcType=DECIMAL}, #{toStationId,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.bs.DyStationChargeRecord">
+    insert into DY_STATION_CHARGE_RECORD
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="routeId != null">
+        ROUTE_ID,
+      </if>
+      <if test="busId != null">
+        BUS_ID,
+      </if>
+      <if test="busName != null">
+        BUS_NAME,
+      </if>
+      <if test="serviceType != null">
+        SERVICE_TYPE,
+      </if>
+      <if test="taskId != null">
+        TASK_ID,
+      </if>
+      <if test="fromStationId != null">
+        FROM_STATION_ID,
+      </if>
+      <if test="toStationId != null">
+        TO_STATION_ID,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="routeId != null">
+        #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="busId != null">
+        #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="busName != null">
+        #{busName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceType != null">
+        #{serviceType,jdbcType=VARCHAR},
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=DECIMAL},
+      </if>
+      <if test="fromStationId != null">
+        #{fromStationId,jdbcType=DECIMAL},
+      </if>
+      <if test="toStationId != null">
+        #{toStationId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.bs.DyStationChargeRecord">
+    update DY_STATION_CHARGE_RECORD
+    <set>
+      <if test="routeId != null">
+        ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="busId != null">
+        BUS_ID = #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="busName != null">
+        BUS_NAME = #{busName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceType != null">
+        SERVICE_TYPE = #{serviceType,jdbcType=VARCHAR},
+      </if>
+      <if test="taskId != null">
+        TASK_ID = #{taskId,jdbcType=DECIMAL},
+      </if>
+      <if test="fromStationId != null">
+        FROM_STATION_ID = #{fromStationId,jdbcType=DECIMAL},
+      </if>
+      <if test="toStationId != null">
+        TO_STATION_ID = #{toStationId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.bs.DyStationChargeRecord">
+    update DY_STATION_CHARGE_RECORD
+    set ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      BUS_ID = #{busId,jdbcType=DECIMAL},
+      BUS_NAME = #{busName,jdbcType=VARCHAR},
+      SERVICE_TYPE = #{serviceType,jdbcType=VARCHAR},
+      TASK_ID = #{taskId,jdbcType=DECIMAL},
+      FROM_STATION_ID = #{fromStationId,jdbcType=DECIMAL},
+      TO_STATION_ID = #{toStationId,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <select id="getChargeStationByBusId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    *
+    from DY_STATION_CHARGE_RECORD
+    where BUS_ID = #{busId,jdbcType=DECIMAL}
+  </select>
+</mapper>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DySchedulePlanDriverlessMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless">
+    <result column="SCHEDULE_ID" jdbcType="DECIMAL" property="scheduleId" />
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="ROUTE_CODE" jdbcType="VARCHAR" property="routeCode" />
+    <result column="PLAN_DATE" jdbcType="TIMESTAMP" property="planDate" />
+    <result column="PLAN_TIME" jdbcType="TIMESTAMP" property="planTime" />
+    <result column="START_DIRECTION" jdbcType="VARCHAR" property="startDirection" />
+    <result column="START_ORDER_NUMBER" jdbcType="DECIMAL" property="startOrderNumber" />
+    <result column="TRIP_END_TIME" jdbcType="TIMESTAMP" property="tripEndTime" />
+    <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType" />
+    <result column="SERVICE_NAME" jdbcType="VARCHAR" property="serviceName" />
+    <result column="DIRECTION" jdbcType="VARCHAR" property="direction" />
+    <result column="BUS_CODE" jdbcType="VARCHAR" property="busCode" />
+    <result column="BUS_ID" jdbcType="DECIMAL" property="busId" />
+    <result column="BUS_NAME" jdbcType="VARCHAR" property="busName" />
+    <result column="FIRST_ROUTE_STA_ID" jdbcType="DECIMAL" property="firstRouteStaId" />
+    <result column="LAST_ROUTE_STA_ID" jdbcType="DECIMAL" property="lastRouteStaId" />
+    <result column="FIRST_ROUTE_STA_NAME" jdbcType="VARCHAR" property="firstRouteStaName" />
+    <result column="LAST_ROUTE_STA_NAME" jdbcType="VARCHAR" property="lastRouteStaName" />
+    <result column="RUN_MILEAGE" jdbcType="DECIMAL" property="runMileage" />
+    <result column="PEAK_TYPE" jdbcType="VARCHAR" property="peakType" />
+    <result column="FIRST_ROUND_PLAN_TIME" jdbcType="TIMESTAMP" property="firstRoundPlanTime" />
+    <result column="FIRST_ROUND_TASK_ID" jdbcType="DECIMAL" property="firstRoundTaskId" />
+    <result column="SYNC_PLAN" jdbcType="DECIMAL" property="syncPlan" />
+  </resultMap>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless">
+    insert into DY_SCHEDULE_PLAN_DRIVERLESS (SCHEDULE_ID, ROUTE_ID, ROUTE_CODE, 
+      PLAN_DATE, PLAN_TIME, START_DIRECTION, 
+      START_ORDER_NUMBER, TRIP_END_TIME, SERVICE_TYPE, 
+      SERVICE_NAME, DIRECTION, BUS_CODE, 
+      BUS_ID, BUS_NAME, FIRST_ROUTE_STA_ID, 
+      LAST_ROUTE_STA_ID, FIRST_ROUTE_STA_NAME, LAST_ROUTE_STA_NAME, 
+      RUN_MILEAGE, PEAK_TYPE, FIRST_ROUND_PLAN_TIME, 
+      FIRST_ROUND_TASK_ID, SYNC_PLAN)
+    values (#{scheduleId,jdbcType=DECIMAL}, #{routeId,jdbcType=DECIMAL}, #{routeCode,jdbcType=VARCHAR}, 
+      #{planDate,jdbcType=TIMESTAMP}, #{planTime,jdbcType=TIMESTAMP}, #{startDirection,jdbcType=VARCHAR}, 
+      #{startOrderNumber,jdbcType=DECIMAL}, #{tripEndTime,jdbcType=TIMESTAMP}, #{serviceType,jdbcType=VARCHAR}, 
+      #{serviceName,jdbcType=VARCHAR}, #{direction,jdbcType=VARCHAR}, #{busCode,jdbcType=VARCHAR}, 
+      #{busId,jdbcType=DECIMAL}, #{busName,jdbcType=VARCHAR}, #{firstRouteStaId,jdbcType=DECIMAL}, 
+      #{lastRouteStaId,jdbcType=DECIMAL}, #{firstRouteStaName,jdbcType=VARCHAR}, #{lastRouteStaName,jdbcType=VARCHAR}, 
+      #{runMileage,jdbcType=DECIMAL}, #{peakType,jdbcType=VARCHAR}, #{firstRoundPlanTime,jdbcType=TIMESTAMP}, 
+      #{firstRoundTaskId,jdbcType=DECIMAL}, #{syncPlan,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless">
+    insert into DY_SCHEDULE_PLAN_DRIVERLESS
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="scheduleId != null">
+        SCHEDULE_ID,
+      </if>
+      <if test="routeId != null">
+        ROUTE_ID,
+      </if>
+      <if test="routeCode != null">
+        ROUTE_CODE,
+      </if>
+      <if test="planDate != null">
+        PLAN_DATE,
+      </if>
+      <if test="planTime != null">
+        PLAN_TIME,
+      </if>
+      <if test="startDirection != null">
+        START_DIRECTION,
+      </if>
+      <if test="startOrderNumber != null">
+        START_ORDER_NUMBER,
+      </if>
+      <if test="tripEndTime != null">
+        TRIP_END_TIME,
+      </if>
+      <if test="serviceType != null">
+        SERVICE_TYPE,
+      </if>
+      <if test="serviceName != null">
+        SERVICE_NAME,
+      </if>
+      <if test="direction != null">
+        DIRECTION,
+      </if>
+      <if test="busCode != null">
+        BUS_CODE,
+      </if>
+      <if test="busId != null">
+        BUS_ID,
+      </if>
+      <if test="busName != null">
+        BUS_NAME,
+      </if>
+      <if test="firstRouteStaId != null">
+        FIRST_ROUTE_STA_ID,
+      </if>
+      <if test="lastRouteStaId != null">
+        LAST_ROUTE_STA_ID,
+      </if>
+      <if test="firstRouteStaName != null">
+        FIRST_ROUTE_STA_NAME,
+      </if>
+      <if test="lastRouteStaName != null">
+        LAST_ROUTE_STA_NAME,
+      </if>
+      <if test="runMileage != null">
+        RUN_MILEAGE,
+      </if>
+      <if test="peakType != null">
+        PEAK_TYPE,
+      </if>
+      <if test="firstRoundPlanTime != null">
+        FIRST_ROUND_PLAN_TIME,
+      </if>
+      <if test="firstRoundTaskId != null">
+        FIRST_ROUND_TASK_ID,
+      </if>
+      <if test="syncPlan != null">
+        SYNC_PLAN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="scheduleId != null">
+        #{scheduleId,jdbcType=DECIMAL},
+      </if>
+      <if test="routeId != null">
+        #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="routeCode != null">
+        #{routeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="planDate != null">
+        #{planDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planTime != null">
+        #{planTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startDirection != null">
+        #{startDirection,jdbcType=VARCHAR},
+      </if>
+      <if test="startOrderNumber != null">
+        #{startOrderNumber,jdbcType=DECIMAL},
+      </if>
+      <if test="tripEndTime != null">
+        #{tripEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serviceType != null">
+        #{serviceType,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null">
+        #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="direction != null">
+        #{direction,jdbcType=VARCHAR},
+      </if>
+      <if test="busCode != null">
+        #{busCode,jdbcType=VARCHAR},
+      </if>
+      <if test="busId != null">
+        #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="busName != null">
+        #{busName,jdbcType=VARCHAR},
+      </if>
+      <if test="firstRouteStaId != null">
+        #{firstRouteStaId,jdbcType=DECIMAL},
+      </if>
+      <if test="lastRouteStaId != null">
+        #{lastRouteStaId,jdbcType=DECIMAL},
+      </if>
+      <if test="firstRouteStaName != null">
+        #{firstRouteStaName,jdbcType=VARCHAR},
+      </if>
+      <if test="lastRouteStaName != null">
+        #{lastRouteStaName,jdbcType=VARCHAR},
+      </if>
+      <if test="runMileage != null">
+        #{runMileage,jdbcType=DECIMAL},
+      </if>
+      <if test="peakType != null">
+        #{peakType,jdbcType=VARCHAR},
+      </if>
+      <if test="firstRoundPlanTime != null">
+        #{firstRoundPlanTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="firstRoundTaskId != null">
+        #{firstRoundTaskId,jdbcType=DECIMAL},
+      </if>
+      <if test="syncPlan != null">
+        #{syncPlan,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+</mapper>

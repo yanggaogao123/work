@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.BsPrepTripMapper">
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.BsPrepTrip">
+        <id column="PREPTRIP_ID" jdbcType="DECIMAL" property="preptripId"/>
+        <result column="DIRECTION" jdbcType="VARCHAR" property="direction"/>
+        <result column="SERVICE_NAME" jdbcType="VARCHAR" property="serviceName"/>
+        <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType"/>
+        <result column="FIRST_STATION_ID" jdbcType="DECIMAL" property="firstStationId"/>
+        <result column="FIRST_STATION_NAME" jdbcType="VARCHAR" property="firstStationName"/>
+        <result column="LAST_STATION_ID" jdbcType="DECIMAL" property="lastStationId"/>
+        <result column="LAST_STATION_NAME" jdbcType="VARCHAR" property="lastStationName"/>
+        <result column="TRIPDEFINE_ID" jdbcType="DECIMAL" property="tripdefineId"/>
+        <result column="ORDER_NUM" jdbcType="DECIMAL" property="orderNum"/>
+        <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId"/>
+    </resultMap>
+
+    <select id="selectByTripdefineId" resultMap="BaseResultMap">
+        select a.PREPTRIP_ID,
+               a.TRIPDEFINE_ID,
+               a.ORDER_NUM,
+               a.DIRECTION,
+               a.SERVICE_TYPE,
+               a.SERVICE_NAME,
+               a.FIRST_STATION_ID,
+               a.FIRST_STATION_NAME,
+               a.LAST_STATION_ID,
+               a.LAST_STATION_NAME,
+               d.ROUTE_ID
+        from BS_PREPTRIP a
+            left join BS_PREPTRIP_DEFINE d on a.TRIPDEFINE_ID = d.TRIPDEFINE_ID
+        where a.TRIPDEFINE_ID = #{tripdefineId}
+        and a.SERVICE_TYPE > 0
+        order by a.TRIPDEFINE_ID, a.ORDER_NUM
+    </select>
+
+    <select id="getByPrepTripId" resultMap="BaseResultMap">
+        select a.PREPTRIP_ID,
+               a.TRIPDEFINE_ID,
+               a.ORDER_NUM,
+               a.DIRECTION,
+               a.SERVICE_TYPE,
+               a.SERVICE_NAME,
+               a.FIRST_STATION_ID,
+               a.FIRST_STATION_NAME,
+               a.LAST_STATION_ID,
+               a.LAST_STATION_NAME
+        from BS_PREPTRIP a
+        where a.PREPTRIP_ID = #{prepTripId}
+        order by a.TRIPDEFINE_ID, a.ORDER_NUM
+    </select>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.BsRouteMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.BsRoute">
+    <id column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="VERSION" jdbcType="DECIMAL" property="version" />
+    <result column="AUDIT_RESULT" jdbcType="VARCHAR" property="auditResult" />
+    <result column="AUDIT_TIME" jdbcType="TIMESTAMP" property="auditTime" />
+    <result column="AUDIT_USER" jdbcType="VARCHAR" property="auditUser" />
+    <result column="BEGIN_DATE" jdbcType="TIMESTAMP" property="beginDate" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="DATE_CREATED" jdbcType="TIMESTAMP" property="dateCreated" />
+    <result column="DIRECTION" jdbcType="VARCHAR" property="direction" />
+    <result column="DOWN_FIRST_TIME" jdbcType="VARCHAR" property="downFirstTime" />
+    <result column="DOWN_LATEST_TIME" jdbcType="VARCHAR" property="downLatestTime" />
+    <result column="END_DATE" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="FIRST_STATION_ID" jdbcType="DECIMAL" property="firstStationId" />
+    <result column="FIRST_STATION_NAME" jdbcType="VARCHAR" property="firstStationName" />
+    <result column="IS_ACTIVE" jdbcType="VARCHAR" property="isActive" />
+    <result column="LAST_STATION_ID" jdbcType="DECIMAL" property="lastStationId" />
+    <result column="LAST_STATION_NAME" jdbcType="VARCHAR" property="lastStationName" />
+    <result column="LAST_UPDATED" jdbcType="TIMESTAMP" property="lastUpdated" />
+    <result column="MILEAGE" jdbcType="FLOAT" property="mileage" />
+    <result column="OPERATOR_TYPE" jdbcType="VARCHAR" property="operatorType" />
+    <result column="ORGAN_ID" jdbcType="DECIMAL" property="organId" />
+    <result column="ORGAN_RUN_ID" jdbcType="DECIMAL" property="organRunId" />
+    <result column="RECORD_STATUS" jdbcType="VARCHAR" property="recordStatus" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="ROUTE_CODE" jdbcType="VARCHAR" property="routeCode" />
+    <result column="ROUTE_NAME" jdbcType="VARCHAR" property="routeName" />
+    <result column="ROUTE_VERSION" jdbcType="VARCHAR" property="routeVersion" />
+    <result column="RUNNING_PLACE" jdbcType="VARCHAR" property="runningPlace" />
+    <result column="SHORT_NAME" jdbcType="VARCHAR" property="shortName" />
+    <result column="TRIPS_TYPE" jdbcType="VARCHAR" property="tripsType" />
+    <result column="UP_FIRST_TIME" jdbcType="VARCHAR" property="upFirstTime" />
+    <result column="UP_LATEST_TIME" jdbcType="VARCHAR" property="upLatestTime" />
+    <result column="STATION_TARGET" jdbcType="DECIMAL" property="stationTarget" />
+    <result column="SORT" jdbcType="DECIMAL" property="sort" />
+    <result column="LAST_OPERATOR" jdbcType="VARCHAR" property="lastOperator" />
+    <result column="OPERATION" jdbcType="VARCHAR" property="operation" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ROUTE_ID, VERSION, AUDIT_RESULT, AUDIT_TIME, AUDIT_USER, BEGIN_DATE, CREATE_USER,
+    DATE_CREATED, DIRECTION, DOWN_FIRST_TIME, DOWN_LATEST_TIME, END_DATE, FIRST_STATION_ID,
+    FIRST_STATION_NAME, IS_ACTIVE, LAST_STATION_ID, LAST_STATION_NAME, LAST_UPDATED,
+    MILEAGE, OPERATOR_TYPE, ORGAN_ID, ORGAN_RUN_ID, RECORD_STATUS, REMARK, ROUTE_CODE,
+    ROUTE_NAME, ROUTE_VERSION, RUNNING_PLACE, SHORT_NAME, TRIPS_TYPE, UP_FIRST_TIME,
+    UP_LATEST_TIME, STATION_TARGET, SORT, LAST_OPERATOR, OPERATION
+  </sql>
+  <select id="selectList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from BS_ROUTE
+  </select>
+  <select id="getByRouteId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from BS_ROUTE
+    where ROUTE_ID = #{routeId,jdbcType=DECIMAL}
+  </select>
+  <select id="getByRouteCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from BS_ROUTE
+    where ROUTE_CODE = #{routeCode}
+  </select>
+</mapper>

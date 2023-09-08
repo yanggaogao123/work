@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.BsRouteTripNumberMapper">
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.BsRouteTripNumber">
+        <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId"/>
+        <result column="ROUTE_NAME" jdbcType="VARCHAR" property="routeName"/>
+        <result column="ORGAN_ID" jdbcType="DECIMAL" property="organId"/>
+        <result column="ORGAN_NAME" jdbcType="VARCHAR" property="organName"/>
+        <result column="TRIP_NUMBER" jdbcType="DECIMAL" property="tripNumber"/>
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="getByRouteId" resultMap="BaseResultMap">
+        select ROUTE_ID,
+               ROUTE_NAME,
+               ORGAN_ID,
+               ORGAN_NAME,
+               TRIP_NUMBER,
+               UPDATE_TIME
+        from SCHEDULES.BS_ROUTE_TRIP_NUMBER
+        where ROUTE_ID = #{routeId}
+    </select>
+
+</mapper>

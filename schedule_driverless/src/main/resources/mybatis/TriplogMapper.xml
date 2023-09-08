@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.TriplogMapper">
+
+    <resultMap id="simpleResultMap" type="com.gci.schedule.driverless.bean.bs.TriplogSimpleDto">
+        <result column="TRIPLOG_ID" jdbcType="DECIMAL" property="triplogId"/>
+        <result column="BUS_ID" jdbcType="DECIMAL" property="busId"/>
+        <result column="DIRECTION" jdbcType="VARCHAR" property="direction"/>
+        <result column="FROM_STATION_ID" jdbcType="DECIMAL" property="fromStationId"/>
+        <result column="FROM_STATION_NAME" jdbcType="VARCHAR" property="fromStationName"/>
+        <result column="TO_STATION_ID" jdbcType="DECIMAL" property="toStationId"/>
+        <result column="TO_STATION_NAME" jdbcType="VARCHAR" property="toStationName"/>
+        <result column="TRIPLOG_BEGIN_TIME" jdbcType="TIMESTAMP" property="triplogBeginTime"/>
+        <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType"/>
+        <result column="TRIPLOG_END_TIME" jdbcType="TIMESTAMP" property="triplogEndTime"/>
+        <result column="ANCHOR_DURATION" jdbcType="DECIMAL" property="anchorDuration"/>
+        <result column="RUN_DATE" jdbcType="TIMESTAMP" property="runDate"/>
+        <result column="RUN_TYPE" jdbcType="VARCHAR" property="runType"/>
+        <result column="RUN_DURATION" jdbcType="DECIMAL" property="runDuration"/>
+        <result column="RUN_MILEAGE" jdbcType="DECIMAL" property="runMileage"/>
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        TRIPLOG_ID
+        , BUS_ID,DIRECTION, FROM_STATION_ID,FROM_STATION_NAME,TO_STATION_ID,TO_STATION_NAME,
+                TRIPLOG_BEGIN_TIME,SERVICE_TYPE,TRIPLOG_END_TIME, ANCHOR_DURATION,RUN_DATE,RUN_TYPE,RUN_DURATION
+    </sql>
+
+    <select id="selectAll" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN = #{routeId}
+        and run_date = #{runDate}
+        and service_type = #{serviceType}
+        order by triplog_begin_time
+    </select>
+
+    <select id="selectList" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where bus_id=#{busId}
+        and run_date=trunc(sysdate)
+        and service_type > 0 order by triplog_begin_time
+    </select>
+
+    <select id="selectListByRouteBusId" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN = #{routeId}
+        and bus_id=#{busId}
+        and run_date=trunc(sysdate)
+        and service_type > 0 order by triplog_begin_time
+    </select>
+
+    <select id="selectListByRouteBusIdRunDate" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN = #{routeId}
+        and bus_id=#{busId}
+        and run_date=#{runDate}
+        and service_type > 0 order by triplog_begin_time
+    </select>
+
+    <select id="selecListByServiceType" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN=#{routeId}
+        and bus_id=#{busId}
+        and run_date=#{runDate}
+        and service_type = #{serviceType}
+        and triplog_begin_time <![CDATA[ >= ]]> #{startTime}
+        order by triplog_begin_time
+    </select>
+
+    <select id="selectRunTripLog" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where bus_id=#{busId}
+        and run_date=#{runDate}
+        and service_type > 0
+        and triplog_begin_time <![CDATA[ >= ]]> #{startTime}
+        order by triplog_begin_time
+    </select>
+
+    <select id="selectByEmployeeId" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where employee_id=#{employeeId}
+        and service_type > 0
+        and triplog_begin_time <![CDATA[ >= ]]> #{startTime}
+        order by triplog_begin_time
+    </select>
+
+    <select id="selectByToStationId" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where employee_id=#{toStationId}
+        and service_type > 0
+        and triplog_begin_time <![CDATA[ >= ]]> #{startTime}
+        and triplog_begin_time <![CDATA[ < ]]> #{tripTime}
+        order by triplog_begin_time
+    </select>
+
+    <select id="selecListByTime" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN=#{routeId}
+        and run_date=#{runDate}
+        and direction = #{direction}
+        and service_type = #{serviceType}
+        and triplog_begin_time <![CDATA[ >= ]]> #{startTime}
+        and triplog_begin_time <![CDATA[ <= ]]> #{endTime}
+        order by triplog_begin_time
+    </select>
+
+    <select id="getLastTripLog" resultMap="simpleResultMap">
+        select *
+        from (select l.triplog_id,
+                     l.BUS_ID,
+                     l.direction,
+                     l.from_station_id,
+                     l.to_station_id,
+                     l.triplog_begin_time,
+                     l.service_type,
+                     l.triplog_end_time,
+                     l.ANCHOR_DURATION
+              from apts.dy_triplog l
+              where l.ROUTE_ID_RUN = #{routeId}
+                and l.run_date = #{runDate}
+                and l.service_type > 0
+                and l.FROM_STATION_ID = #{firstStationId}
+                and l.TRIPLOG_BEGIN_TIME &lt; #{planTime}
+              order by TRIPLOG_BEGIN_TIME desc)
+        where ROWNUM = 1
+    </select>
+
+    <select id="getLastTripLogByTaskId" resultMap="simpleResultMap">
+        select *
+        from (select l.triplog_id,
+                     l.BUS_ID,
+                     l.direction,
+                     l.from_station_id,
+                     l.to_station_id,
+                     l.triplog_begin_time,
+                     l.service_type,
+                     l.triplog_end_time,
+                     l.ANCHOR_DURATION
+              from apts.dy_triplog l
+              where l.ROUTE_ID_RUN = #{routeId}
+                and l.run_date = trunc(sysdate)
+                and l.service_type > 0
+                and l.ROUTE_SUB_ID = #{taskId}
+                and l.TRIPLOG_BEGIN_TIME &lt; #{planTime}
+              order by TRIPLOG_BEGIN_TIME desc)
+        where ROWNUM = 1
+    </select>
+
+    <select id="getLast" resultMap="simpleResultMap">
+        select *
+        from (select l.triplog_id,
+                     l.BUS_ID,
+                     l.direction,
+                     l.from_station_id,
+                     l.to_station_id,
+                     l.triplog_begin_time,
+                     l.service_type,
+                     l.triplog_end_time,
+                     l.ANCHOR_DURATION
+              from apts.dy_triplog l
+              where l.ROUTE_ID_RUN = #{routeId}
+                and l.run_date = #{runDate}
+                and l.service_type = #{serviceType}
+                and l.FROM_STATION_ID = #{firstStationId}
+              order by TRIPLOG_BEGIN_TIME desc)
+        where ROWNUM = 1
+    </select>
+
+    <select id="selectFirstList" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from (select row_number() over (partition by l.BUS_ID order by l.TRIPLOG_BEGIN_TIME) as rownumber ,
+        l.* from dy_triplog l
+        where l.ROUTE_ID_RUN = #{routeId}
+        and run_date= #{runDate}
+        and BUS_ID in
+        <foreach collection="busIds" item="busId" open="(" close=")" separator=",">
+            #{busId,jdbcType=DECIMAL}
+        </foreach>
+        and SERVICE_TYPE = #{serviceType}
+        )
+        where rownumber = 1
+        order by DIRECTION,TRIPLOG_BEGIN_TIME
+    </select>
+
+    <select id="getFirst" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from (select row_number() over (partition by l.BUS_ID order by l.TRIPLOG_BEGIN_TIME) as rownumber ,
+        l.* from dy_triplog l
+        where l.ROUTE_ID_RUN = #{routeId}
+        and run_date= #{runDate}
+        and BUS_ID = #{busId,jdbcType=DECIMAL}
+        and SERVICE_TYPE > 0
+        )
+        where rownumber = 1
+        order by DIRECTION,TRIPLOG_BEGIN_TIME
+    </select>
+
+    <select id="selectByFromToStationId" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN=#{routeId} and run_date=#{runDate}
+        and service_type = #{serviceType}
+        and triplog_begin_time <![CDATA[ >= ]]> #{startTime}
+        and triplog_begin_time <![CDATA[ <= ]]> #{endTime}
+        and from_station_id = #{fromStationId}
+        and to_station_id = #{toStationId}
+        order by triplog_begin_time
+    </select>
+
+
+    <select id="selectByDirection" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN = #{routeId}
+        and run_date <![CDATA[ >= ]]> #{startRunDate}
+        and run_date  <![CDATA[ <= ]]>  #{endRunDate}
+        and service_type = #{serviceType}
+        and direction = #{direction}
+        order by triplog_begin_time
+    </select>
+
+    <select id="selectByDirectionAndTime" resultMap="simpleResultMap">
+        select * from (select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN = #{routeId}
+        and run_date <![CDATA[ >= ]]> #{startRunDate}
+        and run_date  <![CDATA[ <= ]]>  #{endRunDate}
+        and service_type = #{serviceType}
+        and direction = #{direction}
+        order by triplog_begin_time desc)
+        where ROWNUM <![CDATA[ <= ]]> 2
+    </select>
+
+    <select id="selectBySdAndEdAndSt" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN = #{routeId}
+        and run_date <![CDATA[ >= ]]> #{startRunDate}
+        and run_date  <![CDATA[ <= ]]>  #{endRunDate}
+        and service_type = #{serviceType}
+        order by triplog_begin_time
+    </select>
+
+    <select id="selectListByRouteId" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where route_id_run=#{routeId}
+        and run_date=#{runDate}
+        and service_type > 0
+        order by triplog_begin_time
+    </select>
+
+    <select id="selectAvgMileage" resultType="com.gci.schedule.driverless.bean.RouteAvgMileage">
+        select t.ROUTE_ID_RUN                                            routeId,
+               trunc(sum(t.RUN_MILEAGE) / (sum(t.RUN_DURATION) / 60), 4) avgMileage
+        from DY_TRIPLOG t
+        where t.run_date = trunc(sysdate - 7)
+          and t.RECORD_STATUS = 3
+          and t.SERVICE_TYPE > 0
+        group by t.ROUTE_ID_RUN
+        having sum(t.RUN_DURATION) > 0
+    </select>
+
+
+    <resultMap id="refuelResultMap" type="com.gci.schedule.driverless.bean.bs.RefuelDto">
+        <result column="ROUTE_ID_RUN" jdbcType="DECIMAL" property="routeId"/>
+        <result column="BUS_ID" jdbcType="DECIMAL" property="busId"/>
+        <result column="ROUTE_SUB_ID" jdbcType="DECIMAL" property="routeSubId"/>
+    </resultMap>
+
+    <select id="selectRefuel" resultMap="refuelResultMap">
+        select ROUTE_ID_RUN, BUS_ID, ROUTE_SUB_ID
+        from DY_TRIPLOG
+        where ROUTE_ID_RUN = #{routeId}
+          and run_date <![CDATA[ >= ]]> trunc(sysdate - 8)
+          and run_date  <![CDATA[ <= ]]>  trunc(sysdate - 1)
+          and RECORD_STATUS = 3
+          and SERVICE_TYPE in (- 5, - 16, - 45, -56, - 78, - 96, - 97, - 106, - 109, - 115, - 116, - 124)
+        group by ROUTE_ID_RUN, BUS_ID, ROUTE_SUB_ID
+        order by BUS_ID
+    </select>
+
+</mapper>
