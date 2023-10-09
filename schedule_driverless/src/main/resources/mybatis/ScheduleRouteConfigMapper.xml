@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.ScheduleRouteConfigMapper">
+
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.ScheduleRouteConfigVo">
+        <result column="ROUTE_ID" property="routeId"/>
+        <result column="ROUTE_NAME" property="routeName"/>
+        <result column="ORGAN_ID" property="organId"/>
+        <result column="ORGAN_RUN_ID" property="organRunId"/>
+        <result column="ORGAN_NAME" property="organName"/>
+        <result column="UPDATE_USER" property="updateUser"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="DISPATCH_AUTO" property="dispatchAuto"/>
+        <result column="ROUTE_CODE" property="routeCode"/>
+        <result column="WASTE_TIME_UPDATE_STATUS" property="wasteTimeUpdateStatus"/>
+        <result column="PASSENGER_FLOW_UPDATE_STATUS" property="passengerFlowUpdateStatus"/>
+        <result column="WASTE_TIME_UPDATE_TIME" property="wasteTimeUpdateTime"/>
+        <result column="PASSENGER_FLOW_UPDATE_TIME" property="passengerFlowUpdateTime"/>
+        <result column="WASTE_TIME_UPDATE_SUCCESS" property="wasteTimeUpdateSuccess"/>
+        <result column="PASSENGER_FLOW_UPDATE_SUCCESS" property="passengerFlowUpdateSuccess"/>
+        <result column="ARRIVAL_TIME_UPDATE_TIME" property="arrivalTimeUpdateTime"/>
+        <result column="ARRIVAL_TIME_STATUS" property="arrivalTimeStatus"/>
+        <result column="route_code" property="routeCode"/>
+    </resultMap>
+
+    <resultMap id="ResultMap" type="map" extends="BaseResultMap"></resultMap>
+
+    <insert id="save" parameterType="com.gci.schedule.driverless.bean.ScheduleRouteConfigParams">
+        insert into bs_schedule_route_config (route_id,route_name,route_code,organ_id,organ_name,organ_run_id,update_user,update_time,waste_time_update_status,passenger_flow_update_status)
+        values(#{routeId},#{routeName},#{routeCode},#{organId},#{organName},#{organRunId},#{updateUser},sysdate,1,1)
+    </insert>
+
+    <insert id="batchSave">
+        insert into bs_schedule_route_config (route_id,route_name,route_code,organ_id,organ_name,organ_run_id,update_user,update_time,waste_time_update_status,passenger_flow_update_status)
+        <foreach collection="list" index="index" item="route" separator="union all">
+            select
+            #{route.routeId},#{route.routeName},#{route.routeCode},#{route.organId},#{route.organName},#{route.organRunId},#{route.updateUser},sysdate,1,1
+            from dual
+        </foreach>
+    </insert>
+
+    <update id="changeDispatchStatus">
+        update bs_schedule_route_config set dispatch_auto=#{status},update_time=sysdate where route_id=#{routeId}
+    </update>
+
+    <delete id="delete">
+        delete from bs_schedule_route_config where route_id in
+        <foreach collection="list" item="routeId" open="(" separator="," close=")">
+            #{routeId}
+        </foreach>
+    </delete>
+
+    <update id="updateWasteTimeStatusByRouteId">
+        update bs_schedule_route_config set waste_time_update_status=#{status} where route_id=#{routeId}
+    </update>
+
+    <update id="changeArrivalSwitch" >
+        update bs_schedule_route_config
+        set arrival_time_status=#{status}
+        ,arrival_time_update_time = sysdate
+        where route_code in
+        <foreach collection="ids" item="routeId" open="(" separator="," close=")">
+            #{routeId}
+        </foreach>
+    </update>
+
+    <update id="updatePassengerFlowStatusByRouteId">
+        update bs_schedule_route_config set passenger_flow_update_status=#{status} where route_id=#{routeId}
+    </update>
+
+    <update id="updateLastTimeOfWasteTime">
+        update bs_schedule_route_config set waste_time_update_time=sysdate,waste_time_update_success=1 where route_id=#{routeId}
+    </update>
+    <update id="updateLastTimeOfPassengerFlow">
+        update bs_schedule_route_config set passenger_flow_update_time=sysdate,passenger_flow_update_success=1 where route_id=#{routeId}
+    </update>
+
+    <update id="changeDispatchStatusToZero">
+        update bs_schedule_route_config set waste_time_update_status=0,passenger_flow_update_status=0
+        where waste_time_update_status=1 or passenger_flow_update_status=1
+    </update>
+
+    <update id="updateLastWasteTimeUpdateNoSuccess">
+        update bs_schedule_route_config set waste_time_update_success=0 where route_id=#{routeId}
+    </update>
+
+    <update id="updateLastPassengerFlowUpdateNoSuccess">
+        update bs_schedule_route_config set passenger_flow_update_success=0 where route_id=#{routeId}
+    </update>
+
+    <select id="getByRouteId" resultMap="BaseResultMap">
+        select * from bs_schedule_route_config where route_id=#{routeId}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select c.* from bs_schedule_route_config c
+        <where>
+            <if test="key != null and key != ''">
+                and c.route_name like '%' || #{key} || '%'
+            </if>
+            <if test="ids != null">
+                and (c.organ_id in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+                or c.organ_run_id in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+                )
+            </if>
+            <if test="arrivalTimeStatus == 0">
+                and arrival_time_status = 0
+            </if>
+            <if test="arrivalTimeStatus == 1">
+                and arrival_time_status = 1
+            </if>
+            <if test="updateStatus == 1">
+                and ((select count(case is_success when 1 then 1 else null end) from rep_waste_time_update_detail where route_id=c.route_id)&lt;7 or c.passenger_flow_update_success=0)
+            </if>
+            <if test="updateStatus == 2">
+                and ((select count(case is_success when 1 then 1 else null end) from rep_waste_time_update_detail where route_id=c.route_id)=7 and (c.passenger_flow_update_success=1 or c.passenger_flow_update_success is null))
+            </if>
+            <if test="dispatchStatus == 1">
+                <!--首轮打开-->
+                and (c.dispatch_auto=1 or c.dispatch_auto=3)
+            </if>
+            <if test="dispatchStatus == 2">
+                <!--首轮关闭-->
+                and (c.dispatch_auto=0 or c.dispatch_auto=2)
+            </if>
+            <if test="dispatchStatus == 3">
+                <!--到站打开-->
+                and (c.dispatch_auto=2 or c.dispatch_auto=3)
+            </if>
+            <if test="dispatchStatus == 4">
+                <!--到站关闭-->
+                and (c.dispatch_auto=0 or c.dispatch_auto=1)
+            </if>
+            <if test="dispatchStatus == 5">
+                <!--双双打开-->
+                and c.dispatch_auto=3
+            </if>
+            <if test="dispatchStatus == 6">
+                <!--双双关闭-->
+                and c.dispatch_auto=0
+            </if>
+        </where>
+        order by c.update_time desc
+    </select>
+
+    <select id="getRouteIdsByOrganIds" resultType="java.lang.Integer">
+        select route_id from bs_schedule_route_config where (organ_id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        or organ_run_id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        )
+    </select>
+    <select id="getAllRouteId" resultType="java.lang.Long">
+        select route_id from bs_schedule_route_config
+    </select>
+    <select id="getRouteIdAndOrganName" resultType="java.util.Map">
+        select route_id,organ_name from bs_schedule_route_config
+    </select>
+    <select id="getAllRoute" resultMap="ResultMap">
+        select t.route_id, t.route_name
+        from bs_schedule_route_config t
+        left join apts.bs_route tt on t.route_id = tt.route_id
+        order by tt.sort
+    </select>
+
+    <select id="getAllRouteByOrganIds" resultMap="ResultMap">
+        select route_id, route_name from bs_schedule_route_config
+        where (organ_id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        or organ_run_id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        )
+        order by sort
+    </select>
+    <select id="getAllRouteName" parameterType="string" resultMap="ResultMap">
+        select route_id, route_name from bs_schedule_route_config
+        <where>
+            <if test="searchVal != null and searchVal != ''">
+                and route_name like '%' || #{searchVal} || '%'
+            </if>
+            <if test="organIds != null">
+                and (organ_id in
+                <foreach collection="organIds" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+                or organ_run_id in
+                <foreach collection="organIds" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+                )
+            </if>
+        </where>
+        order by length(route_name)
+    </select>
+
+    <select id="getRouteNameByRouteId" resultType="java.lang.String">
+        select route_name from bs_schedule_route_config where route_id=#{routeId}
+    </select>
+
+    <insert id="sync" >
+        insert into apts.bs_route_organ select r.route_id,r.organ_run_id from apts.bs_route r where not exists (select 1 from apts.bs_route_organ ro where ro.route_id=r.route_id )
+    </insert>
+
+    <update id="updateScheduleRouteStatus" >
+        merge into bs_schedule_route_config config
+        using
+        (
+            select
+            route.route_id,
+            route.is_active as status
+            from apts.bs_route route
+            <if test="routeId != null">
+                where route.route_id = #{routeId,jdbcType=VARCHAR}
+            </if>
+        ) tt on (config.route_id = tt.route_id )
+        when matched then
+        update set
+        config.status = tt.status
+    </update>
+
+    <update id="updateDyScheduleRoute">
+        insert into dy_schedule_route_config config
+        (
+            ROUTE_ID,ROUTE_NAME,ORGAN_ID,ORGAN_RUN_ID,STATUS,UPDATE_TIME,PLAN_DATE
+        )
+        select
+        t.ROUTE_ID,
+        t.ROUTE_NAME,
+        t.ORGAN_ID,
+        t.ORGAN_RUN_ID,
+        t.STATUS,
+        sysdate,
+        #{date,jdbcType=TIMESTAMP} as PLAN_DATE
+        from bs_schedule_route_config t
+        <if test="routeId != null">
+            where t.route_id = #{routeId,jdbcType=VARCHAR}
+        </if>
+    </update>
+
+    <delete id="deleteDyScheduleRoute">
+        delete from dy_schedule_route_config config
+        where 1=1
+        <if test="routeId != null">
+            and  config.route_id = #{routeId,jdbcType=VARCHAR}
+        </if>
+        and config.PLAN_DATE = #{date,jdbcType=TIMESTAMP}
+    </delete>
+
+    <update id="updateScheduleRoute">
+        merge into bs_schedule_route_config config
+        using
+        (
+            select
+            route.route_id,
+            route.organ_id,
+            route.organ_run_id,
+            route.is_active as status,
+            <choose>
+                <when test="organRunId != null">
+                    (select o.organ_name from apts.bs_organ o where o.organ_id = #{organRunId,jdbcType=VARCHAR}) as organ_name
+                </when>
+                <otherwise>
+                    organ.organ_name
+                </otherwise>
+            </choose>
+            from apts.bs_route route
+            left join apts.bs_organ organ
+            on (route.organ_run_id = organ.organ_id)
+            <if test="routeId != null">
+                where route.route_id = #{routeId,jdbcType=VARCHAR}
+            </if>
+        ) tt on (config.route_id = tt.route_id )
+        when matched then
+        update set
+        config.organ_id = tt.organ_id,
+        <choose>
+            <when test="organRunId != null">
+                config.organ_run_id = #{organRunId,jdbcType=VARCHAR},
+            </when>
+            <otherwise>
+                config.organ_run_id = tt.organ_run_id,
+            </otherwise>
+        </choose>
+        config.organ_name = tt.organ_name,
+        config.status = tt.status
+    </update>
+
+    <update id="updateBsRouteOrgan">
+        merge into apts.bs_route_organ t
+        using(
+            select
+            route.route_id,
+            route.organ_id
+            from apts.bs_route route
+            <if test="routeId != null">
+                where route.route_id = #{routeId,jdbcType=VARCHAR}
+            </if>
+        ) tt on (t.route_id = tt.route_id)
+        when matched then
+        update set
+        t.organ_id =
+        <choose>
+            <when test="organRunId != null">
+                #{organRunId,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                tt.organ_id
+            </otherwise>
+        </choose>
+    </update>
+
+    <select id="getInvalidRouteList" resultType="java.lang.Integer">
+        select distinct t.route_id  from dy_schedule_route_config t
+        where 1=1
+        and t.plan_date >= trunc(#{beginPlanDate})
+        and t.plan_date <![CDATA[ <=  ]]> trunc(#{endPlanDate})
+        and t.status = 1
+        and t.route_id in
+        <foreach collection="routeIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    
+    <select id="getFirstTriplogBeginTime" resultType="java.lang.String">
+    	select t.triplog_begin_time from BS_ROUTE_B4_FIRST_TIME t 
+	    	where t.route_id_run=#{routeId,jdbcType=NUMERIC}
+	    	and t.direction=#{direction,jdbcType=NUMERIC}
+    </select>
+    
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyDriverlessConfigMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessConfig">
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="ROUTE_NAME" jdbcType="VARCHAR" property="routeName" />
+    <result column="SUPPORT_ROUTE_ID" jdbcType="DECIMAL" property="supportRouteId" />
+    <result column="SUPPORT_ROUTE_NAME" jdbcType="VARCHAR" property="supportRouteName" />
+    <result column="DRIVERLESS_ROUTE_ID" jdbcType="DECIMAL" property="driverlessRouteId" />
+    <result column="DRIVERLESS_ROUTE_NAME" jdbcType="VARCHAR" property="driverlessRouteName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ROUTE_ID, ROUTE_NAME, SUPPORT_ROUTE_ID, SUPPORT_ROUTE_NAME, DRIVERLESS_ROUTE_ID, 
+    DRIVERLESS_ROUTE_NAME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DY_DRIVERLESS_CONFIG
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from DY_DRIVERLESS_CONFIG
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessConfig">
+    insert into DY_DRIVERLESS_CONFIG (ID, ROUTE_ID, ROUTE_NAME, 
+      SUPPORT_ROUTE_ID, SUPPORT_ROUTE_NAME, DRIVERLESS_ROUTE_ID, 
+      DRIVERLESS_ROUTE_NAME)
+    values (#{id,jdbcType=DECIMAL}, #{routeId,jdbcType=DECIMAL}, #{routeName,jdbcType=VARCHAR}, 
+      #{supportRouteId,jdbcType=DECIMAL}, #{supportRouteName,jdbcType=VARCHAR}, #{driverlessRouteId,jdbcType=DECIMAL}, 
+      #{driverlessRouteName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessConfig">
+    insert into DY_DRIVERLESS_CONFIG
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="routeId != null">
+        ROUTE_ID,
+      </if>
+      <if test="routeName != null">
+        ROUTE_NAME,
+      </if>
+      <if test="supportRouteId != null">
+        SUPPORT_ROUTE_ID,
+      </if>
+      <if test="supportRouteName != null">
+        SUPPORT_ROUTE_NAME,
+      </if>
+      <if test="driverlessRouteId != null">
+        DRIVERLESS_ROUTE_ID,
+      </if>
+      <if test="driverlessRouteName != null">
+        DRIVERLESS_ROUTE_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="routeId != null">
+        #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="routeName != null">
+        #{routeName,jdbcType=VARCHAR},
+      </if>
+      <if test="supportRouteId != null">
+        #{supportRouteId,jdbcType=DECIMAL},
+      </if>
+      <if test="supportRouteName != null">
+        #{supportRouteName,jdbcType=VARCHAR},
+      </if>
+      <if test="driverlessRouteId != null">
+        #{driverlessRouteId,jdbcType=DECIMAL},
+      </if>
+      <if test="driverlessRouteName != null">
+        #{driverlessRouteName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessConfig">
+    update DY_DRIVERLESS_CONFIG
+    <set>
+      <if test="routeId != null">
+        ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="routeName != null">
+        ROUTE_NAME = #{routeName,jdbcType=VARCHAR},
+      </if>
+      <if test="supportRouteId != null">
+        SUPPORT_ROUTE_ID = #{supportRouteId,jdbcType=DECIMAL},
+      </if>
+      <if test="supportRouteName != null">
+        SUPPORT_ROUTE_NAME = #{supportRouteName,jdbcType=VARCHAR},
+      </if>
+      <if test="driverlessRouteId != null">
+        DRIVERLESS_ROUTE_ID = #{driverlessRouteId,jdbcType=DECIMAL},
+      </if>
+      <if test="driverlessRouteName != null">
+        DRIVERLESS_ROUTE_NAME = #{driverlessRouteName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessConfig">
+    update DY_DRIVERLESS_CONFIG
+    set ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      ROUTE_NAME = #{routeName,jdbcType=VARCHAR},
+      SUPPORT_ROUTE_ID = #{supportRouteId,jdbcType=DECIMAL},
+      SUPPORT_ROUTE_NAME = #{supportRouteName,jdbcType=VARCHAR},
+      DRIVERLESS_ROUTE_ID = #{driverlessRouteId,jdbcType=DECIMAL},
+      DRIVERLESS_ROUTE_NAME = #{driverlessRouteName,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+
+  <select id="selectByRouteId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from DY_DRIVERLESS_CONFIG
+    where ROUTE_ID = #{routeId,jdbcType=DECIMAL}
+  </select>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.ScheduleTemplateDetailMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.scheduleD.ScheduleTemplateDetail">
+
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="TEMPLATE_ID" jdbcType="DECIMAL" property="templateId" />
+    <result column="APPLY_DAY" jdbcType="DECIMAL" property="applyDay" />
+    <result column="UPDATE_USER" jdbcType="DECIMAL" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <select id="selectList" resultMap="BaseResultMap">
+    select * from BS_SCHEDULE_TEMPLATE_DETAIL d
+  </select>
+
+  <select id="selectByRouteId" resultMap="BaseResultMap">
+    select * from BS_SCHEDULE_TEMPLATE_DETAIL d where  route_id = #{routeId, jdbcType=VARCHAR} order by d.update_time desc
+  </select>
+
+  <select id="getTemplateIdByRouteIdAndDay"  resultType="java.lang.Integer" >
+    SELECT  template_id from bs_schedule_template_detail where  route_id = #{routeId, jdbcType=VARCHAR} and  apply_day =#{applyDay,jdbcType=DECIMAL}
+  </select>
+
+  <select id="getByTemplateId" resultMap="BaseResultMap"  parameterType="map">
+    SELECT  * from bs_schedule_template_detail where  template_id = #{templateId, jdbcType=VARCHAR}
+  </select>
+
+  <delete id="delByRouteIdAndApplyDay">
+    delete from bs_schedule_template_detail where  route_id = #{routeId, jdbcType=VARCHAR} and  apply_day =#{applyDay,jdbcType=DECIMAL}
+  </delete>
+
+  <delete id="delByTemplateId">
+    delete from bs_schedule_template_detail where  template_id = #{templateId, jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insert" parameterType="map">
+    insert into bs_schedule_template_detail d ( d.template_id,d.route_id, d.update_user,d.update_time, d.apply_day)
+    values (#{templateId,jdbcType=DECIMAL},#{routeId,jdbcType=DECIMAL}, #{updateUser,jdbcType=DECIMAL}
+    ,sysdate, #{applyDay,jdbcType=VARCHAR})
+  </insert>
+
+  <select id="selectByTemplateId" resultMap="BaseResultMap">
+    SELECT  * from bs_schedule_template_detail where  template_id = #{templateId, jdbcType=VARCHAR}
+  </select>
+
+</mapper>

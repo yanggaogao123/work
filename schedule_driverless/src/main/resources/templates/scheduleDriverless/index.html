@@ -1,0 +1,135 @@
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>竞争客流排班计划</title>
+    <link rel="stylesheet" type="text/css" href="../css/easyui/icon.css"
+          th:href="@{/css/easyui/icon.css}">
+    <link rel="stylesheet" type="text/css" href="../css/easyui/default/easyui.css"
+          th:href="@{/css/easyui/default/easyui.css}">
+    <link rel="stylesheet" type="text/css" href="../css/x-editable/select2.css"
+          th:href="@{/css/x-editable/select2.css}">
+    <link rel="stylesheet" type="text/css" href="../css/routeSelect/style.css"
+          th:href="@{/css/routeSelect/style.css}">
+    <link rel="stylesheet" type="text/css" href="../css/schedule/site.css"
+          th:href="@{/css/schedule/site.css}">
+    <link rel="stylesheet" type="text/css" href="../css/schedule/style.css"
+          th:href="@{/css/schedule/style.css}">
+    <link rel="stylesheet" type="text/css" href="../css/x-editable/select2.css"
+          th:href="@{/css/x-editable/select2.css}">
+    <link rel="stylesheet" type="text/css" href="../js/alert/alert.css" th:href="@{/js/alert/alert.css}">
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"
+            th:src="@{/js/jquery-1.11.1.min.js}"></script>
+    <script type="text/javascript" src="../js/alert/alert.js" th:src="@{/js/alert/alert.js}"></script>
+    <script type="text/javascript" src="../util/util.js" th:src="@{/js/util/util.js}"></script>
+    <script type="text/javascript" src="../util/webSocketUtil.js"
+            th:src="@{/js/util/webSocketUtil.js}"></script>
+    <script type="text/javascript" src="../js/x-editable/jquery.easyui.min.js"
+            th:src="@{/js/x-editable/jquery.easyui.min.js}"></script>
+    <script type="text/javascript" src="../js/locate/easyui-lang-zh_CN.js"
+            th:src="@{/js/locate/easyui-lang-zh_CN.js}"></script>
+    <!--<script type="text/javascript" src="../js/x-editable/select2.js"   th:src="@{/js/x-editable/select2.js}"></script>-->
+    <script type="text/javascript" src="../js/scheduleDriverless/index.js"
+            th:src="@{/js/scheduleDriverless/index.js}"></script>
+    <script type="text/javascript" src="../js/scheduleDriverless/vehiclePlanDialog.js"
+            th:src="@{/js/scheduleDriverless/vehiclePlanDialog.js}"></script>
+    <script type="text/javascript" src="../js/mySelect2/select2.js"
+            th:src="@{/js/mySelect2/select2.js}"></script>
+    <script type="text/javascript" src="../js/mySelect2/select2_locale_zh-CN_3.4.4.js"
+            th:src="@{/js/mySelect2/select2_locale_zh-CN_3.4.4.js}"></script>
+
+    <script type="text/javascript">
+        var route = {};
+        var routeDataAll;
+        $(document).ready(function () {
+
+            //初始化线路
+            var organRouteDto = ajaxClientRest('/route/getRouteList/');
+            if (organRouteDto != null) {
+                var routeDate = [];
+                var routes = organRouteDto.data;
+                //线路查询
+                $.each(routes, function (i, route) {
+                    routeDate.push({id: route.routeId, text: route.routeName});
+                });
+                //routeDate.sort(sortId);
+                //select2
+                $("#routeSelect").select2({
+                    placeholder: '请选择线路',
+                    width: 150,
+                    data: routeDate
+                });
+
+            }
+
+
+            organRouteDto = ajaxClientRest('/route/getAllRouteList/');
+            if (organRouteDto != null) {
+                var routeDate = [];
+                var routes = organRouteDto.data;
+                //线路查询
+                $.each(routes, function (i, route) {
+                    routeDate.push({id: route.routeId, text: route.routeName});
+                });
+                routeDateAll = routeDate;
+            }
+
+            var userId = $('#userId').html();
+            /*if (userId != "") {
+                //组建websocket和生
+                scheduleTripModule.buildWebSocket(userId);
+            } else {
+                alert('获取不了登录信息，请重新登录');
+            }*/
+            //如果url地址带有线路id和显示日期，则组装出来
+            if (getQueryString('routeId') != null && getQueryString('runDate') != null) {
+                $("#routeSelect").select2('val', getQueryString('routeId'));
+                $('#runDate').datebox("setValue", getQueryString('runDate'));
+                scheduleTripModule.buildDatagrid();
+            }
+            //vehiclePlanModule.showVehiclePlanDialog();
+        });
+
+        function changeRouteOrDate() {
+            $("#planTypeSelect").val(0);
+            $("#planTypeSelect").attr("hidden", true);
+        }
+
+    </script>
+</head>
+<body style="background-color: #f0f8ff;">
+<div style="margin-top: 20px;">
+    <p th:text="${userId}" id="userId" style="display: none;"></p>
+    <table style="width: 100%; height: 2%;" class="bill_table">
+        <tr>
+            <div class="headMenu">
+                &nbsp;&nbsp;线路:
+                <div id="routeSelect" onChange="changeRouteOrDate()"></div>
+                &nbsp;&nbsp;&nbsp;&nbsp;运营日期：
+                <input type="text" id="runDate" class="easyui-datebox" style="width:100px;"
+                       required="required" data-options="onSelect:changeRouteOrDate" />
+                  <select id="planTypeSelect" hidden="hidden" style="margin-left: 10px">
+                      <option value="0" selected hidden>最终计划</option>
+                      <option value="1">最优计划</option>
+                      <option value="2">预设计划</option>
+                  </select>
+                &nbsp;&nbsp;<input type="button" value="查询" onclick="scheduleTripModule.buildDatagrid()"/>
+                &nbsp;&nbsp;<input type="button" value="生成(旧)" onclick="scheduleTripModule.generate()" hidden/>
+                &nbsp;&nbsp;<input type="button" value="生成" onclick="vehiclePlanModule.showVehiclePlanDialog()"/>
+                &nbsp;&nbsp;<input type="button" value="参数设置" onclick="scheduleTripModule.openScheduleParams()" hidden/>
+                &nbsp;&nbsp;<input type="button" value="车位图" onclick="scheduleTripModule.openParkingNew()" hidden/>
+                &nbsp;&nbsp;<input type="button" value="导出横表" onclick="scheduleTripModule.exportExcel()" hidden/>
+                &nbsp; <input type="button" value="导出竖表" onclick="scheduleTripModule.exportVerticalExcel()" hidden/>
+            </div>
+        </tr>
+    </table>
+</div>
+
+<span id="census"></span>
+
+<div style="margin: 10px 0;"></div>
+<table id="datagrid" class="easyui-datagrid" style="height: 700px"></table>
+
+</body>
+</html>

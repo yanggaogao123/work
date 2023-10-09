@@ -1,0 +1,49 @@
+[v-cloak] {
+    display:none !important;
+}
+
+.coupon-info-box {
+    border-bottom: 1px solid #f2f2f2;
+    padding-bottom: 15px;
+    padding-top: 10px;
+}
+
+input[type=file]{
+    display: none;
+}
+
+.tinyInput {
+    width: 100px;
+}
+
+.smallInput {
+    width: 193px;
+}
+
+.middleInput {
+    width: 395px;
+}
+
+.bigInput {
+    width: 500px;
+}
+
+.paddingLeftAndRight {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.common-table-title {
+    border-bottom: 1px solid #f2f2f2;
+    padding-bottom: 5px;
+}
+
+.common-line {
+    border-bottom: 1px solid #f2f2f2;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.text-center {
+    text-align: center;
+}

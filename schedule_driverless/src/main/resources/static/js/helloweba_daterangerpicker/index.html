@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>演示：jQuery日期范围选择器</title>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+    <link rel="stylesheet" href="css/daterangepicker.css" />
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="row">
+            <div class="col-md-3 col-xs-12"><h1 class="logo"><a href="http://www.helloweba.com" title="返回helloweba首页">helloweba</a></h1></div>
+            <div class="col-md-9 text-right"></div>
+        </div>
+    </header>
+    <div class="row main">
+        <div class="col-md-12">
+            <h2 class="top_title"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span><a href="http://www.helloweba.com/view-blog-422.html">jQuery日期范围选择器</a></h2>
+            
+            <div class="row" style="margin-top: 30px">
+                <div class="col-md-offset-2 col-md-6 col-sm-12 form-horizontal">
+                  <div class="form-group">
+                    <label for="date-range0" class="col-sm-6 control-label">1.默认</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range0" placeholder="点击选取">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range1" class="col-sm-6 control-label">2.带时间选择</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range1" placeholder="点击选取">
+                    </div>
+                  </div>
+                
+                  <div class="form-group">
+                    <label for="date-range2" class="col-sm-6 control-label">3.默认日期范围</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range2" value="2017-05-01 to 2017-05-31">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range3" class="col-sm-6 control-label">4.选择2017-05-20后的日期</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range3" placeholder="">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range4" class="col-sm-6 control-label">5.只允许选择2017-05-20至2017-06-10之间的日期</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range4" placeholder="">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range5" class="col-sm-6 control-label">6.最小3天最多7天</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range5" placeholder="">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range6" class="col-sm-6 control-label">7.设置周一为每周第一天</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range6" placeholder="">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range7" class="col-sm-6 control-label">8.使用span标签</label>
+                    <div class="col-sm-6">
+                      <span id="date-range7" style="background-color:#49e; color:white;padding:3px; cursor:pointer; border-radius:4px;">选取</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="two-inputs" class="col-sm-6 control-label">9.使用两个input输入框</label>
+                    <div class="col-sm-6 form-inline">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="two-inputs" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10 form-inline">
+                    <span id="two-inputs">
+                      <input type="text" class="form-control" id="date-range200" placeholder="">
+                      <input type="text" class="form-control" id="date-range201" placeholder="">
+                    </span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range9" class="col-sm-6 control-label">10. 隐藏底栏快捷操作</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range9" placeholder="">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range10" class="col-sm-6 control-label">11.选择后自动关闭面板</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range10" placeholder="">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="date-range11" class="col-sm-6 control-label">12.单个日期模式</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="date-range11" value="2017-05-22">
+                    </div>
+                  </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <footer>
+        <p>Powered by helloweba.com  允许转载、修改和使用本站的DEMO，但请注明出处：<a href="http://www.helloweba.com">www.helloweba.com</a></p>
+    </footer>
+</div>
+<script src="http://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+<script src="js/moment.min.js"></script>
+<script src="js/jquery.daterangepicker.js"></script>  
+<script>
+$(function(){
+    $('#date-range0').dateRangePicker();
+    $('#date-range1').dateRangePicker(
+    {
+        startOfWeek: 'monday',
+        separator : ' ~ ',
+        format: 'DD.MM.YYYY HH:mm',
+        autoClose: false,
+        time: {
+            enabled: true
+        }
+    });
+
+    $('#date-range2').dateRangePicker();
+
+    $('#date-range3').dateRangePicker(
+    {
+        startDate: '2017-05-20'
+    });
+
+    $('#date-range4').dateRangePicker(
+    {
+        startDate: '2017-05-30',
+        endDate: '2017-06-10'
+    });
+
+    $('#date-range5').dateRangePicker(
+    {
+        minDays: 3,
+        maxDays: 7
+    });
+
+    $('#date-range6').dateRangePicker(
+    {
+        startOfWeek: 'monday'
+    });
+
+    $('#date-range7').dateRangePicker(
+    {
+        getValue: function()
+        {
+            return this.innerHTML;
+        },
+        setValue: function(s)
+        {
+            this.innerHTML = s;
+        }
+    });
+
+    $('#two-inputs').dateRangePicker(
+    {
+        separator : ' to ',
+        getValue: function()
+        {
+            if ($('#date-range200').val() && $('#date-range201').val() )
+                return $('#date-range200').val() + ' to ' + $('#date-range201').val();
+            else
+                return '';
+        },
+        setValue: function(s,s1,s2)
+        {
+            $('#date-range200').val(s1);
+            $('#date-range201').val(s2);
+        }
+    });
+
+    $('#date-range9').dateRangePicker(
+    {
+        showShortcuts:false
+    });
+
+    $('#date-range10').dateRangePicker(
+    {
+        autoClose: true
+    });
+
+    $('#date-range11').dateRangePicker(
+    {
+        autoClose: true,
+        singleDate : true,
+        showShortcuts: false 
+    });
+});
+</script> 
+</body>
+</html>
