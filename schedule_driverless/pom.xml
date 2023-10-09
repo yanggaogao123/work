@@ -18,6 +18,27 @@
         <relativePath/>
     </parent>
 
+    <!-- nexus私服代理配置 -->
+    <repositories>
+        <repository>
+            <id>gci-nexus</id>
+            <name>Releases</name>
+            <url>http://10.91.120.21:18888/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>nexus</id>
+            <name>Team Nexus Repository</name>
+            <url>http://10.88.2.69:8081/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nexus</id>
+            <name>Team Nexus Repository</name>
+            <url>http://10.88.2.69:8081/nexus/content/groups/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -122,6 +143,25 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-core</artifactId>
             <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.gci</groupId>
+            <artifactId>smartbus-custom-manage-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+            <version>4.5.5</version>
         </dependency>
     </dependencies>
 

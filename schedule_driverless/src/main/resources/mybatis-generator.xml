@@ -63,7 +63,9 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
         <!--<table tableName="DY_CHANGE_TIME_WINDOW" domainObjectName="DyChangeTimeWindow" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-        <table tableName="DY_SCHEDULE_PLAN_DRIVERLESS" domainObjectName="DySchedulePlanDriverless" enableCountByExample="false" enableUpdateByExample="false"
+        <!--<table tableName="DY_SCHEDULE_PLAN_DRIVERLESS" domainObjectName="DySchedulePlanDriverless" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <table tableName="DY_DRIVERLESS_CONFIG" domainObjectName="DyDriverlessConfig" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
     </context>
 </generatorConfiguration>

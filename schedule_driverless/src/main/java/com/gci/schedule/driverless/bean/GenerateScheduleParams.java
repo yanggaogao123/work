@@ -34,31 +34,36 @@ public class GenerateScheduleParams {
     //最大停战时长  分钟
     private Integer maxParkTime;
 
+    //车内容量
+    private Integer passengerNum;
+
+    private Date runDate;
+
     public Date getUpFristDate(){
         if(Objects.isNull(this.upFristTime)){
             return null;
         }
-        return DateUtil.str2Date((DateUtil.date2Str(new Date(),DateUtil.yyyyMMdd)+this.upFristTime),DateUtil.yyyyMMddHHmm);
+        return DateUtil.str2Date((DateUtil.date2Str(runDate,DateUtil.yyyyMMdd)+this.upFristTime),DateUtil.yyyyMMddHHmm);
     }
 
     public Date getUpLastDate(){
         if(Objects.isNull(this.upLastTime)){
             return null;
         }
-        return DateUtil.str2Date((DateUtil.date2Str(new Date(),DateUtil.yyyyMMdd)+this.upLastTime),DateUtil.yyyyMMddHHmm);
+        return DateUtil.str2Date((DateUtil.date2Str(runDate,DateUtil.yyyyMMdd)+this.upLastTime),DateUtil.yyyyMMddHHmm);
     }
 
     public Date getDownFirstDate(){
         if(Objects.isNull(this.downFirstTime)){
             return null;
         }
-        return DateUtil.str2Date((DateUtil.date2Str(new Date(),DateUtil.yyyyMMdd)+this.downFirstTime),DateUtil.yyyyMMddHHmm);
+        return DateUtil.str2Date((DateUtil.date2Str(runDate,DateUtil.yyyyMMdd)+this.downFirstTime),DateUtil.yyyyMMddHHmm);
     }
 
     public Date getDownLastDate(){
         if(Objects.isNull(this.downLastTime)){
             return null;
         }
-        return DateUtil.str2Date((DateUtil.date2Str(new Date(),DateUtil.yyyyMMdd)+this.downLastTime),DateUtil.yyyyMMddHHmm);
+        return DateUtil.str2Date((DateUtil.date2Str(runDate,DateUtil.yyyyMMdd)+this.downLastTime),DateUtil.yyyyMMddHHmm);
     }
 }

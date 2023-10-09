@@ -80,6 +80,11 @@ public class ScheduleServerServiceImpl implements ScheduleServerService {
         return getIntersiteTime(param);
     }
 
+    /**
+     * 周转时间  单位 秒
+     * @param param
+     * @return
+     */
     private Double getIntersiteTime(Map<String, Object> param) {
         JSONObject result = scheduleApp.getIntersiteTime(param);
         if (!result.containsKey("code") || !"0".equals(result.getString("code"))) {

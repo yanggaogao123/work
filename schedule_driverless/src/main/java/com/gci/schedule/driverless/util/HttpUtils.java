@@ -14,9 +14,9 @@ public class HttpUtils {
         connection.setDoOutput(true);
         connection.setDoInput(true);
         connection.setUseCaches(false);
-//        connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");//设置参数类型是json格式
+        connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");//设置参数类型是json格式
 //        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=----footfoodapplicationrequestnetwork");
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         connection.connect();
 
         String body = bodystr;

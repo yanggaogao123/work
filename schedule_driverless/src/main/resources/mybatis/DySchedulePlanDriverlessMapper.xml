@@ -35,7 +35,7 @@
       LAST_ROUTE_STA_ID, FIRST_ROUTE_STA_NAME, LAST_ROUTE_STA_NAME, 
       RUN_MILEAGE, PEAK_TYPE, FIRST_ROUND_PLAN_TIME, 
       FIRST_ROUND_TASK_ID, SYNC_PLAN)
-    values (#{scheduleId,jdbcType=DECIMAL}, #{routeId,jdbcType=DECIMAL}, #{routeCode,jdbcType=VARCHAR}, 
+    values (SEQ_SCHEDULE_PLAN_DRIVERLESS.nextval, #{routeId,jdbcType=DECIMAL}, #{routeCode,jdbcType=VARCHAR},
       #{planDate,jdbcType=TIMESTAMP}, #{planTime,jdbcType=TIMESTAMP}, #{startDirection,jdbcType=VARCHAR}, 
       #{startOrderNumber,jdbcType=DECIMAL}, #{tripEndTime,jdbcType=TIMESTAMP}, #{serviceType,jdbcType=VARCHAR}, 
       #{serviceName,jdbcType=VARCHAR}, #{direction,jdbcType=VARCHAR}, #{busCode,jdbcType=VARCHAR}, 
@@ -43,6 +43,29 @@
       #{lastRouteStaId,jdbcType=DECIMAL}, #{firstRouteStaName,jdbcType=VARCHAR}, #{lastRouteStaName,jdbcType=VARCHAR}, 
       #{runMileage,jdbcType=DECIMAL}, #{peakType,jdbcType=VARCHAR}, #{firstRoundPlanTime,jdbcType=TIMESTAMP}, 
       #{firstRoundTaskId,jdbcType=DECIMAL}, #{syncPlan,jdbcType=DECIMAL})
+  </insert>
+  <insert id="batchInsertSchedule">
+    insert into DY_SCHEDULE_PLAN_DRIVERLESS (SCHEDULE_ID, ROUTE_ID, ROUTE_CODE,
+    PLAN_DATE, PLAN_TIME, START_DIRECTION,
+    START_ORDER_NUMBER, TRIP_END_TIME, SERVICE_TYPE,
+    SERVICE_NAME, DIRECTION, BUS_CODE,
+    BUS_ID, BUS_NAME, FIRST_ROUTE_STA_ID,
+    LAST_ROUTE_STA_ID, FIRST_ROUTE_STA_NAME, LAST_ROUTE_STA_NAME,
+    RUN_MILEAGE, PEAK_TYPE, FIRST_ROUND_PLAN_TIME,
+    FIRST_ROUND_TASK_ID, SYNC_PLAN)
+
+    select t.* from
+    (
+    <foreach collection="list" index="index" item="item" separator="union all">
+      select
+      SEQ_SCHEDULE_PLAN_DRIVERLESS.nextval,#{item.routeId,jdbcType=DECIMAL},#{item.routeCode,jdbcType=VARCHAR},#{item.planDate,jdbcType=TIMESTAMP},#{item.planTime,jdbcType=TIMESTAMP},#{item.startDirection,jdbcType=VARCHAR},
+      #{item.startOrderNumber,jdbcType=DECIMAL},#{item.tripEndTime,jdbcType=TIMESTAMP},#{item.serviceType,jdbcType=VARCHAR},#{item.serviceName,jdbcType=VARCHAR},#{item.direction,jdbcType=VARCHAR},
+      #{item.busCode,jdbcType=VARCHAR},#{item.busId,jdbcType=DECIMAL},#{item.busName,jdbcType=VARCHAR},#{item.firstRouteStaId,jdbcType=DECIMAL},#{item.lastRouteStaId,jdbcType=DECIMAL},
+      #{item.firstRouteStaName,jdbcType=VARCHAR},#{item.lastRouteStaName,jdbcType=VARCHAR},#{item.runMileage,jdbcType=DECIMAL},#{item.peakType,jdbcType=VARCHAR},#{item.firstRoundPlanTime,jdbcType=TIMESTAMP},
+      #{item.firstRoundTaskId,jdbcType=DECIMAL},#{item.syncPlan,jdbcType=DECIMAL}
+      from dual
+    </foreach>
+    ) t
   </insert>
   <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless">
     insert into DY_SCHEDULE_PLAN_DRIVERLESS
@@ -189,4 +212,8 @@
       </if>
     </trim>
   </insert>
+  <select id="getScheduleList" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless" resultMap="BaseResultMap">
+    select * from DY_SCHEDULE_PLAN_DRIVERLESS
+    where route_id = #{routeId,jdbcType=DECIMAL} and plan_date = #{planDate,jdbcType=TIMESTAMP} order by plan_time desc
+  </select>
 </mapper>
