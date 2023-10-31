@@ -15,6 +15,10 @@ public class DyDriverlessConfig {
 
     private String driverlessRouteName;
 
+    private Integer supportPassengerNum;
+
+    private Integer driverlessPassengerNum;
+
     public Long getId() {
         return id;
     }
@@ -69,5 +73,21 @@ public class DyDriverlessConfig {
 
     public void setDriverlessRouteName(String driverlessRouteName) {
         this.driverlessRouteName = driverlessRouteName == null ? null : driverlessRouteName.trim();
+    }
+
+    public Integer getSupportPassengerNum() {
+        return supportPassengerNum;
+    }
+
+    public void setSupportPassengerNum(Integer supportPassengerNum) {
+        this.supportPassengerNum = supportPassengerNum;
+    }
+
+    public Integer getDriverlessPassengerNum() {
+        return driverlessPassengerNum;
+    }
+
+    public void setDriverlessPassengerNum(Integer driverlessPassengerNum) {
+        this.driverlessPassengerNum = driverlessPassengerNum;
     }
 }

@@ -9,10 +9,12 @@
     <result column="SUPPORT_ROUTE_NAME" jdbcType="VARCHAR" property="supportRouteName" />
     <result column="DRIVERLESS_ROUTE_ID" jdbcType="DECIMAL" property="driverlessRouteId" />
     <result column="DRIVERLESS_ROUTE_NAME" jdbcType="VARCHAR" property="driverlessRouteName" />
+    <result column="SUPPORT_PASSENGER_NUM" jdbcType="DECIMAL" property="supportPassengerNum" />
+    <result column="DRIVERLESS_PASSENGER_NUM" jdbcType="DECIMAL" property="driverlessPassengerNum" />
   </resultMap>
   <sql id="Base_Column_List">
     ID, ROUTE_ID, ROUTE_NAME, SUPPORT_ROUTE_ID, SUPPORT_ROUTE_NAME, DRIVERLESS_ROUTE_ID, 
-    DRIVERLESS_ROUTE_NAME
+    DRIVERLESS_ROUTE_NAME,SUPPORT_PASSENGER_NUM,DRIVERLESS_PASSENGER_NUM
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
