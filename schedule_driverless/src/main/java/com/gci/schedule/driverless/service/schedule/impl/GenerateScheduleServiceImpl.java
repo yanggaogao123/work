@@ -341,14 +341,14 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             log.info("【排班计划】-排班线路配置信息不存在，routeId:{}",params.getRouteId());
             return R.error("排班线路配置信息不存在");
         }
-        /*List<StationPassenger> stationPassengerList = bigDataService.getStationPassengerList(DateUtil.date2Str(params2.getPassengerData(),DateUtil.date_sdf),params.getRouteId().toString());
+        List<StationPassenger> stationPassengerList = bigDataService.getStationPassengerList(DateUtil.date2Str(params2.getPassengerData(),DateUtil.date_sdf),params.getRouteId().toString());
         if(CollectionUtils.isEmpty(stationPassengerList)){
             log.info("【排班计划】-客流信息不存在，routeId:{}",params.getRouteId());
             return R.error("客流信息不存在");
         }
         Integer maxPassengerNum = stationPassengerList.stream().sorted(Comparator.comparing(StationPassenger::getCurpeople).reversed())
-                .collect(Collectors.toList()).get(0).getCurpeople();*/
-        Integer maxPassengerNum = 300;
+                .collect(Collectors.toList()).get(0).getCurpeople();
+        //Integer maxPassengerNum = 300;
 
         DyDriverlessConfig config = configList.get(0);
         Integer supportBusNum = 0;
@@ -593,13 +593,13 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                 .collect(Collectors.toList()).get(0);
 
         //获取上行周转时间
-        /*Double upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.UP.getValue()),
+        Double upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.UP.getValue()),
                 upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), params.getUpFristDate());
         //获取下行周转时间
         Double downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.DOWN.getValue()),
-                downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), params.getDownFirstDate());*/
-        Double upFullTime = 40 * 60d;
-        Double downFullTime = 40 * 60d;
+                downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), params.getDownFirstDate());
+        /*Double upFullTime = 40 * 60d;
+        Double downFullTime = 40 * 60d;*/
         Date upFirstDate = params.getUpFristDate();
         Date downFirstDate = params.getDownFirstDate();
         String upDirection = Convert.toStr(Direction.UP.getValue());
@@ -919,7 +919,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             downFirstDate = new Date(lastUpPlanTime);
             upDirection = upDirection.equals(Convert.toStr(Direction.UP.getValue()))?Convert.toStr(Direction.DOWN.getValue()):Convert.toStr(Direction.UP.getValue());
             downDirection = downDirection.equals(Convert.toStr(Direction.DOWN.getValue()))?Convert.toStr(Direction.UP.getValue()):Convert.toStr(Direction.DOWN.getValue());
-            /*if(upDirection.equals(Convert.toStr(Direction.UP.getValue()))){
+            if(upDirection.equals(Convert.toStr(Direction.UP.getValue()))){
                 upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), upDirection,
                         upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), upFirstDate);
             }else {
@@ -933,7 +933,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             }else {
                 downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), downDirection,
                         upFirstRouteSta.getRouteStationId(), upFirstRouteSta.getRouteStationId(), downFirstDate);
-            }*/
+            }
             //排班结束
             if(isBreakUp && isBreakDown){
                 break;
