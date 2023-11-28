@@ -9,4 +9,5 @@ import java.util.Map;
 
 public interface ScheduleParamsRouteMapper {
     List<ScheduleParamsRoute> selectByRouteId(@Param("routeId") Long routeId);
+    ScheduleParamsRoute getByTemplateId(Integer templateId);
 }

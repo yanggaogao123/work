@@ -1,6 +1,9 @@
 package com.gci.schedule.driverless.bean.scheduleD;
 
+import cn.hutool.core.convert.Convert;
+
 import java.util.Date;
+import java.util.Objects;
 
 //停站时长设定(多时段)
 public class ScheduleParamsAnchor {
@@ -9,9 +12,9 @@ public class ScheduleParamsAnchor {
 
     private String direction;
 
-    private String beginTime; //开始时间
+    private String beginTime; //开始时间 0630
 
-    private String endTime; //结束时间
+    private String endTime; //结束时间 0730
 
     private Short anchorDurationMin; //最小停站时长
 
@@ -31,6 +34,19 @@ public class ScheduleParamsAnchor {
 
     private Date updateTime;
 
+    public Integer getIntbeginTime(){
+        if(Objects.nonNull(this.beginTime)){
+            return Convert.toInt(this.beginTime);
+        }
+        return null;
+    }
+
+    public Integer getIntendTime(){
+        if(Objects.nonNull(this.endTime)){
+            return Convert.toInt(this.endTime);
+        }
+        return null;
+    }
 
     public Short getBusOccupancy() {
         return busOccupancy;

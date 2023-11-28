@@ -18,4 +18,7 @@ public interface DyDriverlessConfigMapper {
     int updateByPrimaryKey(DyDriverlessConfig record);
 
     List<DyDriverlessConfig> selectByRouteId(Long routeId);
+
+    List<DyDriverlessConfig> selectByRouteIdAndSupportId(DyDriverlessConfig record);
+
 }

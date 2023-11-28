@@ -6,12 +6,10 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class ScheduleBySortParam {
+public class ScheduleCountParam {
     private Long routeId;
 
     private Long supportRouteId;
-
-    private String planType;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date runDate;

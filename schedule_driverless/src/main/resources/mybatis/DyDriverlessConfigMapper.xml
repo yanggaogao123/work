@@ -7,14 +7,12 @@
     <result column="ROUTE_NAME" jdbcType="VARCHAR" property="routeName" />
     <result column="SUPPORT_ROUTE_ID" jdbcType="DECIMAL" property="supportRouteId" />
     <result column="SUPPORT_ROUTE_NAME" jdbcType="VARCHAR" property="supportRouteName" />
-    <result column="DRIVERLESS_ROUTE_ID" jdbcType="DECIMAL" property="driverlessRouteId" />
-    <result column="DRIVERLESS_ROUTE_NAME" jdbcType="VARCHAR" property="driverlessRouteName" />
     <result column="SUPPORT_PASSENGER_NUM" jdbcType="DECIMAL" property="supportPassengerNum" />
-    <result column="DRIVERLESS_PASSENGER_NUM" jdbcType="DECIMAL" property="driverlessPassengerNum" />
+    <result column="IS_DRIVERLESS" jdbcType="DECIMAL" property="isDriverless" />
+    <result column="TYPE" jdbcType="DECIMAL" property="type" />
   </resultMap>
   <sql id="Base_Column_List">
-    ID, ROUTE_ID, ROUTE_NAME, SUPPORT_ROUTE_ID, SUPPORT_ROUTE_NAME, DRIVERLESS_ROUTE_ID, 
-    DRIVERLESS_ROUTE_NAME,SUPPORT_PASSENGER_NUM,DRIVERLESS_PASSENGER_NUM
+    ID, ROUTE_ID, ROUTE_NAME, SUPPORT_ROUTE_ID, SUPPORT_ROUTE_NAME,SUPPORT_PASSENGER_NUM,IS_DRIVERLESS
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -122,6 +120,21 @@
     select
     <include refid="Base_Column_List" />
     from DY_DRIVERLESS_CONFIG
-    where ROUTE_ID = #{routeId,jdbcType=DECIMAL}
+    where 1=1
+     <if test="routeId != null">
+     and ROUTE_ID = #{routeId,jdbcType=DECIMAL}
+     </if>
   </select>
+
+  <select id="selectByRouteIdAndSupportId" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessConfig" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from DY_DRIVERLESS_CONFIG
+    where ROUTE_ID = #{routeId,jdbcType=DECIMAL}
+    <if test="supportRouteId != null">
+      and SUPPORT_ROUTE_ID = #{supportRouteId,jdbcType=DECIMAL}
+    </if>
+    and IS_DRIVERLESS = #{isDriverless,jdbcType=DECIMAL}
+  </select>
+
 </mapper>

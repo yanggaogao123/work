@@ -1,6 +1,10 @@
 package com.gci.schedule.driverless.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.gci.schedule.driverless.bean.common.R;
+import com.gci.schedule.driverless.bean.scheduleD.DriverlessUpDownInfoVo;
+import com.gci.schedule.driverless.bean.scheduleD.RouteUpDownInfo;
+import com.gci.schedule.driverless.service.schedule.GenerateScheduleService;
 import com.gci.schedule.driverless.service.schedule.RouteService;
 import com.gci.schedule.driverless.service.schedule.ScheduleRouteConfigService;
 import com.gci.schedule.driverless.util.HttpRequestUtil;
@@ -32,6 +36,9 @@ public class RouteController {
 	@Resource
 	private RouteService routeService;
 
+	@Autowired
+	private GenerateScheduleService generateScheduleService;
+
 	/**
 	 * 获取机构线路
 	 */
@@ -55,5 +62,36 @@ public class RouteController {
 //		List<Map> list = routeService.getRouteListNew("18");//921路 359  测试
 		return R.ok().put("data",list);
 	}
+
+	@RequestMapping(value="/getRouteUpDownInfo",method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
+	@ResponseBody
+	//@SysLog
+	//根据线路和方向查询线路上下行信息（首末站、首末班发班时间和所属企业）
+	public R getRouteUpDownInfo(HttpServletRequest request,@RequestBody Map<String, Object> json) {
+		Long routeId = Long.valueOf(json.get("routeId").toString());
+		Long supportRouteId = null;
+		if(Objects.nonNull(json.get("supportRouteId"))){
+			supportRouteId = Long.valueOf(json.get("supportRouteId").toString());
+		}
+		List<RouteUpDownInfo> mainList = routeService.getRouteUpDownInfo(routeId);
+		List<RouteUpDownInfo> subList = null;
+		if(Objects.nonNull(supportRouteId)){
+			subList = routeService.getRouteUpDownInfo(supportRouteId);
+		}else {
+			subList = mainList;
+		}
+		DriverlessUpDownInfoVo vo = new DriverlessUpDownInfoVo();
+		vo.setMainList(mainList);
+		vo.setSubList(subList);
+		return R.ok().put("data",vo);
+	}
+
+	@RequestMapping(value="/getUnionRouteInfo",method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
+	@ResponseBody
+	public R getUnionRouteInfo(HttpServletRequest request,@RequestBody Map<String, Object> json) {
+		Long routeId = Long.valueOf(json.get("routeId").toString());
+		return generateScheduleService.getUnionRouteInfo(routeId);
+	}
+
 
 }

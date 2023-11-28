@@ -17,6 +17,8 @@ public class DateUtil {
 
     public static final String hhmm = "HHmm";
 
+    public static final String hh_mm = "HH:mm";
+
     public static final String date_sdf = "yyyy-MM-dd";
 
     public static final String time_sdf = "yyyy-MM-dd HH:mm:ss";

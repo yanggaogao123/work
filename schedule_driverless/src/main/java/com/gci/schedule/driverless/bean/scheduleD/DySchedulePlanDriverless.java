@@ -1,5 +1,9 @@
 package com.gci.schedule.driverless.bean.scheduleD;
 
+import cn.hutool.core.convert.Convert;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gci.schedule.driverless.util.DateUtil;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -9,6 +13,8 @@ public class DySchedulePlanDriverless {
     private Long routeId;
 
     private String routeCode;
+
+    private Long supportRouteId;
 
     private Date planDate;
 
@@ -49,6 +55,120 @@ public class DySchedulePlanDriverless {
     private Long firstRoundTaskId;
 
     private Short syncPlan;
+
+    private Integer classes;
+
+    private Integer supportClasses;
+
+    private Integer interval;
+
+    private Integer stopTime;
+
+    private Date passengerData;
+
+    private Integer passengerNum;
+
+    @JsonIgnore
+    private String busNameFull;//车辆全称
+
+    private Boolean singleBus;
+
+    private Integer status;
+
+    //周转时间
+    private Double fullTime;
+
+    public int getPlanTimeInt(){
+        return Convert.toInt(DateUtil.date2Str(this.planTime,DateUtil.hhmm));
+    }
+
+    public Double getFullTime() {
+        return fullTime;
+    }
+
+    public void setFullTime(Double fullTime) {
+        this.fullTime = fullTime;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getBusNameFull() {
+        return busNameFull;
+    }
+
+    public void setBusNameFull(String busNameFull) {
+        this.busNameFull = busNameFull;
+    }
+
+    public Boolean isSingleBus() {
+        return singleBus;
+    }
+
+    public void setSingleBus(Boolean singleBus) {
+        this.singleBus = singleBus;
+    }
+
+    public Long getSupportRouteId() {
+        return supportRouteId;
+    }
+
+    public void setSupportRouteId(Long supportRouteId) {
+        this.supportRouteId = supportRouteId;
+    }
+
+    public Date getPassengerData() {
+        return passengerData;
+    }
+
+    public void setPassengerData(Date passengerData) {
+        this.passengerData = passengerData;
+    }
+
+    public Integer getPassengerNum() {
+        return passengerNum;
+    }
+
+    public void setPassengerNum(Integer passengerNum) {
+        this.passengerNum = passengerNum;
+    }
+
+    public Integer getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Integer classes) {
+        this.classes = classes;
+    }
+
+    public Integer getSupportClasses() {
+        return supportClasses;
+    }
+
+    public void setSupportClasses(Integer supportClasses) {
+        this.supportClasses = supportClasses;
+    }
+
+    public Integer getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Integer interval) {
+        this.interval = interval;
+    }
+
+    public Integer getStopTime() {
+        return stopTime;
+    }
+
+    public void setStopTime(Integer stopTime) {
+        this.stopTime = stopTime;
+    }
 
     public Long getScheduleId() {
         return scheduleId;

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.AdrealSimulateMapper">
+
+  <select id="selectStationBusAndPassengerInfo" resultMap="stationBusAndPassengerInfoResultMap"  parameterType="map">
+    select  trunc(t.up_number_all/t.bus_num) up_number,
+    trunc(t.down_number_all/t.bus_num) down_number,
+    trunc(t.current_number_all/t.bus_num) current_number,
+    ceil(trunc(t.current_number_all/t.bus_num)/#{vehicleContent,jdbcType=DECIMAL} *100) full_load_ratio
+    ,current_number_all , bus_num
+    , route_sta_id
+    ,t.bus_id ,t.bus_code,t.bus_name ,bus_name_full
+    ,t.start_order_number ,t.start_direction ,t.schedule_id ,t.service_type ,t.service_name
+    from
+    (select
+    s.route_sta_id ,s.up_number as up_number_all,s.down_number as down_number_all ,s.current_number  as current_number_all  ,  s.run_time_num ,p2.bus_num
+    ,p2.bus_id ,p2.bus_code,p2.bus_name ,bus_name_full
+    ,p2.start_order_number ,p2.start_direction ,p2.schedule_id ,p2.service_type ,p2.service_name
+    from   rep_station_passenger s
+    left join
+      ( select t.*,b.bus_num from (select p.bus_id ,p.bus_code,p.bus_name , (decode(p.start_direction,0,'上',1,'下','')||p.start_order_number)  as bus_name_full
+      ,p.start_order_number ,p.start_direction ,p.schedule_id ,p.service_type ,p.service_name
+      ,p.route_id ,p.direction ,  trunc((p.plan_time - trunc(p.plan_time)) * 1440 / 30)  as run_time_num  ,to_char(p.plan_date,'D') run_day_num
+      from  DY_SCHEDULE_PLAN_DRIVERLESS p   where P.route_id =#{routeId,jdbcType=DECIMAL}
+      and p.trip_end_time >=  #{runDate,jdbcType=DATE}
+      and p.plan_time &lt;=  #{runDate,jdbcType=DATE}+ 1/24
+      ) t
+      left join
+      ( select  distinct count(schedule_id) over (partition by trunc((p.plan_time - trunc(p.plan_time)) * 1440 / 30) ,p.direction) bus_num
+      ,trunc((p.plan_time - trunc(p.plan_time)) * 1440 / 30)  as run_time_num  ,direction
+      from     DY_SCHEDULE_PLAN_DRIVERLESS p   where P.route_id =#{routeId,jdbcType=DECIMAL} and   p.plan_date = trunc(#{runDate,jdbcType=DATE})) b
+      on t.run_time_num=b.run_time_num and t.direction=b.direction
+      )  p2
+    on s.route_id =p2.route_id and p2.run_day_num = s.run_day_num and  s.run_time_num =p2.run_time_num and s.direction  =p2.direction
+    where bus_num is not null and schedule_id is not null
+    order by schedule_id ,run_time_num ) t
+  </select>
+
+  <resultMap id="stationBusAndPassengerInfoResultMap" type="com.gci.schedule.driverless.bean.scheduleD.StationBusAndPassengerInfo">
+    <result column="BUS_ID" jdbcType="INTEGER" property="busId" />
+    <result column="BUS_CODE" jdbcType="VARCHAR" property="busCode" />
+    <result column="BUS_NAME" jdbcType="VARCHAR" property="busName" />
+    <result column="BUS_NAME_FULL" jdbcType="VARCHAR" property="busNameFull" />
+    <result column="START_ORDER_NUMBER" jdbcType="DECIMAL" property="busNumber" />
+    <result column="START_DIRECTION" jdbcType="VARCHAR" property="firstDirection" />
+
+    <result column="SCHEDULE_ID" jdbcType="DECIMAL" property="scheduleId" />
+    <result column="ROUTE_STA_ID" jdbcType="DECIMAL" property="routeStationId" />
+    <result column="UP_NUMBER" jdbcType="DECIMAL" property="upNumber" />
+    <result column="DOWN_NUMBER" jdbcType="DECIMAL" property="downNumber" />
+    <result column="CURRENT_NUMBER" jdbcType="DECIMAL" property="currentNumber" />
+    <result column="FULL_LOAD_RATIO" jdbcType="DECIMAL" property="fullLoadRatio" />
+    <result column="CURRENT_NUMBER_ALL" jdbcType="DECIMAL" property="currentNumberAll" />
+    <result column="BUS_NUM" jdbcType="DECIMAL" property="busNum" />
+
+    <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType" />
+    <result column="SERVICE_NAME" jdbcType="VARCHAR" property="serviceName" />
+
+  </resultMap>
+
+  <!--获取非全程在某个站点开始的车辆和-->
+  <select id="getNotLongStationBusSum" resultMap="notLongStationBusSumResultMap"  parameterType="map">
+    select  distinct count(schedule_id) over (partition by trunc((p.plan_time - trunc(p.plan_time)) * 1440 / 30) ,p.direction
+    ,p.First_Route_Sta_Id , p.Last_Route_Sta_Id ) not_long_bus_num
+    ,trunc((p.plan_time - trunc(p.plan_time)) * 1440 / 30)  as run_time_num  ,direction ,p.First_Route_Sta_Id , p.Last_Route_Sta_Id
+    from     DY_SCHEDULE_PLAN_DRIVERLESS p   where  p.route_id =#{routeId,jdbcType=DECIMAL}  and  p.plan_date = trunc(#{runDate,jdbcType=DATE})
+    and p.service_type >0 and p.service_type!=1
+  </select>
+
+  <resultMap id="notLongStationBusSumResultMap" type="com.gci.schedule.driverless.bean.scheduleD.NotLongStationBusSum">
+    <result column="RUN_TIME_NUM" jdbcType="DECIMAL" property="runTimeNum" />
+    <result column="NOT_LONG_BUS_NUM" jdbcType="DECIMAL" property="notLongBusNum" />
+    <result column="DIRECTION" jdbcType="DECIMAL" property="direction" />
+    <result column="First_Route_Sta_Id" jdbcType="DECIMAL" property="firstRouteStationId" />
+    <result column="Last_Route_Sta_Id" jdbcType="DECIMAL" property="lastRouteStationId" />
+  </resultMap>
+
+
+</mapper>

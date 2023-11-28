@@ -25,16 +25,27 @@
     <result column="FIRST_ROUND_PLAN_TIME" jdbcType="TIMESTAMP" property="firstRoundPlanTime" />
     <result column="FIRST_ROUND_TASK_ID" jdbcType="DECIMAL" property="firstRoundTaskId" />
     <result column="SYNC_PLAN" jdbcType="DECIMAL" property="syncPlan" />
+    <result column="CLASSES" jdbcType="DECIMAL" property="classes" />
+    <result column="SUPPORT_CLASSES" jdbcType="DECIMAL" property="supportClasses" />
+    <result column="INTERVAL" jdbcType="DECIMAL" property="interval" />
+    <result column="STOP_TIME" jdbcType="DECIMAL" property="stopTime" />
+    <result column="PASSENGER_NUM" jdbcType="DECIMAL" property="passengerNum" />
+    <result column="PASSENGER_DATE" jdbcType="TIMESTAMP" property="passengerData" />
+    <result column="SUPPORT_ROUTE_ID" jdbcType="DECIMAL" property="supportRouteId" />
+    <result column="BUS_NAME_Full" jdbcType="VARCHAR" property="busNameFull"/>
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="FULL_TIME" jdbcType="DECIMAL" property="fullTime" />
   </resultMap>
   <insert id="insert" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless">
     insert into DY_SCHEDULE_PLAN_DRIVERLESS (SCHEDULE_ID, ROUTE_ID, ROUTE_CODE, 
       PLAN_DATE, PLAN_TIME, START_DIRECTION, 
       START_ORDER_NUMBER, TRIP_END_TIME, SERVICE_TYPE, 
       SERVICE_NAME, DIRECTION, BUS_CODE, 
-      BUS_ID, BUS_NAME, FIRST_ROUTE_STA_ID, 
+      BUS_ID, BUS_NAME, FIRST_ROUTE_STA_ID,
       LAST_ROUTE_STA_ID, FIRST_ROUTE_STA_NAME, LAST_ROUTE_STA_NAME, 
-      RUN_MILEAGE, PEAK_TYPE, FIRST_ROUND_PLAN_TIME, 
-      FIRST_ROUND_TASK_ID, SYNC_PLAN)
+      RUN_MILEAGE, PEAK_TYPE, FIRST_ROUND_PLAN_TIME,
+      FIRST_ROUND_TASK_ID, SYNC_PLAN,CLASSES,SUPPORT_CLASSES,INTERVAL,STOP_TIME,PASSENGER_NUM,
+      PASSENGER_DATE,SUPPORT_ROUTE_ID,STATUS,FULL_TIME)
     values (SEQ_SCHEDULE_PLAN_DRIVERLESS.nextval, #{routeId,jdbcType=DECIMAL}, #{routeCode,jdbcType=VARCHAR},
       #{planDate,jdbcType=TIMESTAMP}, #{planTime,jdbcType=TIMESTAMP}, #{startDirection,jdbcType=VARCHAR}, 
       #{startOrderNumber,jdbcType=DECIMAL}, #{tripEndTime,jdbcType=TIMESTAMP}, #{serviceType,jdbcType=VARCHAR}, 
@@ -42,7 +53,9 @@
       #{busId,jdbcType=DECIMAL}, #{busName,jdbcType=VARCHAR}, #{firstRouteStaId,jdbcType=DECIMAL}, 
       #{lastRouteStaId,jdbcType=DECIMAL}, #{firstRouteStaName,jdbcType=VARCHAR}, #{lastRouteStaName,jdbcType=VARCHAR}, 
       #{runMileage,jdbcType=DECIMAL}, #{peakType,jdbcType=VARCHAR}, #{firstRoundPlanTime,jdbcType=TIMESTAMP}, 
-      #{firstRoundTaskId,jdbcType=DECIMAL}, #{syncPlan,jdbcType=DECIMAL})
+      #{firstRoundTaskId,jdbcType=DECIMAL}, #{syncPlan,jdbcType=DECIMAL},#{classes,jdbcType=DECIMAL},#{supportClasses,jdbcType=DECIMAL},
+      #{interval,jdbcType=DECIMAL},#{stopTime,jdbcType=DECIMAL},#{passengerNum,jdbcType=DECIMAL},#{passengerData,jdbcType=TIMESTAMP},
+      #{supportRouteId,jdbcType=DECIMAL},#{status,jdbcType=DECIMAL},#{fullTime,jdbcType=DECIMAL})
   </insert>
   <insert id="batchInsertSchedule">
     insert into DY_SCHEDULE_PLAN_DRIVERLESS (SCHEDULE_ID, ROUTE_ID, ROUTE_CODE,
@@ -214,6 +227,70 @@
   </insert>
   <select id="getScheduleList" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless" resultMap="BaseResultMap">
     select * from DY_SCHEDULE_PLAN_DRIVERLESS
-    where route_id = #{routeId,jdbcType=DECIMAL} and plan_date = #{planDate,jdbcType=TIMESTAMP} order by plan_time desc
+    where route_id = #{routeId,jdbcType=DECIMAL} and support_route_id = #{supportRouteId,jdbcType=DECIMAL} and plan_date = #{planDate,jdbcType=TIMESTAMP} order by plan_time desc
   </select>
+
+  <select id="getScheduleList02" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless" resultMap="BaseResultMap">
+    select * from DY_SCHEDULE_PLAN_DRIVERLESS
+    where route_id = #{routeId,jdbcType=DECIMAL} and plan_date = #{planDate,jdbcType=TIMESTAMP}
+    <if test="status != null">
+    and status = #{status,jdbcType=DECIMAL}
+    </if>
+    order by plan_time desc
+  </select>
+
+  <select id="selectSchedulePlan" resultMap="BaseResultMap" parameterType="map">
+        select schedule_id
+             , route_id
+             , route_code
+             , plan_date
+             , plan_time
+             , start_direction
+             , start_order_number
+             , trip_end_time
+             , service_type
+             , service_name
+             , direction
+             , bus_code
+             , bus_id
+             , bus_name
+             , (decode(p.start_direction, 0, '上', 1, '下', '') || p.start_order_number) as bus_name_full
+             , FIRST_ROUTE_STA_ID
+             , LAST_ROUTE_STA_ID
+        from DY_SCHEDULE_PLAN_DRIVERLESS p
+        where P.route_id = #{routeId,jdbcType=DECIMAL}
+          and p.trip_end_time >= #{runDate,jdbcType=TIMESTAMP}
+          and p.plan_time &lt;= #{runDate,jdbcType=TIMESTAMP} + 1 / 24
+          and p.STATUS = #{scheduleStatus,jdbcType=DECIMAL}
+    </select>
+
+  <select id="getMinPlanTimeByRouteIdAndPlanDate" resultType="java.util.Date">
+        select min(plan_time)
+        from DY_SCHEDULE_PLAN_DRIVERLESS
+        where route_id = #{routeId}
+          and plan_date = #{date}
+        order by plan_time
+    </select>
+
+  <resultMap id="BusConfigureMap" type="com.gci.schedule.driverless.bean.scheduleD.BusConfigure">
+    <result property="busNumber" jdbcType="BIGINT" column="BUS_NUMBER"></result>
+    <result property="singleBusNumber" jdbcType="BIGINT" column="SINGLE_BUS_NUMBER"></result>
+  </resultMap>
+
+  <select id="busConfigure" resultMap="BusConfigureMap">
+        select * from
+        (
+        select count(1) as BUS_NUMBER from
+        (select distinct t.start_direction,t.start_order_number from DY_SCHEDULE_PLAN_DRIVERLESS t
+        where t.ROUTE_ID = #{routeId,jdbcType=VARCHAR} and status = #{status,jdbcType=DECIMAL}
+        and trunc(t.PLAN_DATE) = trunc(to_date( #{runDate,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')))
+        ) aa,
+        (
+        select count(1) as SINGLE_BUS_NUMBER from
+        (select distinct t.start_direction,t.start_order_number from DY_SCHEDULE_PLAN_DRIVERLESS t
+        where t.ROUTE_ID = #{routeId,jdbcType=VARCHAR} and status = #{status,jdbcType=DECIMAL}
+        and trunc(t.PLAN_DATE) = trunc(to_date( #{runDate,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'))
+        and t.SERVICE_TYPE=-32)
+        ) bb
+    </select>
 </mapper>

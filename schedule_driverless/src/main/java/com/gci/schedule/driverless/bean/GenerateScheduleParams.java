@@ -1,5 +1,6 @@
 package com.gci.schedule.driverless.bean;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gci.schedule.driverless.util.DateUtil;
 import lombok.Data;
 
@@ -38,6 +39,12 @@ public class GenerateScheduleParams {
     private Integer passengerNum;
 
     private Date runDate;
+
+    //客流参考日期
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    private Date passengerData;
+
+    private Long supportRouteId;
 
     public Date getUpFristDate(){
         if(Objects.isNull(this.upFristTime)){

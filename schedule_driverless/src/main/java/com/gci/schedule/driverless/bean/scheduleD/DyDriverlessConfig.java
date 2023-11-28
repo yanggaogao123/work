@@ -11,13 +11,29 @@ public class DyDriverlessConfig {
 
     private String supportRouteName;
 
-    private Long driverlessRouteId;
-
-    private String driverlessRouteName;
-
     private Integer supportPassengerNum;
 
-    private Integer driverlessPassengerNum;
+    //是否无人车支援，0否1是
+    private Integer isDriverless;
+
+    //释义见枚举类SimulationType
+    private Integer type;
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getIsDriverless() {
+        return isDriverless;
+    }
+
+    public void setIsDriverless(Integer isDriverless) {
+        this.isDriverless = isDriverless;
+    }
 
     public Long getId() {
         return id;
@@ -59,35 +75,11 @@ public class DyDriverlessConfig {
         this.supportRouteName = supportRouteName == null ? null : supportRouteName.trim();
     }
 
-    public Long getDriverlessRouteId() {
-        return driverlessRouteId;
-    }
-
-    public void setDriverlessRouteId(Long driverlessRouteId) {
-        this.driverlessRouteId = driverlessRouteId;
-    }
-
-    public String getDriverlessRouteName() {
-        return driverlessRouteName;
-    }
-
-    public void setDriverlessRouteName(String driverlessRouteName) {
-        this.driverlessRouteName = driverlessRouteName == null ? null : driverlessRouteName.trim();
-    }
-
     public Integer getSupportPassengerNum() {
         return supportPassengerNum;
     }
-
     public void setSupportPassengerNum(Integer supportPassengerNum) {
         this.supportPassengerNum = supportPassengerNum;
     }
 
-    public Integer getDriverlessPassengerNum() {
-        return driverlessPassengerNum;
-    }
-
-    public void setDriverlessPassengerNum(Integer driverlessPassengerNum) {
-        this.driverlessPassengerNum = driverlessPassengerNum;
-    }
 }
