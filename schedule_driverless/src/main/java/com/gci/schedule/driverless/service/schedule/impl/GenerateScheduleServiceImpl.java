@@ -345,7 +345,8 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             log.info("【排班计划】-排班线路站点信息不存在，routeId:{}",params.getRouteId());
             return R.error("排班线路站点信息不存在");
         }
-
+        //测试支援线路
+        params.setSupportRouteId(420l);
         DyDriverlessConfig config = getDyDriverlessConfig(params.getRouteId(),params.getSupportRouteId(),Objects.isNull(params.getSupportRouteId())?1:0);
         if(Objects.isNull(config)){
             log.info("【排班计划】-排班线路配置信息不存在，routeId:{}",params.getRouteId());
@@ -414,6 +415,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             GenerateScheduleParams2 reduceParams2 = new GenerateScheduleParams2();
             reduceParams2.setRouteId(config.getSupportRouteId());
             reduceParams2.setRunDate(params2.getRunDate());
+            reduceParams2.setPassengerData(params2.getPassengerData());
             GenerateScheduleParams reduceParams = getGenerateScheduleParams(reduceParams2);
             //上行减车
             Integer upReduceBusNum;
@@ -427,8 +429,13 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                 downReduceBusNum = -BigDecimal.valueOf(supportBusNum/2).setScale(0,BigDecimal.ROUND_UP).intValue();
             }
             Route supportRoute = dispatchApp.getRouteById(reduceParams.getRouteId()).getData();
+            List<RouteSta> supportRouteStaList = aptsBaseApp.getRouteStaListByRouteId(reduceParams.getRouteId()).getData();
+            if(CollectionUtils.isEmpty(supportRouteStaList)){
+                log.info("【排班计划】-排班支援线路站点信息不存在，routeId:{}",reduceParams.getRouteId());
+                return R.error("排班支援线路站点信息不存在");
+            }
             //支援排班
-            List<DySchedulePlanDriverless> supportScheduleList = getDySchedulePlanDriverlesses(reduceParams, supportRoute, routeStaList,upReduceBusNum,downReduceBusNum,null,ScheduleStatus.SUPPORT_SCHEDULE.getValue());
+            List<DySchedulePlanDriverless> supportScheduleList = getDySchedulePlanDriverlesses(reduceParams, supportRoute, supportRouteStaList,upReduceBusNum,downReduceBusNum,null,ScheduleStatus.SUPPORT_SCHEDULE.getValue());
             if(!CollectionUtils.isEmpty(supportScheduleList)&&!CollectionUtils.isEmpty(scheduleList)){
                 scheduleList.addAll(supportScheduleList);
             }
@@ -451,6 +458,8 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
 
     @Override
     public R getScheduleBySort(ScheduleBySortParam params) {
+        //测试数据
+        //params.setSupportRouteId(420l);
         DySchedulePlanDriverless record = new DySchedulePlanDriverless();
         record.setRouteId(params.getRouteId());
         record.setPlanDate(params.getRunDate());
@@ -461,10 +470,11 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             return R.error("排班计划信息不存在");
         }
         if(Objects.isNull(params.getSupportRouteId())){
-            driverlessList = driverlessList.stream().filter(e -> ScheduleStatus.DRIVERLESS_SCHEDULE.getValue()==e.getStatus()).collect(Collectors.toList());
-            if(CollectionUtils.isEmpty(driverlessList)){
+            List<DySchedulePlanDriverless> finalDriverlessList = driverlessList.stream().filter(e -> ScheduleStatus.DRIVERLESS_SCHEDULE.getValue()==e.getStatus()).collect(Collectors.toList());
+            if(CollectionUtils.isEmpty(finalDriverlessList)){
                 log.info("无人车排班计划信息不存在，routeId:{}",params.getRouteId());
-                return R.error("无人车排班计划信息不存在");
+            }else {
+                driverlessList = finalDriverlessList;
             }
         }
         //根据班次分组
@@ -940,7 +950,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                         downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), downFirstDate);
             }else {
                 downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), downDirection,
-                        upFirstRouteSta.getRouteStationId(), upFirstRouteSta.getRouteStationId(), downFirstDate);
+                        upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), downFirstDate);
             }
             //排班结束
             if(isBreakUp && isBreakDown){

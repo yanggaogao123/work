@@ -12,7 +12,7 @@
     <result column="TYPE" jdbcType="DECIMAL" property="type" />
   </resultMap>
   <sql id="Base_Column_List">
-    ID, ROUTE_ID, ROUTE_NAME, SUPPORT_ROUTE_ID, SUPPORT_ROUTE_NAME,SUPPORT_PASSENGER_NUM,IS_DRIVERLESS
+    ID, ROUTE_ID, ROUTE_NAME, SUPPORT_ROUTE_ID, SUPPORT_ROUTE_NAME,SUPPORT_PASSENGER_NUM,IS_DRIVERLESS,TYPE
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 

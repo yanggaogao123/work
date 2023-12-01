@@ -47,4 +47,8 @@ public class ScheduleCountVo {
     private Map<String,Object> mainDownIntersiteMap;
     private Map<String,Object> subUpIntersiteMap;
     private Map<String,Object> subDownIntersiteMap;
+
+    //表格内容
+    private Map<String,Object> mainUpWordMap;
+    private Map<String,Object> mainDownWordMap;
 }

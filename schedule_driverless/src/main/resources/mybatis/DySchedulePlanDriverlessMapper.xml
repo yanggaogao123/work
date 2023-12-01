@@ -227,7 +227,11 @@
   </insert>
   <select id="getScheduleList" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless" resultMap="BaseResultMap">
     select * from DY_SCHEDULE_PLAN_DRIVERLESS
-    where route_id = #{routeId,jdbcType=DECIMAL} and support_route_id = #{supportRouteId,jdbcType=DECIMAL} and plan_date = #{planDate,jdbcType=TIMESTAMP} order by plan_time desc
+    where route_id = #{routeId,jdbcType=DECIMAL}
+    <if test="supportRouteId != null">
+      and support_route_id = #{supportRouteId,jdbcType=DECIMAL}
+    </if>
+    and plan_date = #{planDate,jdbcType=TIMESTAMP} order by plan_time desc
   </select>
 
   <select id="getScheduleList02" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless" resultMap="BaseResultMap">

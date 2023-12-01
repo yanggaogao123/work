@@ -20,6 +20,7 @@ import com.gci.schedule.driverless.service.schedule.SimulationService;
 import com.gci.schedule.driverless.util.DateUtil;
 import com.gci.schedule.driverless.util.HttpClientUtils;
 import com.gci.schedule.driverless.util.StringUtil;
+import javafx.scene.chart.ScatterChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,12 +224,20 @@ public class SimulationServiceImpl implements SimulationService {
             intersiteTimeParamsThisSchedule.setDirection(direction);
             intersiteTimeParamsThisSchedule.setFromRouteStaId(firstRouteStaId.intValue());
             intersiteTimeParamsThisSchedule.setToRouteStaId(lastRouteStaId.intValue());
+
             double intersiteTotalTime = getIntersiteTime(intersiteTimeParamsThisSchedule);//志武接口算出该班次的耗时 (s)
             double triplogTotolTime = (double) (schedulePlan.getTripEndTime().getTime() - schedulePlan.getPlanTime().getTime()) / 1000;
             //耗时比例缩放系数，保留2位小数
-            double zoomFactor = triplogTotolTime / intersiteTotalTime;
-            BigDecimal b = new BigDecimal(zoomFactor);
-            zoomFactor = b.setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
+            double zoomFactor = 0;
+            try{
+                zoomFactor = triplogTotolTime / intersiteTotalTime;
+                BigDecimal b = new BigDecimal(zoomFactor);
+                zoomFactor = b.setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
+            }catch (Exception e){
+                System.out.println(intersiteTotalTime+"------"+triplogTotolTime);
+                e.printStackTrace();
+            }
+
             System.out.println("zoomFactor" + zoomFactor);
             System.out.println(intersiteTotalTime + "_" + triplogTotolTime);
             double wasteTimeTotalAll = 0.0;
