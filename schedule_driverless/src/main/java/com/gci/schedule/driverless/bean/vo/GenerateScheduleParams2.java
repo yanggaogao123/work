@@ -17,4 +17,7 @@ public class GenerateScheduleParams2 {
     //客流参考日期
     @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date passengerData;
+
+    //最优计划：1，预设计划：2
+    private Integer planType;
 }

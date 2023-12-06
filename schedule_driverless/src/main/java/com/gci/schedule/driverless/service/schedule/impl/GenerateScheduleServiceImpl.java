@@ -1011,6 +1011,15 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
         params.setPassengerNum(scheduleParamsRoute.getVehicleContent());
         params.setPassengerData(params2.getPassengerData());
         params.setSupportRouteId(params2.getSupportRouteId());
+        if(Objects.equals(params2.getPlanType(),1)){
+            //最优计划参数配置
+            /**
+             * 1、每半小时大数据最大客流数据除以车内容量获取半小时的班次数
+             * 2、获取来回周转时间加两边停站时间内的班次数最为总配车数
+             * 3、分配上下行车数
+             */
+
+        }
         return params;
     }
 
