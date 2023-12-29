@@ -1,0 +1,9 @@
+{
+  "tabWidth": 4,
+  "printWidth": 120,
+  "semi": true,
+  "singleQuote": true,
+  "bracketSpacing": true,
+  "prettier.htmlWhitespaceSensitivity": "ignore",
+  "prettier.jsxBracketSameLine": false
+}
