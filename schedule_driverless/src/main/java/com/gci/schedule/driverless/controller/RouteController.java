@@ -93,5 +93,11 @@ public class RouteController {
 		return generateScheduleService.getUnionRouteInfo(routeId);
 	}
 
+	@RequestMapping(value="/getDriverlessRoute",method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+	@ResponseBody
+	public R getDriverlessRoute(HttpServletRequest request) {
+		return generateScheduleService.getDriverlessRoute();
+	}
+
 
 }

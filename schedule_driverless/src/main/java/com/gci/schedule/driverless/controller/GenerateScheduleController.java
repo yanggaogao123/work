@@ -4,18 +4,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.gci.schedule.driverless.bean.GenerateScheduleParams;
 import com.gci.schedule.driverless.bean.common.R;
 import com.gci.schedule.driverless.bean.enums.ScheduleStatus;
-import com.gci.schedule.driverless.bean.scheduleD.BusConfigure;
-import com.gci.schedule.driverless.bean.scheduleD.BusConfigureVo;
+import com.gci.schedule.driverless.bean.scheduleD.*;
 import com.gci.schedule.driverless.bean.vo.GenerateScheduleParams2;
 import com.gci.schedule.driverless.bean.vo.ScheduleBySortParam;
 import com.gci.schedule.driverless.service.schedule.GenerateScheduleService;
+import com.gci.schedule.driverless.service.schedule.ScheduleTemplateService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -24,6 +25,8 @@ public class GenerateScheduleController {
     @Autowired
     private GenerateScheduleService generateScheduleService;
 
+    @Autowired
+    private ScheduleTemplateService scheduleTemplateService;
     /**
      * 常规线排班生成
      * @param params
@@ -105,5 +108,104 @@ public class GenerateScheduleController {
         } catch (Exception e) {
             return R.error(500, "权限不足");
         }
+    }
+
+    @ResponseBody
+    @RequestMapping("/getDriverlessDetail")
+    public R getDriverlessDetail(@RequestBody ScheduleBySortParam params) {
+        log.info("查询排班计划详情 - routeId:{} 入参:{}", params.getRouteId(), JSONObject.toJSONString(params));
+        if (params.getRouteId() == null) {
+            return R.error("线路id不能为空");
+        }
+        return generateScheduleService.getScheduleDetaiList(params);
+    }
+
+    @RequestMapping(value="/getJoinTemplateListByRouteId/{routeId}",method = RequestMethod.GET )
+    @ResponseBody
+    //@SysLog
+    public R getJoinTemplateListByRouteId(HttpServletRequest request, @PathVariable Integer routeId) {
+        List<ScheduleTemplateJoin> list=scheduleTemplateService.getJoinTemplateListByRouteId(routeId);
+        return  R.ok().put("data", JSONObject.toJSON(list));
+    }
+
+    @RequestMapping("/mountCarPlan/{routeId}/{runMode}/{referenceDate}/{runDate}")
+    @ResponseBody
+    public R mountCarPlan(@PathVariable String routeId, @PathVariable String runMode,
+                          @PathVariable String referenceDate, @PathVariable String runDate) {
+        if (StringUtils.isEmpty(routeId) || StringUtils.isEmpty(runMode) || StringUtils.isEmpty(referenceDate) || StringUtils.isEmpty(runDate)) {
+            return R.error("参数有误");
+        }
+        List<MountCarPlan> list = generateScheduleService.mountCarPlan(routeId, runMode, referenceDate, runDate);
+        return R.ok().put("data", list);
+    }
+
+    //查询过去n天电子路单
+    //routeId-线路id,referenceDate-参考日期
+    @RequestMapping("/recentRunBus/{routeId}/{referenceDate}")
+    @ResponseBody
+    public R recentRunBus(@PathVariable String routeId, @PathVariable String referenceDate) {
+        if (StringUtils.isEmpty(routeId) || StringUtils.isEmpty(referenceDate)) {
+            return R.error("参数有误");
+        }
+        List<MountCarPlan> recentRunBus = generateScheduleService.recentRunBus(routeId, referenceDate);
+        return R.ok().put("data", recentRunBus);
+    }
+
+    @RequestMapping(value = "/runBus/{routeId}", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    //@SysLog
+    public String queryRunBus(@PathVariable String routeId,
+                              HttpServletRequest request) {
+        return generateScheduleService.runBus(routeId);
+    }
+
+    //保存挂车
+    @RequestMapping("/saveMountCar")
+    @ResponseBody
+    public R saveMountCar(@RequestBody List<MountCarPlan> list, HttpServletRequest req) {
+        if (CollectionUtils.isNotEmpty(list)) {
+            try {
+                String userId = String.valueOf(req.getSession().getAttribute("userId"));
+                String userName = String.valueOf(req.getSession().getAttribute("userName"));
+                return R.ok().put("data", generateScheduleService.saveMountCar(list, userId, userName));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return R.error(e.getMessage());
+            }
+        }
+        return R.error();
+    }
+
+    @RequestMapping(value = "/runBusAndInfoNewRunBus/{routeId}", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    //@SysLog
+    public R queryRunBusAndInfoByRouteNewRunBus(@PathVariable String routeId,
+                              HttpServletRequest request) {
+        return generateScheduleService.runBusAndInfoByRouteNewRunBus(routeId);
+    }
+
+    @ResponseBody
+    @RequestMapping("/getRuningScheduleDetail")
+    public R getRuningScheduleDetail(@RequestBody Map<String, Object> params) {
+        log.info("监控调度支援计划 - routeId:{} 入参:{}", params.get("routeId"), JSONObject.toJSONString(params));
+        if (Objects.isNull(params.get("routeId"))) {
+            return R.error("线路id不能为空");
+        }
+        return generateScheduleService.getRuningScheduleDetail(params);
+    }
+
+    /**
+     * 监控调度车辆配置信息
+     * @param params
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getRuningScheduleConfig")
+    public R getRuningScheduleConfig(@RequestBody Map<String, Object> params) {
+        log.info("监控调度车辆配置信息 - routeId:{} 入参:{}", params.get("routeId"), JSONObject.toJSONString(params));
+        if (Objects.isNull(params.get("routeId"))) {
+            return R.error("线路id不能为空");
+        }
+        return generateScheduleService.getRuningScheduleConfig(params);
     }
 }

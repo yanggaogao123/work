@@ -137,4 +137,10 @@
     and IS_DRIVERLESS = #{isDriverless,jdbcType=DECIMAL}
   </select>
 
+  <select id="getDriverlessRoute" resultMap="BaseResultMap">
+    select
+    distinct(ROUTE_ID), ROUTE_NAME
+    from DY_DRIVERLESS_CONFIG
+  </select>
+
 </mapper>

@@ -1,6 +1,7 @@
 package com.gci.schedule.driverless.bean.scheduleD;
 
 import cn.hutool.core.convert.Convert;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gci.schedule.driverless.util.DateUtil;
 
@@ -18,12 +19,14 @@ public class DySchedulePlanDriverless {
 
     private Date planDate;
 
+    @JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date planTime;
 
     private String startDirection;
 
     private Short startOrderNumber;
 
+    @JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date tripEndTime;
 
     private String serviceType;
@@ -77,6 +80,17 @@ public class DySchedulePlanDriverless {
 
     //周转时间
     private Double fullTime;
+
+    //最优计划：1，预设计划：2
+    private Integer planType;
+
+    public Integer getPlanType() {
+        return planType;
+    }
+
+    public void setPlanType(Integer planType) {
+        this.planType = planType;
+    }
 
     public int getPlanTimeInt(){
         return Convert.toInt(DateUtil.date2Str(this.planTime,DateUtil.hhmm));

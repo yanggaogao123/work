@@ -51,6 +51,7 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
         DySchedulePlanDriverless subRecord = new DySchedulePlanDriverless();
         mainRecord.setRouteId(param.getRouteId());
         mainRecord.setPlanDate(param.getRunDate());
+        mainRecord.setPlanType(param.getPlanType());
         subRecord.setPlanDate(param.getRunDate());
         if(Objects.nonNull(param.getSupportRouteId())){
             mainRecord.setStatus(ScheduleStatus.SUPPORTED_SCHEDULE.getValue());
@@ -137,10 +138,16 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
                     &&Objects.nonNull(e.getIntendTime())&&e.getIntendTime()>=(timeNum+1)*100).collect(Collectors.toList());
             List<ScheduleParamsAnchor> finalMainDownAnchorList = mainAnchorList.stream().filter(e -> e.getDirection().equals("1")&&Objects.nonNull(e.getIntbeginTime())&&e.getIntbeginTime()<=timeNum*100
                     &&Objects.nonNull(e.getIntendTime())&&e.getIntendTime()>=(timeNum+1)*100).collect(Collectors.toList());
-            ScheduleParamsAnchor mainUpAnchor = finalMainUpAnchorList.get(0);
-            ScheduleParamsAnchor mainDownAnchor = finalMainDownAnchorList.get(0);
-            Integer mainUploadPeopleNum = BigDecimal.valueOf(mainUpAnchor.getBusOccupancy()*mainScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
-            Integer mainDownloadPeopleNum = BigDecimal.valueOf(mainDownAnchor.getBusOccupancy()*mainScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
+            Integer mainUploadPeopleNum = 0;
+            Integer mainDownloadPeopleNum = 0;
+            if(!CollectionUtils.isEmpty(finalMainUpAnchorList)){
+                ScheduleParamsAnchor mainUpAnchor = finalMainUpAnchorList.get(0);
+                mainUploadPeopleNum = BigDecimal.valueOf(mainUpAnchor.getBusOccupancy()*mainScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
+            }
+            if(!CollectionUtils.isEmpty(finalMainDownAnchorList)){
+                ScheduleParamsAnchor mainDownAnchor = finalMainDownAnchorList.get(0);
+                mainDownloadPeopleNum = BigDecimal.valueOf(mainDownAnchor.getBusOccupancy()*mainScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
+            }
             mainUploadPeopleNumMap.put(timeNum.toString(),mainUploadPeopleNum);
             mainDownloadPeopleNumMap.put(timeNum.toString(),mainDownloadPeopleNum);
             //支援线路时段班次核载人数
@@ -154,12 +161,19 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
                         &&Objects.nonNull(e.getIntendTime())&&e.getIntendTime()>=(timeNum+1)*100).collect(Collectors.toList());
                 List<ScheduleParamsAnchor> finalSubDownAnchorList = subAnchorList.stream().filter(e -> e.getDirection().equals("1")&&Objects.nonNull(e.getIntbeginTime())&&e.getIntbeginTime()<=timeNum*100
                         &&Objects.nonNull(e.getIntendTime())&&e.getIntendTime()>=(timeNum+1)*100).collect(Collectors.toList());
-                ScheduleParamsAnchor subUpAnchor = finalSubUpAnchorList.get(0);
-                ScheduleParamsAnchor subDownAnchor = finalSubDownAnchorList.get(0);
-                Integer subUploadPeopleNum = BigDecimal.valueOf(subUpAnchor.getBusOccupancy()*subScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
-                Integer subDownloadPeopleNum = BigDecimal.valueOf(subDownAnchor.getBusOccupancy()*subScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
-                mainUploadPeopleNumMap.put(timeNum.toString(),subUploadPeopleNum);
-                mainDownloadPeopleNumMap.put(timeNum.toString(),subDownloadPeopleNum);
+                Integer subUploadPeopleNum = 0;
+                Integer subDownloadPeopleNum = 0;
+                if(!CollectionUtils.isEmpty(finalSubUpAnchorList)){
+                    ScheduleParamsAnchor subUpAnchor = finalSubUpAnchorList.get(0);
+                    subUploadPeopleNum = BigDecimal.valueOf(subUpAnchor.getBusOccupancy()*subScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
+
+                }
+                if(!CollectionUtils.isEmpty(finalSubDownAnchorList)){
+                    ScheduleParamsAnchor subDownAnchor = finalSubDownAnchorList.get(0);
+                    subDownloadPeopleNum = BigDecimal.valueOf(subDownAnchor.getBusOccupancy()*subScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
+                }
+                subUploadPeopleNumMap.put(timeNum.toString(),subUploadPeopleNum);
+                subDownloadPeopleNumMap.put(timeNum.toString(),subDownloadPeopleNum);
             }
 
             //线路时段客流人数,时段最高车内人数
@@ -244,14 +258,29 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             subDownIntersiteMap.put(timeNum.toString(),Math.round(subDownIntersite));
 
             //线路时段班次满载率
-            Integer upMainfullPercent = BigDecimal.valueOf(upMainMax * 100).divide(BigDecimal.valueOf(mainUpClasses * mainScheduleList.get(0).getPassengerNum()),BigDecimal.ROUND_HALF_UP).intValue();
-            Integer downMainfullPercent = BigDecimal.valueOf(downMainMax * 100).divide(BigDecimal.valueOf(mainDownClasses * mainScheduleList.get(0).getPassengerNum()),BigDecimal.ROUND_HALF_UP).intValue();
+            Integer upMainfullPercent = 0;
+            Integer downMainfullPercent = 0;
+            if(mainUpClasses!=0){
+                upMainfullPercent = BigDecimal.valueOf(upMainMax * 100).divide(BigDecimal.valueOf(mainUpClasses * mainScheduleList.get(0).getPassengerNum()),BigDecimal.ROUND_HALF_UP).intValue();
+            }
+            if(mainDownClasses!=0){
+                downMainfullPercent = BigDecimal.valueOf(downMainMax * 100).divide(BigDecimal.valueOf(mainDownClasses * mainScheduleList.get(0).getPassengerNum()),BigDecimal.ROUND_HALF_UP).intValue();
+
+            }
             mainUpFullPercentMap.put(timeNum.toString(),upMainfullPercent);
             mainDownFullPercentMap.put(timeNum.toString(),downMainfullPercent);
 
             //支援线路时段班次满载率
-            Integer upSubfullPercent = BigDecimal.valueOf(upSubMax * 100).divide(BigDecimal.valueOf(subUpClasses * subScheduleList.get(0).getPassengerNum()),BigDecimal.ROUND_HALF_UP).intValue();
-            Integer downSubfullPercent = BigDecimal.valueOf(downSubMax * 100).divide(BigDecimal.valueOf(subDownClasses * mainScheduleList.get(0).getPassengerNum()),BigDecimal.ROUND_HALF_UP).intValue();
+            Integer upSubfullPercent = 0;
+            Integer downSubfullPercent = 0;
+            if(subUpClasses!=0){
+                upSubfullPercent = BigDecimal.valueOf(upSubMax * 100).divide(BigDecimal.valueOf(subUpClasses * subScheduleList.get(0).getPassengerNum()),BigDecimal.ROUND_HALF_UP).intValue();
+
+            }
+            if(subDownClasses!=0){
+                downSubfullPercent = BigDecimal.valueOf(downSubMax * 100).divide(BigDecimal.valueOf(subDownClasses * mainScheduleList.get(0).getPassengerNum()),BigDecimal.ROUND_HALF_UP).intValue();
+
+            }
             subUpFullPercentMap.put(timeNum.toString(),upSubfullPercent);
             subDownFullPercentMap.put(timeNum.toString(),downSubfullPercent);
 

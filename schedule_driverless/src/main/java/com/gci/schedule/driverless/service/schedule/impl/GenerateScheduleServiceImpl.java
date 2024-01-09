@@ -1,6 +1,8 @@
 package com.gci.schedule.driverless.service.schedule.impl;
 
 import cn.hutool.core.convert.Convert;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.gci.schedule.driverless.bean.*;
 import com.gci.schedule.driverless.bean.common.CodeResp;
 import com.gci.schedule.driverless.bean.common.Constant;
@@ -15,21 +17,27 @@ import com.gci.schedule.driverless.feign.AptsBaseApp;
 import com.gci.schedule.driverless.feign.DispatchApp;
 import com.gci.schedule.driverless.mapper.DyDriverlessConfigMapper;
 import com.gci.schedule.driverless.mapper.DySchedulePlanDriverlessMapper;
-import com.gci.schedule.driverless.service.schedule.BigDataService;
-import com.gci.schedule.driverless.service.schedule.GenerateScheduleService;
-import com.gci.schedule.driverless.service.schedule.RouteService;
-import com.gci.schedule.driverless.service.schedule.ScheduleParamsAnchorService;
+import com.gci.schedule.driverless.mapper.RouteWasteTimeMapper;
+import com.gci.schedule.driverless.mapper.ScheduleRouteConfigMapper;
+import com.gci.schedule.driverless.service.schedule.*;
 import com.gci.schedule.driverless.service.server.ScheduleServerService;
 import com.gci.schedule.driverless.util.DateUtil;
+import com.gci.schedule.driverless.util.DateUtil2;
+import com.gci.schedule.driverless.util.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -53,6 +61,24 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
     private RouteService routeService;
     @Autowired
     private ScheduleParamsAnchorService scheduleParamsAnchorService;
+    @Autowired
+    private RouteWasteTimeMapper routeWasteTimeMapper;
+    @Autowired
+    private BusNumberConfigService busNumberConfigService;
+    @Value("${dispatchServer.server.url}")
+    private String dispatchServerUrl;
+    @Value("${getRunBusByRoute}")
+    private String getRunBusByRoute;
+    @Value("${dispatchApp.app.url01}")
+    private String dispatchAppAppUrl01;
+    @Value("${dispatchApp.app.url02}")
+    private String dispatchAppAppUrl02;
+    @Value("${newRunBus}")
+    private String newRunBus;
+    @Autowired
+    private ScheduleRouteConfigMapper scheduleRouteConfigMapper;
+    @Autowired
+    private RunBusService runBusService;
 
     @Override
     public R generateSchedule(GenerateScheduleParams params) {
@@ -323,12 +349,21 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
         DySchedulePlanDriverless record = new DySchedulePlanDriverless();
         record.setRouteId(params2.getRouteId());
         record.setPlanDate(params2.getRunDate());
+        record.setPlanType(params2.getPlanType());
         List<DySchedulePlanDriverless> driverlessList = dySchedulePlanDriverlessMapper.getScheduleList02(record);
         if(!CollectionUtils.isEmpty(driverlessList)){
             log.info("【排班计划】-排班计划已存在，routeId:{}",params2.getRouteId());
             return R.error("排班计划已存在");
         }
-        GenerateScheduleParams params = getGenerateScheduleParams(params2);
+        List<StationPassenger> stationPassengerList = bigDataService.getStationPassengerList(DateUtil.date2Str(params2.getPassengerData(),DateUtil.date_sdf),params2.getRouteId().toString());
+        if(CollectionUtils.isEmpty(stationPassengerList)){
+            log.info("【排班计划】-客流信息不存在，routeId:{}",params2.getRouteId());
+            return R.error("客流信息不存在");
+        }
+        Integer maxPassengerNum = stationPassengerList.stream().sorted(Comparator.comparing(StationPassenger::getCurpeople).reversed())
+                .collect(Collectors.toList()).get(0).getCurpeople();
+//        Integer maxPassengerNum = 300;
+        GenerateScheduleParams params = getGenerateScheduleParams(params2,stationPassengerList);
         if(Objects.isNull(params)){
             log.info("【排班计划】-排班参数信息查询失败，routeId:{}",params.getRouteId());
             return R.error("排班参数信息查询失败");
@@ -346,24 +381,35 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             return R.error("排班线路站点信息不存在");
         }
         //测试支援线路
-        params.setSupportRouteId(420l);
+        //params.setSupportRouteId(420l);
         DyDriverlessConfig config = getDyDriverlessConfig(params.getRouteId(),params.getSupportRouteId(),Objects.isNull(params.getSupportRouteId())?1:0);
         if(Objects.isNull(config)){
             log.info("【排班计划】-排班线路配置信息不存在，routeId:{}",params.getRouteId());
             return R.error("排班线路配置信息不存在");
         }
-        List<StationPassenger> stationPassengerList = bigDataService.getStationPassengerList(DateUtil.date2Str(params2.getPassengerData(),DateUtil.date_sdf),params.getRouteId().toString());
-        if(CollectionUtils.isEmpty(stationPassengerList)){
-            log.info("【排班计划】-客流信息不存在，routeId:{}",params.getRouteId());
-            return R.error("客流信息不存在");
-        }
-        Integer maxPassengerNum = stationPassengerList.stream().sorted(Comparator.comparing(StationPassenger::getCurpeople).reversed())
-                .collect(Collectors.toList()).get(0).getCurpeople();
-//        Integer maxPassengerNum = 300;
 
         Integer supportBusNum = BigDecimal.valueOf((maxPassengerNum-params.getPassengerNum())/config.getSupportPassengerNum()).setScale(0,BigDecimal.ROUND_UP).intValue();
+        //判断常规线混编是否互相支援
+        boolean supportEachOther = true;
+        if(supportBusNum<0&&config.getIsDriverless().equals(0)){
+            List<StationPassenger> supportStationPassengerList = bigDataService.getStationPassengerList(DateUtil.date2Str(params2.getPassengerData(),DateUtil.date_sdf),config.getSupportRouteId().toString());
+            if(CollectionUtils.isEmpty(supportStationPassengerList)){
+                log.info("【排班计划】-支援线客流信息不存在，routeId:{}",params2.getRouteId());
+                return R.error("支援线客流信息不存在");
+            }
+            Integer supportMaxPassengerNum = supportStationPassengerList.stream().sorted(Comparator.comparing(StationPassenger::getCurpeople).reversed())
+                    .collect(Collectors.toList()).get(0).getCurpeople();
+            GenerateScheduleParams2 reduceParams2 = new GenerateScheduleParams2();
+            reduceParams2.setRouteId(config.getSupportRouteId());
+            reduceParams2.setRunDate(params2.getRunDate());
+            reduceParams2.setPassengerData(params2.getPassengerData());
+            GenerateScheduleParams reduceParamsTemp = getGenerateScheduleParams(reduceParams2,null);
+            if(supportMaxPassengerNum < reduceParamsTemp.getPassengerNum()){
+                supportEachOther = false;
+            }
+        }
         List<DySchedulePlanDriverless> scheduleList = null;
-
+        GenerateScheduleParams reduceParams = null;
         if(config.getIsDriverless().equals(1)){
             //无人车支援排班
             //上行无人车支援
@@ -397,7 +443,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             if(!CollectionUtils.isEmpty(scheduleList)&&!CollectionUtils.isEmpty(commonScheduleList)){
                 scheduleList.addAll(commonScheduleList);
             }
-        }else if(config.getIsDriverless().equals(0)){
+        }else if(config.getIsDriverless().equals(0) && supportEachOther){
             //常规线支援排班
             //上行支援车
             Integer upSupportBusNum;
@@ -416,7 +462,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             reduceParams2.setRouteId(config.getSupportRouteId());
             reduceParams2.setRunDate(params2.getRunDate());
             reduceParams2.setPassengerData(params2.getPassengerData());
-            GenerateScheduleParams reduceParams = getGenerateScheduleParams(reduceParams2);
+            reduceParams = getGenerateScheduleParams(reduceParams2,null);
             //上行减车
             Integer upReduceBusNum;
             //下行减车
@@ -452,18 +498,22 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                 dySchedulePlanDriverlessMapper.insert(item);
             });
         }
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("mainRouteInfo",params);
+        resultMap.put("subRouteInfo",reduceParams);
 
-        return R.ok("操作成功!");
+        return R.ok("操作成功!").put("data",resultMap);
     }
 
     @Override
     public R getScheduleBySort(ScheduleBySortParam params) {
         //测试数据
-        //params.setSupportRouteId(420l);
+        params.setSupportRouteId(420l);
         DySchedulePlanDriverless record = new DySchedulePlanDriverless();
         record.setRouteId(params.getRouteId());
         record.setPlanDate(params.getRunDate());
         record.setSupportRouteId(params.getSupportRouteId());
+        record.setPlanType(params.getPlanType());
         List<DySchedulePlanDriverless> driverlessList = dySchedulePlanDriverlessMapper.getScheduleList(record);
         if(CollectionUtils.isEmpty(driverlessList)){
             log.info("排班计划信息不存在，routeId:{}",params.getRouteId());
@@ -738,6 +788,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                         schedule.setPassengerData(params.getPassengerData());
                         schedule.setStatus(status);
                         schedule.setFullTime(upFullTime);
+                        schedule.setPlanType(params.getPlanType());
                         scheduleList.add(schedule);
 
                     }
@@ -814,6 +865,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                         schedule.setPassengerData(params.getPassengerData());
                         schedule.setStatus(status);
                         schedule.setFullTime(upFullTime);
+                        schedule.setPlanType(params.getPlanType());
                         scheduleList.add(schedule);
                         //支援车排班
                         if(upFlag&&Objects.nonNull(upSupportBusNum)){
@@ -912,6 +964,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                     schedule.setPassengerData(params.getPassengerData());
                     schedule.setStatus(status);
                     schedule.setFullTime(downFullTime);
+                    schedule.setPlanType(params.getPlanType());
                     scheduleList.add(schedule);
                     //支援车排班
                     if(downFlag&&Objects.nonNull(downSupportBusNum)){
@@ -960,7 +1013,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
         return scheduleList;
     }
 
-    private GenerateScheduleParams getGenerateScheduleParams(GenerateScheduleParams2 params2) {
+    private GenerateScheduleParams getGenerateScheduleParams(GenerateScheduleParams2 params2,List<StationPassenger> stationPassengerList) {
         GenerateScheduleParams params = new GenerateScheduleParams();
         params.setRouteId(params2.getRouteId());
         params.setRunDate(params2.getRunDate());
@@ -1001,23 +1054,67 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
         Calendar cal = Calendar.getInstance();
         cal.setTime(params2.getRunDate());
         Integer applyDay = cal.get(Calendar.DAY_OF_WEEK);
-        Integer templateId = templateDetailMap.get(applyDay).get(0).getTemplateId();
+        Integer templateId = Objects.isNull(params2.getTemplateId())?templateDetailMap.get(applyDay).get(0).getTemplateId():params2.getTemplateId();
         List<ScheduleParamsAnchor> anchorTemplateList = anchorMap.get(templateId);
         Double anchorDurationMin = anchorTemplateList.stream().mapToInt(ScheduleParamsAnchor::getAnchorDurationMin).average().getAsDouble();
         params.setMinParkTime((int) Math.ceil(anchorDurationMin));
         ScheduleParamsRoute scheduleParamsRoute = paramsRouteMap.get(templateId).get(0);
         params.setUpBusNum(scheduleParamsRoute.getUpBeginNum());
         params.setDownBusNum(scheduleParamsRoute.getDownBeginNum());
+        if(Objects.nonNull(params2.getBusNumberUp())&&Objects.nonNull(params2.getBusNumberDown())){
+            params.setUpBusNum(params2.getBusNumberUp());
+            params.setDownBusNum(params2.getBusNumberDown());
+        }
         params.setPassengerNum(scheduleParamsRoute.getVehicleContent());
         params.setPassengerData(params2.getPassengerData());
         params.setSupportRouteId(params2.getSupportRouteId());
-        if(Objects.equals(params2.getPlanType(),1)){
+        params.setPlanType(params2.getPlanType());
+        if(Objects.equals(params2.getPlanType(),1) && Objects.nonNull(stationPassengerList)){
             //最优计划参数配置
             /**
              * 1、每半小时大数据最大客流数据除以车内容量获取半小时的班次数
-             * 2、获取来回周转时间加两边停站时间内的班次数最为总配车数
-             * 3、分配上下行车数
+             * 2、获取来回周转时间加两边停站时间内的班次数作为总配车数
+             * 3、分配上下行车数，早发的车多分配，多分配的配车数根据多发的时间算出客流数得出班次数作为需要多发的配车数，剩余的车辆数均匀分配
              */
+            //半小时班次数
+            Integer maxPassengerNum = stationPassengerList.stream().sorted(Comparator.comparing(StationPassenger::getCurpeople).reversed())
+                    .collect(Collectors.toList()).get(0).getCurpeople();
+            Integer halfHourClasses = BigDecimal.valueOf(maxPassengerNum/scheduleParamsRoute.getVehicleContent()).setScale(0,BigDecimal.ROUND_UP).intValue();
+            //获取通用周转时间
+            Calendar wasteCal = Calendar.getInstance();
+            wasteCal.setTime(params2.getPassengerData());
+            Integer wasteApplyDay = wasteCal.get(Calendar.DAY_OF_WEEK);
+            if(Objects.nonNull(params2.getTurnaroundData())){
+                Calendar wasteCal02 = Calendar.getInstance();
+                wasteCal02.setTime(params2.getTurnaroundData());
+                wasteApplyDay = wasteCal02.get(Calendar.DAY_OF_WEEK);
+            }
+            List<RouteWasteTime> routeWasteTimeList = routeWasteTimeMapper.queryByRouteIdAndRunDayNum(params2.getRouteId(),wasteApplyDay);
+            List<RouteWasteTime> upRouteWasteTimeList = routeWasteTimeList.stream().filter(e -> e.getDirection().equals("0")).collect(Collectors.toList());
+            List<RouteWasteTime> downRouteWasteTimeList = routeWasteTimeList.stream().filter(e -> e.getDirection().equals("1")).collect(Collectors.toList());
+            Optional<Integer> upReduce = upRouteWasteTimeList.stream().map(RouteWasteTime::getWasteTimeInt).reduce(Integer::max);
+            Optional<Integer> downReduce = downRouteWasteTimeList.stream().map(RouteWasteTime::getWasteTimeInt).reduce(Integer::max);
+
+            Integer totalTime = upReduce.get()+downReduce.get()+ Convert.toInt(anchorDurationMin)*2;
+            //总配车数
+            Integer totalBusNum = BigDecimal.valueOf(totalTime/60*2*halfHourClasses).setScale(0,BigDecimal.ROUND_UP).intValue();
+
+            //分配上行车数
+            Integer upBusNum;
+            Integer downBusNum;
+            if(Convert.toInt(params.getUpFristTime()) > Convert.toInt(params.getDownFirstTime())){
+                List<StationPassenger> downStationPassengerList = stationPassengerList.stream().filter(e -> e.getDirection().equals("1") && Convert.toInt(DateUtil.date2Str(e.getPdate(),DateUtil.hhmm)) >= Convert.toInt(params.getDownFirstTime()) && Convert.toInt(DateUtil.date2Str(e.getPdate(),DateUtil.hhmm)) <= Convert.toInt(params.getUpFristTime())).collect(Collectors.toList());
+                Integer downPassengerNum = downStationPassengerList.stream().mapToInt(StationPassenger::getCurpeople).sum();
+                upBusNum = BigDecimal.valueOf((totalBusNum-downPassengerNum)/2).setScale(0,BigDecimal.ROUND_UP).intValue();
+                downBusNum = BigDecimal.valueOf((totalBusNum-downPassengerNum)/2).setScale(0,BigDecimal.ROUND_DOWN).intValue() + downPassengerNum;
+            }else {
+                List<StationPassenger> upStationPassengerList = stationPassengerList.stream().filter(e -> e.getDirection().equals("0") && Convert.toInt(DateUtil.date2Str(e.getPdate(),DateUtil.hhmm)) >= Convert.toInt(params.getDownFirstTime()) && Convert.toInt(DateUtil.date2Str(e.getPdate(),DateUtil.hhmm)) <= Convert.toInt(params.getUpFristTime())).collect(Collectors.toList());
+                Integer upPassengerNum = upStationPassengerList.stream().mapToInt(StationPassenger::getCurpeople).sum();
+                upBusNum = BigDecimal.valueOf((totalBusNum-upPassengerNum)/2).setScale(0,BigDecimal.ROUND_DOWN).intValue() + upPassengerNum;
+                downBusNum = BigDecimal.valueOf((totalBusNum-upPassengerNum)/2).setScale(0,BigDecimal.ROUND_UP).intValue();
+            }
+            params.setUpBusNum(upBusNum);
+            params.setDownBusNum(downBusNum);
 
         }
         return params;
@@ -1046,5 +1143,425 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             return null;
         }
         return configList.get(0);
+    }
+
+    @Override
+    public R getDriverlessRoute(){
+        List<DyDriverlessConfig> configList = dyDriverlessConfigMapper.getDriverlessRoute();
+        return R.ok().put("data",configList);
+    }
+
+    @Override
+    public R getScheduleDetaiList(ScheduleBySortParam params) {
+        DySchedulePlanDriverless record = new DySchedulePlanDriverless();
+        record.setRouteId(params.getRouteId());
+        record.setPlanDate(params.getRunDate());
+        List<DySchedulePlanDriverless> detailList = dySchedulePlanDriverlessMapper.getDriverlessDetailList(record);
+        if(CollectionUtils.isEmpty(detailList)){
+            return R.error("排班计划信息不存在");
+        }
+        List<Schedule> scheduleList = new ArrayList<>();
+        for(DySchedulePlanDriverless driverless : detailList){
+            Schedule schedule = new Schedule();
+            schedule.setBusCode(driverless.getBusCode());
+            schedule.setBusId(Convert.toInt(driverless.getBusId()));
+            schedule.setBusName(driverless.getBusName());
+            schedule.setBusNumber(Convert.toLong(driverless.getStartOrderNumber()));
+            schedule.setDirection(driverless.getDirection());
+            schedule.setFirstDirection(driverless.getStartDirection());
+            schedule.setFirstRouteStaId(driverless.getFirstRouteStaId());
+            schedule.setFirstRouteStaName(driverless.getFirstRouteStaName());
+            schedule.setLastRouteStaId(driverless.getLastRouteStaId());
+            schedule.setLastRouteStaName(driverless.getLastRouteStaName());
+            schedule.setRunMileage(driverless.getRunMileage());
+            schedule.setScheduleId(driverless.getScheduleId());
+            schedule.setServiceName(driverless.getServiceName());
+            schedule.setServiceType(driverless.getServiceType());
+            schedule.setTripBeginTime(driverless.getPlanTime());
+            schedule.setTripEndTime(driverless.getTripEndTime());
+            scheduleList.add(schedule);
+        }
+        return R.ok().put("data",scheduleList);
+    }
+
+    @Override
+    public List<MountCarPlan> mountCarPlan(String routeId, String runMode, String referenceDate, String runDate) {
+        List<MountCarPlan> carPlans = dySchedulePlanDriverlessMapper.mountCarPlan(routeId, runMode, referenceDate, runDate).stream()
+                .filter(t -> Objects.nonNull(t.getScheduleId())).collect(Collectors.toList());
+
+        /*MountCarPlanVO mountCarPlanVO = new MountCarPlanVO();
+        mountCarPlanVO.setMountCarPlans(carPlans);
+        Date runDateD = DateUtil.str2Date(runDate,DateUtil.date_sdf);
+        BusNumberConfig busNumberConfig = busNumberConfigService.selectByRouteIdAndPlanDate(Integer.valueOf(routeId), runDateD);
+        if (Objects.nonNull(busNumberConfig) && Objects.nonNull(busNumberConfig.getTemplateId())) {
+            mountCarPlanVO.setTemplateId(busNumberConfig.getTemplateId());
+        }*/
+        return carPlans;
+    }
+
+    @Override
+    public List<MountCarPlan> recentRunBus(String routeId, String referenceDate) {
+        return dySchedulePlanDriverlessMapper.recentRunBus(routeId, referenceDate);
+    }
+
+    @Override
+    public String runBus(String routeId) {
+
+        String result = HttpUtil.getString(dispatchServerUrl + "/" + getRunBusByRoute + "/" + routeId);
+        //String result = restTemplate.getForObject(dispatchServerUrl + "/" + getRunBusByRoute+"/"+routeId, String
+        // .class);
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public int saveMountCar(@NotNull List<MountCarPlan> list, String userId, String userName) throws Exception {
+        int i = 0;
+        MountCarPlan firstMountCarPlan = list.get(0);
+        ScheduleRouteConfigVo scheduleRouteConfigVo =
+                scheduleRouteConfigMapper.getByRouteId(firstMountCarPlan.getRouteId());
+        Integer busOrganId = null;
+        String routeName = null;
+        if (Objects.nonNull(scheduleRouteConfigVo)) {
+            busOrganId = scheduleRouteConfigVo.getOrganId();
+            routeName = scheduleRouteConfigVo.getRouteName();
+        }
+
+        // 查询旧计划列表
+        String referenceDate = DateUtil2.getDateString(DateUtil2.getDateAddDay(firstMountCarPlan.getPlanDate(), -1),
+                new SimpleDateFormat("yyyy-MM-dd"));
+        String runDate = DateUtil2.getDateString(firstMountCarPlan.getPlanDate(), new SimpleDateFormat("yyyy-MM-dd"));
+        List<MountCarPlan> oldPlanList = dySchedulePlanDriverlessMapper.mountCarPlan(firstMountCarPlan.getRouteId() + "",
+                firstMountCarPlan.getRunMode() + "", referenceDate, runDate);
+
+        //判断任务id是否在该线路上
+        List<DispatchTask> dispatchTasks = dySchedulePlanDriverlessMapper.dispatchTaskByRoute(list.get(0).getRouteId());
+        Map<Long, Long> tasks = dispatchTasks.stream().collect(Collectors.toMap(DispatchTask::getRouteSubId,
+                DispatchTask::getRouteSubId));
+        for (int j = 0; j < list.size(); j++) {
+            DyMidwayShortStation dyMidwayShortStation = list.get(j).getDyMidwayShortStation();
+            //判断出场任务id
+            if (dyMidwayShortStation != null) {
+                if (!tasks.containsKey(dyMidwayShortStation.getTaskId())) {
+                    throw new Exception("第" + (j + 1) + "行所选出场任务Id不是该线路，请刷新页面再操作！");
+                }
+            }
+            //判断首轮任务id
+            if (list.get(j).getFirstRoundTaskId() != null) {
+                if (!tasks.containsKey(list.get(j).getFirstRoundTaskId())) {
+                    throw new Exception("第" + (j + 1) + "行所选首轮任务Id不是该线路，请刷新页面再操作！");
+                }
+            }
+        }
+
+        //判断是否为定点班车, 添加时刻表校验
+        /*List<SchedulePlan> timetableList = getTimetableList(firstMountCarPlan.getPlanDate(),
+                firstMountCarPlan.getRouteId());
+        if (!CollectionUtils.isEmpty(timetableList)) {
+            StringBuffer buffer = new StringBuffer();
+            //上行
+            List<SchedulePlan> upList =
+                    timetableList.stream().filter(t -> "0".equals(t.getDirection())).collect(Collectors.toList());
+            Map<Date, SchedulePlan> upMap = upList.stream().collect(Collectors.toMap(SchedulePlan::getPlanTime,
+                    Function.identity()));
+            for (MountCarPlan mountCarPlan :
+                    list.stream().filter(t -> "0".equals(t.getBusCode().substring(5, 6))).collect(Collectors.toList())) {
+                if (mountCarPlan.getFirstRoundPlanTime() != null && !upMap.containsKey(mountCarPlan.getFirstRoundPlanTime())) {
+                    buffer.append(DateUtil.getDateString(mountCarPlan.getFirstRoundPlanTime(), new SimpleDateFormat(
+                            "HH:mm")));
+                    buffer.append(",");
+                }
+            }
+            //下行
+            List<SchedulePlan> downList =
+                    timetableList.stream().filter(t -> "1".equals(t.getDirection())).collect(Collectors.toList());
+            Map<Date, SchedulePlan> downMap = downList.stream().collect(Collectors.toMap(SchedulePlan::getPlanTime,
+                    Function.identity()));
+            for (MountCarPlan mountCarPlan :
+                    list.stream().filter(t -> "1".equals(t.getBusCode().substring(5, 6))).collect(Collectors.toList())) {
+                if (mountCarPlan.getFirstRoundPlanTime() != null && !downMap.containsKey(mountCarPlan.getFirstRoundPlanTime())) {
+                    buffer.append(DateUtil.getDateString(mountCarPlan.getFirstRoundPlanTime(), new SimpleDateFormat(
+                            "HH:mm")));
+                    buffer.append(",");
+                }
+            }
+            if (!StringUtil.isEmpty(buffer.toString())) {
+                buffer.deleteCharAt(buffer.length() - 1);
+                throw new Exception("[" + buffer.toString() + "]不是时刻表时间");
+            }
+        }*/
+
+        //清空该线路其他车辆挂车情况
+        MountCarPlan delMountCarPlan = new MountCarPlan();
+        delMountCarPlan.setBusId(null);
+        delMountCarPlan.setBusName(null);
+        delMountCarPlan.setFirstRoundPlanTime(null);
+        delMountCarPlan.setFirstRoundTaskId(null);
+        delMountCarPlan.setSyncPlan(0);//同步
+        delMountCarPlan.setPlanDate(firstMountCarPlan.getPlanDate());
+        delMountCarPlan.setRouteId(firstMountCarPlan.getRouteId());
+        //清空挂车信息（busId+busName）
+        i += dySchedulePlanDriverlessMapper.saveMountCar(delMountCarPlan);
+        //清空首轮信息（发班时间+任务+syncPlan）
+        i += dySchedulePlanDriverlessMapper.saveFirstRound(delMountCarPlan);
+
+        //清空该线路其他车辆中途出场
+        DyMidwayShortStation delDyMidwayShortStation = new DyMidwayShortStation();
+        delDyMidwayShortStation.setRunDate(firstMountCarPlan.getPlanDate());
+        delDyMidwayShortStation.setRouteId(firstMountCarPlan.getRouteId() == null ? null :
+                Long.valueOf(firstMountCarPlan.getRouteId()));
+        dySchedulePlanDriverlessMapper.deleteDyMidwayShortStation(delDyMidwayShortStation);
+
+
+        //判断是否为定点班车,更新时刻表计划挂车
+        /*if (!CollectionUtils.isEmpty(timetableList)) {
+            try {
+                i += schedulePlanMapper.saveMountCarByTimetable(delMountCarPlan);
+                i += schedulePlanMapper.saveFirstRoundByTimetable(delMountCarPlan);
+                for (MountCarPlan mountCarPlan : list) {
+                    i += schedulePlanMapper.saveMountCarByTimetable(mountCarPlan);
+                    //添加只修改首轮发班时间，任务方法
+                    i += schedulePlanMapper.saveFirstRoundByTimetable(mountCarPlan);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }*/
+        //更新挂车信息（busId+busName）
+        for (MountCarPlan mountCarPlan : list) {
+            i += dySchedulePlanDriverlessMapper.saveMountCar(mountCarPlan);
+        }
+        //更新首轮信息（发班时间+任务+syncPlan）
+        for (MountCarPlan mountCarPlan : list) {
+            if (mountCarPlan.getBusId() == null) {
+                mountCarPlan.setSyncPlan(1);
+            }
+            i += dySchedulePlanDriverlessMapper.saveFirstRound(mountCarPlan);
+        }
+        // 判断是否环线
+//        boolean loopRouteFlag = loopRouteFlag(firstMountCarPlan.getRouteId());
+//		//若当前计划syncPlan=1，则对应回程syncPlan=1
+//		for (MountCarPlan mountCarPlan : list) {
+//			if (mountCarPlan.getSyncPlan() != null && mountCarPlan.getSyncPlan() == 1 && !loopRouteFlag) {
+//				schedulePlanMapper.setNextSyncPlanFalse(mountCarPlan);
+//			}
+//		}
+        for (MountCarPlan mountCarPlan : list) {
+            //添加中途出场
+            DyMidwayShortStation dyMidwayShortStation = mountCarPlan.getDyMidwayShortStation();
+            if (dyMidwayShortStation != null) {
+                dySchedulePlanDriverlessMapper.insertDyMidwayShortStation(dyMidwayShortStation);
+            }
+        }
+//		//统计挂车数量
+//		schedulePlanMapper.saveBusNumberMountOptimal(firstMountCarPlan.getRouteId(), firstMountCarPlan.getPlanDate());
+//		schedulePlanMapper.saveBusNumberMountPreset(firstMountCarPlan.getRouteId(), firstMountCarPlan.getPlanDate());
+
+        // 抛出挂车记录事件
+        /*HangBusEventContext context = new HangBusEventContext();
+        context.setBusOrganId(busOrganId.longValue());
+        context.setRouteId(firstMountCarPlan.getRouteId());
+        context.setRouteName(routeName);
+        context.setRunDate(firstMountCarPlan.getPlanDate());
+        context.setOldList(oldPlanList);
+        context.setNewList(list);
+        context.setUserId(userId);
+        context.setUserName(userName);
+        context.setDispatchTasks(dispatchTasks);
+        applicationEventPublisher.publishEvent(new HangBusRecordEvent(this, context));
+
+        busNumberConfigService.updateMountCarTemplate(firstMountCarPlan.getRouteId(), firstMountCarPlan.getPlanDate(), null);*/
+
+        return i;
+    }
+
+    @Override
+    public R runBusAndInfoByRouteNewRunBus(String routeId) {
+        String result = HttpUtil.getString(dispatchAppAppUrl01 + "/" + newRunBus + "/" + routeId);
+        if(Objects.isNull(result)){
+            result = HttpUtil.getString(dispatchAppAppUrl02+ "/" + newRunBus + "/" + routeId);
+        }
+        JSONObject dataObj = JSONObject.parseObject(result).getJSONObject("data");
+        JSONArray runBusArray = dataObj.getJSONArray("runBus");
+        JSONArray infoArray = dataObj.getJSONArray("info");
+        List<RunBus> runBuses = runBusService.getByRoute(Convert.toLong(routeId));
+
+        for (int i = 0 ; i < infoArray.size() ; i++){
+            JSONObject jsonObject = (JSONObject) infoArray.get(i);
+            String status = jsonObject.getString("status");
+            String direction = jsonObject.getString("direction");
+            String busId = jsonObject.getString("busId");
+            if(status.equals(2)){
+                //找出前一辆途中车
+                List<RunBus> onTripBusList = runBuses.stream().filter(e ->
+                        Objects.equals(e.getRunStatus(), Constant.RunBusStatus.ON_TRIP) && Objects.equals(e.getDirection(), direction))
+                        .sorted(Comparator.comparing(RunBus::getTripBeginTime).reversed()).collect(Collectors.toList());
+                RunBus runBus = runBuses.stream().filter(e -> e.getBusId().equals(Convert.toLong(busId))).collect(Collectors.toList()).get(0);
+                jsonObject.put("tripBeginTime",DateUtil.date2Str(runBus.getTripBeginTime(),DateUtil.hh_mm));
+                int interval = BigDecimal.valueOf((runBus.getTripBeginTime().getTime()-onTripBusList.get(0).getTripBeginTime().getTime())/60000).setScale(0,BigDecimal.ROUND_HALF_UP).intValue();
+                jsonObject.put("interval",interval);
+            }else {
+                jsonObject.put("tripBeginTime","");
+                jsonObject.put("interval","");
+            }
+        }
+
+        return R.ok("成功").put("info",infoArray).put("runBus",runBusArray);
+    }
+
+    @Override
+    public R getRuningScheduleDetail(Map<String, Object> params) {
+        Long routeId = Convert.toLong(params.get("routeId"));
+        Date runDate = DateUtil.str2Date((String) params.get("runDate"),DateUtil.date_sdf);
+        DySchedulePlanDriverless record = new DySchedulePlanDriverless();
+        record.setRouteId(routeId);
+        record.setPlanDate(runDate);
+        List<DySchedulePlanDriverless> driverlessList = dySchedulePlanDriverlessMapper.getScheduleList02(record);
+        if(CollectionUtils.isEmpty(driverlessList)){
+            return R.error("排班计划不存在");
+        }
+        List<DySchedulePlanDriverless> finalDriverlessList = driverlessList.stream().filter(e -> e.getPlanType().equals(2)).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(finalDriverlessList)){
+            finalDriverlessList = driverlessList;
+        }
+        List<RuningScheduleVo> result = new ArrayList<>();
+        for(DySchedulePlanDriverless driverless : finalDriverlessList){
+            RunBus runBus = runBusService.getByBus(driverless.getBusId());
+            RuningScheduleVo vo = new RuningScheduleVo();
+            vo.setBusId(driverless.getBusId());
+            vo.setBusName(driverless.getBusName());
+            vo.setDirection(driverless.getDirection());
+            vo.setEmployeeName(runBus.getEmployeeName());
+            vo.setInterval(driverless.getInterval());
+            vo.setTripBeginTime(DateUtil.date2Str(driverless.getPlanTime(),DateUtil.hh_mm));
+            vo.setTripEndTime(DateUtil.date2Str(driverless.getTripEndTime(),DateUtil.hh_mm));
+            Double fullTime;
+            if(runBus.getDirection().equals(driverless.getDirection())){
+                fullTime = scheduleServerService.getIntersiteTime(runBus.getRouteId(), driverless.getDirection(),
+                        runBus.getFirstRouteStaId(), runBus.getLastRouteStaId(), driverless.getPlanTime());
+            }else {
+                fullTime = scheduleServerService.getIntersiteTime(runBus.getRouteId(), driverless.getDirection(),
+                        runBus.getLastRouteStaId(), runBus.getFirstRouteStaId(), driverless.getPlanTime());
+            }
+            vo.setFullTime(Convert.toInt(fullTime/60));
+            Double runingFullTime = scheduleServerService.getIntersiteTime(runBus.getRouteId(), runBus.getDirection(),
+                    runBus.getFirstRouteStaId(), runBus.getLastRouteStaId(), runBus.getTripBeginTime());
+            long realTripEndTime = runBus.getTripBeginTime().getTime()+Convert.toLong(runingFullTime*1000);
+            if(realTripEndTime<driverless.getPlanTime().getTime()){
+                vo.setStatus(1);
+            }else if((runBus.getTripBeginTime().getTime()>=driverless.getPlanTime().getTime()&&runBus.getTripBeginTime().getTime()<=driverless.getTripEndTime().getTime())
+                    ||(realTripEndTime>=driverless.getPlanTime().getTime()&&realTripEndTime<=driverless.getTripEndTime().getTime())){
+                vo.setStatus(2);
+                vo.setRealTripBeginTime(DateUtil.date2Str(runBus.getTripBeginTime(),DateUtil.hh_mm));
+            }else {
+                vo.setStatus(3);
+            }
+            result.add(vo);
+        }
+
+        return R.ok("成功").put("data",result);
+    }
+
+    @Override
+    public R getRuningScheduleConfig(Map<String, Object> params) {
+        Long routeId = Convert.toLong(params.get("routeId"));
+        Date runDate = DateUtil.str2Date((String) params.get("runDate"),DateUtil.date_sdf);
+        DySchedulePlanDriverless record = new DySchedulePlanDriverless();
+        record.setRouteId(routeId);
+        record.setPlanDate(runDate);
+        List<DySchedulePlanDriverless> driverlessList = dySchedulePlanDriverlessMapper.getScheduleList02(record);
+        if(CollectionUtils.isEmpty(driverlessList)){
+            return R.error("排班计划不存在");
+        }
+        List<DySchedulePlanDriverless> finalDriverlessList = driverlessList.stream().filter(e -> e.getPlanType().equals(2)).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(finalDriverlessList)){
+            finalDriverlessList = driverlessList;
+        }
+        finalDriverlessList = finalDriverlessList.stream().filter(e -> Objects.nonNull(e.getSupportClasses())).sorted(Comparator.comparing(DySchedulePlanDriverless::getPlanTime)).collect(Collectors.toList());
+        //支援总班次数
+        Integer totalSupportClasses = finalDriverlessList.size();
+        //支援开始时间
+        String supportBeginTime = DateUtil.date2Str(finalDriverlessList.get(0).getPlanTime(),DateUtil.hh_mm);
+        //支援结束时间
+        String supportEndTime = DateUtil.date2Str(finalDriverlessList.get(finalDriverlessList.size()-1).getPlanTime(),DateUtil.hh_mm);
+
+        List<RunBus> runBusList = runBusService.getByRoute(routeId);
+
+        //总配车数
+        Integer totalBusNum = runBusList.size();
+        //双班车
+        Integer doubleBusNum = runBusList.stream().filter(e -> e.isDoubleShift()).collect(Collectors.toList()).size();
+        //单班车
+        Integer singleBusNum = runBusList.size() - doubleBusNum;
+
+        //线路首末班时间参数
+        List<RouteUpDownInfo> routeUpDownInfoList = routeService.getRouteUpDownInfo(routeId);
+        if(CollectionUtils.isEmpty(routeUpDownInfoList)){
+            log.info("首末班时间参数不存在，routeId:{}",routeId);
+            return R.error("首末班时间参数不存在");
+        }
+        RouteUpDownInfo upInfo = routeUpDownInfoList.stream().filter(r -> r.getDirection().equals(0)).collect(Collectors.toList()).get(0);
+        RouteUpDownInfo downInfo = routeUpDownInfoList.stream().filter(r -> r.getDirection().equals(1)).collect(Collectors.toList()).get(0);
+        //上行时间
+        String upBeginTime = upInfo.getFirstTime();
+        String upEndTime = upInfo.getLatestTime();
+        //下行时间
+        String downBeginTime = downInfo.getFirstTime();
+        String downEndTime = downInfo.getLatestTime();
+
+        Map<String,Object> mainMap = new HashMap<>();
+        Map<String,Object> subMap = new HashMap<>();
+        mainMap.put("upBeginTime",upBeginTime);
+        mainMap.put("upEndTime",upEndTime);
+        mainMap.put("downBeginTime",downBeginTime);
+        mainMap.put("downEndTime",downEndTime);
+        mainMap.put("totalBusNum",totalBusNum);
+        mainMap.put("doubleBusNum",doubleBusNum);
+        mainMap.put("singleBusNum",singleBusNum);
+        mainMap.put("totalSupportClasses",totalSupportClasses);
+        mainMap.put("supportBeginTime",supportBeginTime);
+        mainMap.put("supportEndTime",supportEndTime);
+        if(Objects.nonNull(params.get("supportRouteId"))){
+            Long supportRouteId = Convert.toLong(params.get("supportRouteId"));
+            //线路首末班时间参数
+            List<RouteUpDownInfo> supportRouteUpDownInfoList = routeService.getRouteUpDownInfo(supportRouteId);
+            if(CollectionUtils.isEmpty(supportRouteUpDownInfoList)){
+                log.info("支援线路首末班时间参数不存在，routeId:{}",routeId);
+                return R.error("支援线路首末班时间参数不存在");
+            }
+            RouteUpDownInfo supportUpInfo = supportRouteUpDownInfoList.stream().filter(r -> r.getDirection().equals(0)).collect(Collectors.toList()).get(0);
+            RouteUpDownInfo supportDownInfo = supportRouteUpDownInfoList.stream().filter(r -> r.getDirection().equals(1)).collect(Collectors.toList()).get(0);
+            //上行时间
+            String supportUpBeginTime = supportUpInfo.getFirstTime();
+            String supportUpEndTime = supportUpInfo.getLatestTime();
+            //下行时间
+            String supportDownBeginTime = supportDownInfo.getFirstTime();
+            String supportDownEndTime = supportDownInfo.getLatestTime();
+
+            List<RunBus> supportRunBusList = runBusService.getByRoute(routeId);
+
+            //总配车数
+            Integer supportTotalBusNum = supportRunBusList.size();
+            //双班车
+            Integer supportDoubleBusNum = supportRunBusList.stream().filter(e -> e.isDoubleShift()).collect(Collectors.toList()).size();
+            //单班车
+            Integer supportSingleBusNum = supportRunBusList.size() - doubleBusNum;
+
+            subMap.put("upBeginTime",supportUpBeginTime);
+            subMap.put("upEndTime",supportUpEndTime);
+            subMap.put("downBeginTime",supportDownBeginTime);
+            subMap.put("downEndTime",supportDownEndTime);
+            subMap.put("totalBusNum",supportTotalBusNum);
+            subMap.put("doubleBusNum",supportDoubleBusNum);
+            subMap.put("singleBusNum",supportSingleBusNum);
+            subMap.put("totalSupportClasses",totalSupportClasses);
+            subMap.put("supportBeginTime",supportBeginTime);
+            subMap.put("supportEndTime",supportEndTime);
+        }
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("mainMap",mainMap);
+        result.put("subMap",subMap);
+        return R.ok("成功").put("data",result);
     }
 }

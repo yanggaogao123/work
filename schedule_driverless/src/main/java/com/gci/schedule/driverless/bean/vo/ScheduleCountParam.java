@@ -13,4 +13,7 @@ public class ScheduleCountParam {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date runDate;
+
+    //最优计划：1，预设计划：2
+    private Integer planType;
 }

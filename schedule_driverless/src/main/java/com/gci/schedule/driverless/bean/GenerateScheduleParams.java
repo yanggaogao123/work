@@ -46,6 +46,9 @@ public class GenerateScheduleParams {
 
     private Long supportRouteId;
 
+    //最优计划：1，预设计划：2
+    private Integer planType;
+
     public Date getUpFristDate(){
         if(Objects.isNull(this.upFristTime)){
             return null;
