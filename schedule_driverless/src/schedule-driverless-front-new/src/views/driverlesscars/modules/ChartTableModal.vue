@@ -40,8 +40,8 @@
               :dataSource="mainUpData"
               :pagination="ipagination"
               :loading="loading"
-              class="j-table-force-nowrap"
               @change="handleTableChange"
+              class="j-table-force-no-wrap"
             >
               <!-- <span slot="action" slot-scope="text, record" v-has="'1015:edit'">
                     <a @click="handleEdit(record)">编辑</a>
@@ -111,7 +111,6 @@ export default {
           title: "无人车或支援班次",
           align: "center",
           dataIndex: "upSupportClasses",
-          sorter: true,
         },
         {
           title: "总客流人次",

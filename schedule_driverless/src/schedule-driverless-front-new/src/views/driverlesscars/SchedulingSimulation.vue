@@ -83,11 +83,11 @@
         v-show="carBool == 'c'"
         :sendData="sendData"
       ></car-type-four-modal>
-      <chart-table-modal
+      <!-- <chart-table-modal
         v-if="chartBool"
         :chartData="chartData"
         :baseData="baseData"
-      ></chart-table-modal>
+      ></chart-table-modal> -->
     </div>
   </a-card>
 </template>
@@ -126,16 +126,16 @@ export default {
       allRouteList: [],
       routeList: [],
       supRouteList: [],
-      routeId: "194",
-      supRouteId: "420",
-      routeName: "36路",
-      supRouteName: "76A路",
-      runDate: "2023-12-18",
-      // routeId: "",
-      // supRouteId: "",
-      // routeName: "",
-      // supRouteName: "",
-      // runDate: moment().add("1", "days"),
+      // routeId: "194",
+      // supRouteId: "420",
+      // routeName: "36路",
+      // supRouteName: "76A路",
+      // runDate: "2023-12-18",
+      routeId: "",
+      supRouteId: "",
+      routeName: "",
+      supRouteName: "",
+      runDate: moment().add("1", "days"),
       sendData: {},
       centerData: "",
       chartData: "",
