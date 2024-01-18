@@ -1,0 +1,12 @@
+
+3.1.1根据经纬度查询附近站点名称
+http://10.91.134.241:3821/xxt-api/bus/stationName/getStationNameByCoordination
+参见: stationName-getStationNameByCoordination.json
+
+3.1.8根据站点名称ID查询该站点名下所有途径线路
+http://10.91.134.241:3821/xxt-api/bus/route/getRouteByStationNameId
+参见：routeStation-getByStaion.json
+
+3.1.13根据站点名称ID获取线路的到站预测时间
+http://xxtapi.gzyyjt.net/wxxt-api/bus/forecast/getByStationNameID
+参见：forecast-getByStationName.json

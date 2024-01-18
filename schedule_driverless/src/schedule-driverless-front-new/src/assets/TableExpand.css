@@ -1,0 +1,14 @@
+/** [表格主题样式一] 表格强制列不换行 */
+.j-table-force-nowrap {
+  /** 列自适应，弊端会导致列宽失效 */
+}
+.j-table-force-nowrap td,
+.j-table-force-nowrap th {
+  white-space: nowrap;
+}
+.j-table-force-nowrap .ant-table-selection-column {
+  padding: 12px 22px !important;
+}
+.j-table-force-nowrap.ant-table-wrapper .ant-table-content {
+  overflow-x: auto;
+}

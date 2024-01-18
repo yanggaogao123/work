@@ -142,7 +142,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="center-car">
+                        <!-- <div class="center-car">
                             <p>
                                 <span>上行运行时间: {{ centerData.upTime }}</span>
                                 <span>920路</span>
@@ -157,7 +157,7 @@
                                 <span>计划支援总班次数：3</span><span>支援开始时间：17 : 00</span
                                 ><span>支援结束时间：17 : 00</span>
                             </p>
-                        </div>
+                        </div> -->
                         <!-- 下行公交 -->
                         <div class="bottom-car">
                             <div class="bottom-bg"></div>
@@ -251,9 +251,11 @@
                             </div>
                         </div>
                         <!-- 总站标识 -->
-                        <div class="top-st">{{ arrUp[0].routeStationName }}</div>
-                        <!-- <div class="bottom-st">{{ arrUp[arrUp.length - 1].routeStationName }}</div> -->
-                        <div class="bottom-st"></div>
+                        <div class="top-st" v-if="[1, 5].includes(carType)">{{ arrUp[0].routeStationName }}</div>
+                        <div class="bottom-st" v-if="[0, 5].includes(carType)">
+                            {{ arrUp[arrUp.length - 1].routeStationName }}
+                        </div>
+                        <!-- <div class="bottom-st"></div> -->
                     </div>
 
                     <!-- 右侧总站公交 -->
@@ -279,7 +281,7 @@
                     </div>
                 </div>
             </div>
-            <div class="in-car">
+            <div class="in-car" :class="`type${carType}`">
                 <div class="content">
                     <!-- 左侧总站公交 -->
                     <div class="left-z-car">
@@ -397,20 +399,42 @@
                             </div>
                         </div>
                         <div class="center-car">
-                            <p>
-                                <span>上行运行时间: {{ centerData.upTime }}</span>
+                            <div class="cen-left">
                                 <span>920路</span>
-                                <span>下行运行时间: {{ centerData.downTime }}</span>
-                            </p>
-                            <p>
-                                <span>总配车数: {{ centerData.allCars }}</span
-                                ><span>单班车数: {{ centerData.singleCars }}</span
-                                ><span>双班车数: {{ centerData.doubleCars }}</span>
-                            </p>
-                            <p>
-                                <span>计划支援总班次数：3</span><span>支援开始时间：17 : 00</span
-                                ><span>支援结束时间：17 : 00</span>
-                            </p>
+                                <span>831路</span>
+                            </div>
+                            <div class="cen-right">
+                                <ul>
+                                    <li>上行运行时间</li>
+                                    <li>下行运行时间</li>
+                                    <li>总配车数</li>
+                                    <li>单班车数</li>
+                                    <li>双班车数</li>
+                                    <li>计划支援总班次数</li>
+                                    <li>支援开始时间</li>
+                                    <li>支援结束时间</li>
+                                </ul>
+                                <ul class="cen-car1">
+                                    <li>6:00-22:30</li>
+                                    <li>6:00-22:30</li>
+                                    <li>12</li>
+                                    <li>3</li>
+                                    <li>8</li>
+                                    <li>8</li>
+                                    <li>6:00-22:30</li>
+                                    <li>6:00-22:30</li>
+                                </ul>
+                                <ul class="cen-car2">
+                                    <li>6:00-22:30</li>
+                                    <li>6:00-22:30</li>
+                                    <li>12</li>
+                                    <li>3</li>
+                                    <li>8</li>
+                                    <li>8</li>
+                                    <li>6:00-22:30</li>
+                                    <li>6:00-22:30</li>
+                                </ul>
+                            </div>
                         </div>
                         <!-- 下行公交 -->
                         <div class="bottom-car">
@@ -554,6 +578,8 @@ export default {
     name: 'CarTypeOneModal',
     data() {
         return {
+            // 0:共首站，1:共末站，2:共首末站，3:首站为支援线路末站，4:末站为支援线路首站，5:首末站相邻
+            carType: 2,
             time: moment(),
             playBool: true,
             // 速度选择
@@ -611,8 +637,8 @@ export default {
     mounted() {
         this.getListByRouteId();
         this.getListByRouteId2();
-        this.adrealInfo();
-        this.adrealInfo2();
+        // this.adrealInfo();
+        // this.adrealInfo2();
     },
     methods: {
         // 速度选择
@@ -1250,17 +1276,17 @@ section {
         }
     }
     .car-content {
-        display: flex;
-        flex-wrap: nowrap;
+        // display: flex;
+        // flex-wrap: nowrap;
         position: relative;
         .out-car {
             width: 100%;
-            height: 560px;
+            height: 660px;
 
             .content {
                 // overflow: scroll;
                 width: 100%;
-                height: 560px;
+                height: 100%;
                 position: relative;
                 display: flex;
                 align-items: center;
@@ -1270,8 +1296,8 @@ section {
 
                 .car-box {
                     flex: 1;
-                    height: 400px;
-                    margin: 0 0 0 60px;
+                    height: 560px;
+                    margin: 0 190px;
                     position: relative;
 
                     .top-car {
@@ -1283,8 +1309,8 @@ section {
                             position: absolute;
                             width: 100%;
                             height: 100%;
-                            border-top-left-radius: 50px;
-                            border-top-right-radius: 50px;
+                            border-top-left-radius: 100px;
+                            border-top-right-radius: 100px;
                             overflow: hidden;
                             border: 6px solid #2796fd;
                             border-bottom: none;
@@ -1301,8 +1327,8 @@ section {
                             position: absolute;
                             width: 100%;
                             height: 100%;
-                            border-bottom-left-radius: 50px;
-                            border-bottom-right-radius: 50px;
+                            border-bottom-left-radius: 100px;
+                            border-bottom-right-radius: 100px;
                             overflow: hidden;
                             border: 6px solid #2796fd;
                             border-top: none;
@@ -1490,7 +1516,7 @@ section {
                     }
 
                     .line-car-bottom {
-                        margin-top: 40px;
+                        margin-top: 120px;
 
                         .line {
                             .model {
@@ -1717,9 +1743,8 @@ section {
 
                 .left-z-car {
                     position: absolute;
-                    left: -6px;
-                    top: 50%;
-                    transform: translate(0, -50%);
+                    left: 50px;
+                    top: 20px;
                     width: 50px;
                     // text-align: center;
 
@@ -1771,9 +1796,8 @@ section {
 
                 .right-z-car {
                     position: absolute;
-                    right: 14px;
-                    top: 50%;
-                    transform: translate(0, -50%);
+                    right: 50px;
+                    top: 20px;
                     .bus {
                         display: block;
                         position: relative;
@@ -1822,13 +1846,17 @@ section {
             }
         }
         .in-car {
+            position: absolute;
             width: 100%;
-            height: 260px;
+            height: 330px;
+            top: 50%;
+            left: 0;
+            transform: translate(0, -50%);
 
             .content {
                 // overflow: scroll;
                 width: 100%;
-                height: 560px;
+                height: 100%;
                 position: relative;
                 display: flex;
                 align-items: center;
@@ -1838,8 +1866,8 @@ section {
 
                 .car-box {
                     flex: 1;
-                    height: 400px;
-                    margin: 0px 60px 0 0;
+                    height: 260px;
+                    margin: 0px 190px;
                     position: relative;
 
                     .top-car {
@@ -1851,8 +1879,8 @@ section {
                             position: absolute;
                             width: 100%;
                             height: 100%;
-                            border-top-left-radius: 50px;
-                            border-top-right-radius: 50px;
+                            border-top-left-radius: 100px;
+                            border-top-right-radius: 100px;
                             overflow: hidden;
                             border: 6px solid #2fcba9;
                             border-bottom: none;
@@ -1869,8 +1897,8 @@ section {
                             position: absolute;
                             width: 100%;
                             height: 100%;
-                            border-bottom-left-radius: 50px;
-                            border-bottom-right-radius: 50px;
+                            border-bottom-left-radius: 100px;
+                            border-bottom-right-radius: 100px;
                             overflow: hidden;
                             border: 6px solid #2fcba9;
                             border-top: none;
@@ -2058,7 +2086,7 @@ section {
                     }
 
                     .line-car-bottom {
-                        margin-top: 40px;
+                        margin-top: -30px;
 
                         .line {
                             .model {
@@ -2208,32 +2236,63 @@ section {
 
                     .center-car {
                         z-index: 99;
-                        background: #bce9f0;
-                        height: 100px;
-                        width: 76%;
+                        width: 85%;
+                        height: 110px;
                         position: absolute;
-                        // border: 1px #3789fe dashed;
-                        border-radius: 15px;
                         box-sizing: border-box;
                         padding: 5px 0;
-                        overflow: hidden;
                         left: 0;
                         right: 0;
-                        top: 0;
-                        bottom: 0;
-                        margin: auto;
-
-                        > p {
-                            display: flex;
-                            width: 100%;
-                            line-height: 30px;
-
-                            > span {
-                                font-size: 15px;
+                        top: 50%;
+                        margin: 0 auto;
+                        transform: translate(0, -50%);
+                        display: flex;
+                        .cen-left {
+                            margin: 33px 10px 0 10px;
+                            span {
+                                display: block;
+                                width: 67px;
+                                height: 30px;
+                                background: #1890ff;
+                                border-radius: 5px 5px 5px 5px;
+                                opacity: 1;
+                                color: #fff;
+                                font-size: 20px;
                                 line-height: 30px;
                                 text-align: center;
-                                color: #444444;
-                                flex: 1;
+                            }
+                            span:nth-child(2) {
+                                margin-top: 10px;
+                                background: #1bb291;
+                            }
+                        }
+                        .cen-right {
+                            width: calc(100% - 77px);
+                            ul {
+                                display: flex;
+                                width: 100%;
+                                box-sizing: border-box;
+                                padding: 0 20px;
+                                justify-content: space-between;
+                                text-align: center;
+                                margin-bottom: 10px;
+                                li {
+                                    width: 12.5%;
+                                }
+                            }
+                            .cen-car1,
+                            .cen-car2 {
+                                height: 34px;
+                                line-height: 34px;
+                                font-size: 18px;
+                                border-radius: 17px;
+                                // font-weight: 800;
+                            }
+                            .cen-car1 {
+                                background: #c4e4ff;
+                            }
+                            .cen-car2 {
+                                background: #c8eff0;
                             }
                         }
                     }
@@ -2285,9 +2344,9 @@ section {
 
                 .left-z-car {
                     position: absolute;
-                    left: 16px;
-                    top: 50%;
-                    transform: translate(0, -50%);
+                    left: 50px;
+                    top: 70%;
+                    // transform: translate(0, -50%);
                     width: 50px;
                     // text-align: center;
 
@@ -2339,9 +2398,9 @@ section {
 
                 .right-z-car {
                     position: absolute;
-                    right: 3px;
-                    top: 50%;
-                    transform: translate(0, -50%);
+                    right: 50px;
+                    top: 70%;
+                    // transform: translate(0, -50%);
                     .bus {
                         display: block;
                         position: relative;
@@ -2386,6 +2445,34 @@ section {
                             background: #ffffff;
                         }
                     }
+                }
+            }
+        }
+        .type0 {
+            .content {
+                .car-box {
+                    margin: 0 calc(190px + 5%) 0 190px;
+                }
+            }
+        }
+        .type1 {
+            .content {
+                .car-box {
+                    margin: 0 190px 0 calc(190px + 5%);
+                }
+            }
+        }
+        .type2 {
+            .content {
+                .car-box {
+                    margin: 0 190px;
+                }
+            }
+        }
+        .type5 {
+            .content {
+                .car-box {
+                    margin: 0 calc(190px + 5%);
                 }
             }
         }
