@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>线路车位图(无人车/常规线支援)</title>
+    <link rel="stylesheet" href="./css/schedulePlanParkingNew/base.css">
+    <link rel="stylesheet" href="./plugins/layui-v2.3.0/css/layui.css">
+    <link rel="stylesheet" href="./css/schedulePlanParkingNew/simulationScheduling.css">
+    <link rel="stylesheet" href="./css/x-editable/select2.css">
+</head>
+<body>
+<div id="wrap">
+    <header>
+        <div class="area area-search">
+            <div class="line-select layui-form">
+                <label class="layui-form-label">线路:</label>
+                <div class="layui-input-block">
+                    <div id="routeSelect" style="margin-right: 16px;"></div>
+                </div>
+            </div>
+            <div class="time-select">
+                <span>日期:</span>
+                <input type="text" class="layui-input" id="time">
+            </div>
+            <button id="btn-search" @click="search">查询</button>
+        </div>
+
+        <div class="area area-explain">
+            <ul>
+                <li>
+                    <span>上行:</span>
+                    <div></div>
+                </li>
+                <li>
+                    <span>下行:</span>
+                    <div></div>
+                </li>
+                <li>
+                   <!-- <span>非营运:</span>
+                    <div></div>-->
+                </li>
+                <li>
+                    <span>营运车辆数:</span>
+                    <div v-html="infoList.length"></div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <section>
+        <div class="list-box clearfix">
+            <ul class="side-box fl">
+                <li v-for="(item,index) in infoList">
+                    <div class="bus" onmouseenter="vm.showLineTips()" onmouseleave="vm.hideScheduleTips();" :id="'line_'+index">
+                        <span :style="item[0].shiftStyle">{{item[0].firstDirection=='0'?'上':'下'}}{{item[0].busNumber}} {{item[0].busName == null?'未挂车':item[0].busName }} ({{item[0].count}})</span>
+                    </div>
+                    <span class="line"></span>
+                </li>
+            </ul>
+            <ul class="top-box fl">
+                <li v-for="(item) in timeList">
+                    <div class="time">{{item}}</div>
+                    <span class="line"></span>
+                </li>
+            </ul>
+            <ul class="content-box fl">
+                <li v-for="(item,index) in infoList">
+                    <div v-for="(itemss,j) in item" :class="setClassStyle(itemss)" :style="itemss.styleObject"
+                         onmouseenter="vm.showScheduleTips();" onmouseleave="vm.hideScheduleTips();" :id="index+'_'+j">
+                        <!--<span>{{itemss.planTime.split(" ")[1].split(":")[0]}}:{{itemss.planTime.split(" ")[1].split(":")[1]}}</span>-->
+                        <span>{{setStationName(itemss,1)}}</span>
+                        <span>{{setStationName(itemss,2)}}</span>
+                        <!--  <span>{{itemss.tripEndTime.split(" ")[1].split(":")[0]}}:{{itemss.tripEndTime.split(" ")[1].split(":")[1]}}</span>-->
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
+</div>
+
+</body>
+<script src="./js/Vue.js"></script>
+<script src="./js/jquery-3.1.0.min.js"></script>
+<script src="./js/layui/layui.js"></script>
+<script src="./js/schedulePlanParkingNew/simulationScheduling.js"></script>
+<script src="./js/util/util.js"></script>
+<script src="./js/mySelect2/select2.js"></script>
+<script src="./js/mySelect2/select2_locale_zh-CN_3.4.4.js"></script>
+<script type="text/javascript">
+    var route = {};
+    $(document).ready(function () {
+
+        //初始化线路
+        var organRouteDto = ajaxClientRest('/route/getDriverlessRoute/');
+        if (organRouteDto != null) {
+            var routeDate = [];
+            var routes = organRouteDto.data;
+            //线路查询
+            $.each(routes, function (i, route) {
+                routeDate.push({id: route.routeId, text: route.routeName});
+            });
+            //routeDate.sort(sortId);
+            //select2
+            $("#routeSelect").select2({
+                placeholder: '请选择线路',
+                width: 150,
+                data: routeDate
+            });
+        }
+
+        if (getQueryString("routeId") !== null && getQueryString('runDate') !== null) {
+            $("#routeSelect").select2('val', getQueryString("routeId"));
+            $("#time").val(getQueryString('runDate'));
+            vm.search();
+        }
+
+        /*if (getQueryString("planType") !== null) {
+            planType = getQueryString("planType");
+        }*/
+    });
+
+    function sortId(a, b) {
+        var aa = a.text.replace(/[^0-9]/ig, "");
+        var bb = b.text.replace(/[^0-9]/ig, "");
+        if (aa == '' && bb != '') {
+            aa = bb + 1;
+        } else if (aa != '' && bb == '') {
+            bb = aa + 1;
+        } else if (aa == bb) {
+            if (a.text.indexOf(aa) < b.text.indexOf(bb)) {
+                bb = aa + 1;
+            } else if (a.text.indexOf(aa) > b.text.indexOf(bb)) {
+                aa = bb + 1;
+            }
+        }
+        return aa - bb
+    }
+
+</script>
+</html>
