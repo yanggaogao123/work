@@ -722,7 +722,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public String getMinPlanTimeByRouteIdAndPlanDate(String routeId, String planDate) {
-        Date date = DateUtil.str2Date(planDate, "yyyy-MM-dd HH:mm:ss");
+        Date date = DateUtil.str2Date(planDate, "yyyy-MM-dd");
         Date minTime = dySchedulePlanDriverlessMapper.getMinPlanTimeByRouteIdAndPlanDate(routeId, date);
         if (minTime == null) {
             return null;

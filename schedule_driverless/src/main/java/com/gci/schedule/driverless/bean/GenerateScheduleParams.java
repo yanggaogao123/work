@@ -49,6 +49,30 @@ public class GenerateScheduleParams {
     //最优计划：1，预设计划：2
     private Integer planType;
 
+    //上行单班车
+    private Integer singleBusUp;
+
+    //下行单班车
+    private Integer singleBusDwon;
+
+    //上行早半班车
+    private Integer earlyHalfBusUp;
+
+    //下行早半班车
+    private Integer earlyHalfBusDown;
+
+    //单班开始时间 1500
+    private String singleBeginTime;
+
+    //单班结束时间1900
+    private String singleEndTime;
+
+    //早半班开始时间
+    private String earlyBeginTime;
+
+    //早半班结束时间
+    private String earlyEndTime;
+
     public Date getUpFristDate(){
         if(Objects.isNull(this.upFristTime)){
             return null;

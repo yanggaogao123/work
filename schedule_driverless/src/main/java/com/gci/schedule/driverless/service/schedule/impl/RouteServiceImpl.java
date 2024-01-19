@@ -88,4 +88,26 @@ public class RouteServiceImpl implements RouteService {
         return route;
     }
 
+    @Override
+    public String getRouteUpDownInfo2(Long routeId) {
+
+        /*Map map = new HashMap<>();
+        map.put("routeId", routeId);
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity entity = RestTemplateUtil.getHttpEntityWithJsonHendersByMap(map);
+        String result = restTemplate.postForObject(aptsBaseUrl + "/" + getRouteUpDownInfo, entity, String.class);*/
+        Map map = new HashMap<>();
+        map.put("routeId", routeId);
+        String result = null;
+        try {
+            result = HttpUtils.Post(aptsBaseUrl + "/" + getRouteUpDownInfo, JSONObject.toJSONString(map));
+        } catch (Exception e) {
+            log.info("获取线路首末班时间请求信息，param:{},返回信息，resp:{}", JSONObject.toJSONString(map), result);
+            log.error("获取线路首末班时间请求异常", e);
+            e.printStackTrace();
+        }
+        log.info("获取线路首末班时间请求信息，param:{},返回信息，resp:{}", JSONObject.toJSONString(map), result);
+        return result;
+    }
+
 }

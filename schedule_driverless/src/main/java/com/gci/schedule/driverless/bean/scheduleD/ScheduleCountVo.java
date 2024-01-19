@@ -51,4 +51,6 @@ public class ScheduleCountVo {
     //表格内容
     private Map<String,Object> mainUpWordMap;
     private Map<String,Object> mainDownWordMap;
+    private Map<String,Object> subUpWordMap;
+    private Map<String,Object> subDownWordMap;
 }

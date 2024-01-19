@@ -130,6 +130,9 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
         Map<String,Object> mainUpWordMap = new HashMap<>();
         Map<String,Object> mainDownWordMap = new HashMap<>();
 
+        Map<String,Object> subUpWordMap = new HashMap<>();
+        Map<String,Object> subDownWordMap = new HashMap<>();
+
         for(Integer timeNum : timeList){
             //线路时段班次核载人数
             List<ScheduleParamsAnchor> mainAnchorList = mainAnchorParams.getAnchorList();
@@ -151,7 +154,11 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             mainUploadPeopleNumMap.put(timeNum.toString(),mainUploadPeopleNum);
             mainDownloadPeopleNumMap.put(timeNum.toString(),mainDownloadPeopleNum);
             //支援线路时段班次核载人数
+            Integer subUploadPeopleNum = 0;
+            Integer subDownloadPeopleNum = 0;
             if(Objects.isNull(subAnchorParams)){
+                subUploadPeopleNum = mainUploadPeopleNum;
+                subDownloadPeopleNum = mainDownloadPeopleNum;
                 subUploadPeopleNumMap.put(timeNum.toString(),mainUploadPeopleNum);
                 subDownloadPeopleNumMap.put(timeNum.toString(),mainDownloadPeopleNum);
             }else {
@@ -161,8 +168,7 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
                         &&Objects.nonNull(e.getIntendTime())&&e.getIntendTime()>=(timeNum+1)*100).collect(Collectors.toList());
                 List<ScheduleParamsAnchor> finalSubDownAnchorList = subAnchorList.stream().filter(e -> e.getDirection().equals("1")&&Objects.nonNull(e.getIntbeginTime())&&e.getIntbeginTime()<=timeNum*100
                         &&Objects.nonNull(e.getIntendTime())&&e.getIntendTime()>=(timeNum+1)*100).collect(Collectors.toList());
-                Integer subUploadPeopleNum = 0;
-                Integer subDownloadPeopleNum = 0;
+
                 if(!CollectionUtils.isEmpty(finalSubUpAnchorList)){
                     ScheduleParamsAnchor subUpAnchor = finalSubUpAnchorList.get(0);
                     subUploadPeopleNum = BigDecimal.valueOf(subUpAnchor.getBusOccupancy()*subScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
@@ -199,28 +205,24 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             //支援线路时段客流人数,时段最高车内人数
             Integer upSubMax = 0;
             Integer downSubMax = 0;
+            Integer subUpPassenger = 0;
+            Integer subDownPassenger = 0;
             if(upSubStationPassengerMap.containsKey(Convert.toShort(timeNum))){
-                Integer subUpPassenger = upSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getCurpeople).sum();
-                subUpPassengerMap.put(timeNum.toString(),subUpPassenger);
-
+                subUpPassenger = upSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getCurpeople).sum();
                 Optional<Integer> max = upSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().map(StationPassenger::getCurpeople).reduce(Integer::max);
-                subUpMaxPeopleMap.put(timeNum.toString(),max.get());
                 upSubMax = max.get();
-            }else{
-                subUpPassengerMap.put(timeNum.toString(),0);
-                subUpMaxPeopleMap.put(timeNum.toString(),0);
             }
             if(downSubStationPassengerMap.containsKey(Convert.toShort(timeNum))){
-                Integer subDownPassenger = downSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getCurpeople).sum();
-                subDownPassengerMap.put(timeNum.toString(),subDownPassenger);
-
+                subDownPassenger = downSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getCurpeople).sum();
                 Optional<Integer> max = downSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().map(StationPassenger::getCurpeople).reduce(Integer::max);
-                subDownMaxPeopleMap.put(timeNum.toString(),max.get());
                 downSubMax = max.get();
-            }else{
-                subDownPassengerMap.put(timeNum.toString(),0);
-                subDownMaxPeopleMap.put(timeNum.toString(),0);
             }
+            subUpMaxPeopleMap.put(timeNum.toString(),subUpPassenger);
+            subUpMaxPeopleMap.put(timeNum.toString(),upSubMax);
+            subDownPassengerMap.put(timeNum.toString(),subDownPassenger);
+            subDownMaxPeopleMap.put(timeNum.toString(),downSubMax);
+
+
 
             //线路时段发车班次
             Long mainUpClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).count();
@@ -285,39 +287,63 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             subDownFullPercentMap.put(timeNum.toString(),downSubfullPercent);
 
             //表格内容
-            Map<String,Object> upWordRowMap = new HashMap<>();
-            Map<String,Object> downWordRowMap = new HashMap<>();
-            Long upSupportClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0") && !e.getSupportClasses().equals(0)).count();
-            Long downSupportClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1") && !e.getSupportClasses().equals(0)).count();
+            Map<String,Object> mainUpWordRowMap = new HashMap<>();
+            Map<String,Object> mainDownWordRowMap = new HashMap<>();
+            Map<String,Object> subUpWordRowMap = new HashMap<>();
+            Map<String,Object> subDownWordRowMap = new HashMap<>();
+            Long mainUpSupportClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0") && !e.getSupportClasses().equals(0)).count();
+            Long mainDownSupportClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1") && !e.getSupportClasses().equals(0)).count();
+            Long subUpSupportClasses = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0") && !e.getSupportClasses().equals(0)).count();
+            Long subDownSupportClasses = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1") && !e.getSupportClasses().equals(0)).count();
             //总班次
-            upWordRowMap.put("upClasses",mainUpClasses);
-            downWordRowMap.put("downClasses",mainDownClasses);
+            mainUpWordRowMap.put("upClasses",mainUpClasses);
+            mainDownWordRowMap.put("downClasses",mainDownClasses);
+            subUpWordRowMap.put("upClasses",subUpClasses);
+            subDownWordRowMap.put("downClasses",mainDownClasses);
             //无车或支援班次
-            upWordRowMap.put("upSupportClasses",upSupportClasses);
-            downWordRowMap.put("downSupportClasses",downSupportClasses);
+            mainUpWordRowMap.put("upSupportClasses",mainUpSupportClasses);
+            mainDownWordRowMap.put("downSupportClasses",mainDownSupportClasses);
+            subUpWordRowMap.put("upSupportClasses",subUpSupportClasses);
+            subDownWordRowMap.put("downSupportClasses",subDownSupportClasses);
             //总客流人次
-            upWordRowMap.put("upPassenger",mainUpPassenger);
-            downWordRowMap.put("downPassenger",mainDownPassenger);
+            mainUpWordRowMap.put("upPassenger",mainUpPassenger);
+            mainDownWordRowMap.put("downPassenger",mainDownPassenger);
+            subUpWordRowMap.put("upPassenger",subUpPassenger);
+            subDownWordRowMap.put("downPassenger",subDownPassenger);
             //最高车内人数
-            upWordRowMap.put("upMax",upMainMax);
-            downWordRowMap.put("downMax",downMainMax);
+            mainUpWordRowMap.put("upMax",upMainMax);
+            mainDownWordRowMap.put("downMax",downMainMax);
+            subUpWordRowMap.put("upMax",upSubMax);
+            subDownWordRowMap.put("downMax",downSubMax);
             //班次车流人数：时段内班次数*车厢核载人数*目标满载率（如75%）
-            upWordRowMap.put("uploadPeopleClasses",mainUploadPeopleNum*mainUpClasses);
-            downWordRowMap.put("downloadPeopleClasses",mainDownloadPeopleNum*mainDownClasses);
+            mainUpWordRowMap.put("uploadPeopleClasses",mainUploadPeopleNum*mainUpClasses);
+            mainDownWordRowMap.put("downloadPeopleClasses",mainDownloadPeopleNum*mainDownClasses);
+            subUpWordRowMap.put("uploadPeopleClasses",subUploadPeopleNum*subUpClasses);
+            subDownWordRowMap.put("downloadPeopleClasses",subDownloadPeopleNum*subDownClasses);
             //平均单程时间
-            upWordRowMap.put("upIntersite",mainUpIntersite);
-            downWordRowMap.put("downIntersite",mainDownIntersite);
+            mainUpWordRowMap.put("upIntersite",mainUpIntersite);
+            mainDownWordRowMap.put("downIntersite",mainDownIntersite);
+            subUpWordRowMap.put("upIntersite",subUpIntersite);
+            subDownWordRowMap.put("downIntersite",subDownIntersite);
             //平均发班间隔
-            upWordRowMap.put("upInterval",mainUpInterval);
-            downWordRowMap.put("downInterval",mainDownInterval);
+            mainUpWordRowMap.put("upInterval",mainUpInterval);
+            mainDownWordRowMap.put("downInterval",mainDownInterval);
+            subUpWordRowMap.put("upInterval",subUpInterval);
+            subDownWordRowMap.put("downInterval",subDownInterval);
             //平均停站时间
-            Double upStopTime = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getStopTime).average().orElse(0D);
-            Double downStopTime = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).mapToDouble(DySchedulePlanDriverless::getStopTime).average().orElse(0D);
-            upWordRowMap.put("upStopTime",upStopTime);
-            downWordRowMap.put("downStopTime",downStopTime);
+            Double mainUpStopTime = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getStopTime).average().orElse(0D);
+            Double mainDownStopTime = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).mapToDouble(DySchedulePlanDriverless::getStopTime).average().orElse(0D);
+            Double subUpStopTime = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getStopTime).average().orElse(0D);
+            Double subDownStopTime = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).mapToDouble(DySchedulePlanDriverless::getStopTime).average().orElse(0D);
+            mainUpWordRowMap.put("upStopTime",mainUpStopTime);
+            mainDownWordRowMap.put("downStopTime",mainDownStopTime);
+            subUpWordRowMap.put("upStopTime",subUpStopTime);
+            subDownWordRowMap.put("downStopTime",subDownStopTime);
 
-            mainUpWordMap.put(timeNum.toString(),upWordRowMap);
-            mainDownWordMap.put(timeNum.toString(),downWordRowMap);
+            mainUpWordMap.put(timeNum.toString(),mainUpWordRowMap);
+            mainDownWordMap.put(timeNum.toString(),mainDownWordRowMap);
+            subUpWordMap.put(timeNum.toString(),subUpWordRowMap);
+            subDownWordMap.put(timeNum.toString(),subDownWordRowMap);
 
         }
         ScheduleCountVo vo = new ScheduleCountVo();
@@ -351,6 +377,8 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
         vo.setSubDownIntersiteMap(subDownIntersiteMap);
         vo.setMainUpWordMap(mainUpWordMap);
         vo.setMainDownWordMap(mainDownWordMap);
+        vo.setSubUpWordMap(subUpWordMap);
+        vo.setSubDownWordMap(subDownWordMap);
         return R.ok().put("data",vo);
     }
 

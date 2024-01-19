@@ -71,9 +71,11 @@ public class SimulationController {
 		return R.ok().put("data",vo);
 	}
 
-	@RequestMapping("/getMinPlanTime")
+	@RequestMapping(value="/getMinPlanTime",method = RequestMethod.POST , produces = {"application/json;charset=UTF-8"})
 	@ResponseBody
-	public R getMinPlanTimeByRouteIdAndPlanDate(String routeId, String planDate){
+	public R getMinPlanTimeByRouteIdAndPlanDate(@RequestBody Map<String, Object> json){
+		String routeId = json.get("routeId").toString();
+		String planDate = json.get("planDate").toString();
 		String minPlanTime = simulationService.getMinPlanTimeByRouteIdAndPlanDate(routeId, planDate);
 		return R.ok().put("minPlanTime", minPlanTime);
 	}
