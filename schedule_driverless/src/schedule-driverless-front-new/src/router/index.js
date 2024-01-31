@@ -323,6 +323,14 @@ const routes = [
     },
   },
   {
+    path: "/SchedulingSearch",
+    name: "SchedulingSearch",
+    component: () => import("../views/driverlesscars/SchedulingSearch.vue"),
+    meta: {
+      title: "排班查询",
+    },
+  },
+  {
     path: "/about",
     name: "about",
     // route level code-splitting

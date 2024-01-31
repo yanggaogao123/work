@@ -117,7 +117,6 @@
                                     )`,
                         }"
                       ></div>
-
                       <div
                         v-else-if="item.cars && item.cars.fullLoadRatio >= 80"
                         class="bus-bar"
@@ -519,8 +518,8 @@
             </div>
             <div class="center-car">
               <div class="cen-left">
-                <span>920路</span>
-                <span>831路</span>
+                <span>{{ routeName }}</span>
+                <span>{{ supRouteName }}</span>
               </div>
               <div class="cen-right">
                 <ul>

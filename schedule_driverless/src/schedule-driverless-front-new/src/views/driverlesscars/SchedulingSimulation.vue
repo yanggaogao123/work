@@ -67,8 +67,8 @@
 
           <a-form-item style="float: right">
             <a-radio-group v-model="pageValue" @change="onChange">
-              <a-radio-button value="a">监控调度</a-radio-button>
-              <a-radio-button value="b">拍板查询</a-radio-button>
+              <a-radio-button value="a">计划表</a-radio-button>
+              <a-radio-button value="b">车位图</a-radio-button>
               <a-radio-button value="c">排班仿真</a-radio-button>
             </a-radio-group>
           </a-form-item>
@@ -83,11 +83,11 @@
         v-show="carBool == 'c'"
         :sendData="sendData"
       ></car-type-four-modal>
-      <!-- <chart-table-modal
+      <chart-table-modal
         v-if="chartBool"
         :chartData="chartData"
         :baseData="baseData"
-      ></chart-table-modal> -->
+      ></chart-table-modal>
     </div>
   </a-card>
 </template>
@@ -171,6 +171,7 @@ export default {
           console.log(res);
           if (res.data.retCode != 0) {
             this.$message.error(res.data.retMsg);
+            return;
           }
           this.allRouteList = res.data.data;
         });
@@ -201,6 +202,7 @@ export default {
           console.log("关联线路信息", res);
           if (res.data.retCode != 0) {
             this.$message.error(res.data.retMsg);
+            return;
           }
           this.supRouteList = res.data.data;
         });
@@ -222,6 +224,7 @@ export default {
     async searchIt() {
       if (!this.routeId || !this.supRouteId || !this.runDate) {
         this.$message.error("请选择相关选项再查询");
+        return;
       }
       // await this.getMinPlanTime();
       // this.getRouteUpDownInfo();
@@ -306,7 +309,8 @@ export default {
       let send = {
         routeId: this.routeId,
         supportRouteId: this.supRouteId,
-        runDate: "2024-01-09 00:00:00",
+        // runDate: "2024-01-09 00:00:00",
+        runDate: `${this.runDate} 00:00:00`,
         planType: 2,
       };
       let params = this.mes;

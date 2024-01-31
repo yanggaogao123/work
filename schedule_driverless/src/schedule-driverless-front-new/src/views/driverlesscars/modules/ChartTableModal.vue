@@ -36,12 +36,13 @@
               size="middle"
               bordered
               rowKey="id"
-              :columns="columns"
+              :columns="mainUpColumns"
               :dataSource="mainUpData"
-              :pagination="ipagination"
+              :pagination="false"
               :loading="loading"
               @change="handleTableChange"
-              class="j-table-force-no-wrap"
+              class="j-table-force-wrap table-blue"
+              :scroll="{ y: 400 }"
             >
               <!-- <span slot="action" slot-scope="text, record" v-has="'1015:edit'">
                     <a @click="handleEdit(record)">编辑</a>
@@ -60,11 +61,56 @@
                 </span> -->
             </a-table>
           </div>
-          <div class="right-part"></div>
+          <div class="right-part">
+            <a-table
+              ref="table"
+              size="middle"
+              bordered
+              rowKey="id"
+              :columns="mainDownColumns"
+              :dataSource="mainDownData"
+              :pagination="false"
+              :loading="loading"
+              @change="handleTableChange"
+              class="j-table-force-wrap table-blue"
+              :scroll="{ y: 400 }"
+            >
+            </a-table>
+          </div>
         </div>
         <div class="down-part">
-          <div class="left-part"></div>
-          <div class="right-part"></div>
+          <div class="left-part">
+            <a-table
+              ref="table"
+              size="middle"
+              bordered
+              rowKey="id"
+              :columns="supUpColumns"
+              :dataSource="supUpData"
+              :pagination="false"
+              :loading="loading"
+              @change="handleTableChange"
+              class="j-table-force-wrap table-green"
+              :scroll="{ y: 400 }"
+            >
+            </a-table>
+          </div>
+          <div class="right-part">
+            <a-table
+              ref="table"
+              size="middle"
+              bordered
+              rowKey="id"
+              :columns="supDownColumns"
+              :dataSource="supDownData"
+              :pagination="false"
+              :loading="loading"
+              @change="handleTableChange"
+              class="j-table-force-wrap table-green"
+              :scroll="{ y: 400 }"
+            >
+            </a-table>
+          </div>
         </div>
       </div>
     </section>
@@ -73,7 +119,7 @@
 
 <script>
 import "@/assets/less/TableExpand.less";
-import { JeecgListMixin } from "@/assets/js/JeecgListMixin";
+// import { JeecgListMixin } from "@/assets/js/JeecgListMixin";
 // import { JeecgListMixin } from "@/mixins/JeecgListMixin";
 import Vue from "vue";
 import axios from "axios";
@@ -81,12 +127,11 @@ import "@/assets/less/base.css";
 export default {
   name: "ChartTableModal",
   props: ["chartData", "baseData"],
-  mixins: [JeecgListMixin],
+  // mixins: [JeecgListMixin],
   data() {
     return {
       seeType: "a",
-      typeChartDom: "",
-      columns: [
+      mainUpColumns: [
         // {
         //   title: "序号",
         //   dataIndex: "",
@@ -98,7 +143,7 @@ export default {
         //   },
         // },
         {
-          title: "时段",
+          title: `${this.baseData.routeName}(上行) 时段`,
           align: "center",
           dataIndex: "time",
         },
@@ -143,17 +188,191 @@ export default {
           dataIndex: "upInterval",
         },
       ],
-      dataSource: "",
+      mainDownColumns: [
+        // {
+        //   title: "序号",
+        //   dataIndex: "",
+        //   key: "rowIndex",
+        //   width: 60,
+        //   align: "center",
+        //   customRender: function (t, r, index) {
+        //     return parseInt(index) + 1;
+        //   },
+        // },
+        {
+          title: `${this.baseData.routeName}(下行) 时段`,
+          align: "center",
+          dataIndex: "time",
+        },
+        {
+          title: "总班次",
+          align: "center",
+          dataIndex: "upClasses",
+        },
+        {
+          title: "无人车或支援班次",
+          align: "center",
+          dataIndex: "upSupportClasses",
+        },
+        {
+          title: "总客流人次",
+          align: "center",
+          dataIndex: "upPassenger",
+        },
+        {
+          title: "最高车内人数",
+          align: "center",
+          dataIndex: "upMax",
+        },
+        {
+          title: "班次车流人数",
+          align: "center",
+          dataIndex: "uploadPeopleClasses",
+        },
+        {
+          title: "平均停站时间",
+          align: "center",
+          dataIndex: "upStopTime",
+        },
+        {
+          title: "平均单程时间",
+          align: "center",
+          dataIndex: "upIntersite",
+        },
+        {
+          title: "平均发班间隔",
+          align: "center",
+          dataIndex: "upInterval",
+        },
+      ],
+      supUpColumns: [
+        // {
+        //   title: "序号",
+        //   dataIndex: "",
+        //   key: "rowIndex",
+        //   width: 60,
+        //   align: "center",
+        //   customRender: function (t, r, index) {
+        //     return parseInt(index) + 1;
+        //   },
+        // },
+        {
+          title: `${this.baseData.supRouteName}(上行) 时段`,
+          align: "center",
+          dataIndex: "time",
+        },
+        {
+          title: "总班次",
+          align: "center",
+          dataIndex: "upClasses",
+        },
+        {
+          title: "无人车或支援班次",
+          align: "center",
+          dataIndex: "upSupportClasses",
+        },
+        {
+          title: "总客流人次",
+          align: "center",
+          dataIndex: "upPassenger",
+        },
+        {
+          title: "最高车内人数",
+          align: "center",
+          dataIndex: "upMax",
+        },
+        {
+          title: "班次车流人数",
+          align: "center",
+          dataIndex: "uploadPeopleClasses",
+        },
+        {
+          title: "平均停站时间",
+          align: "center",
+          dataIndex: "upStopTime",
+        },
+        {
+          title: "平均单程时间",
+          align: "center",
+          dataIndex: "upIntersite",
+        },
+        {
+          title: "平均发班间隔",
+          align: "center",
+          dataIndex: "upInterval",
+        },
+      ],
+      supDownColumns: [
+        // {
+        //   title: "序号",
+        //   dataIndex: "",
+        //   key: "rowIndex",
+        //   width: 60,
+        //   align: "center",
+        //   customRender: function (t, r, index) {
+        //     return parseInt(index) + 1;
+        //   },
+        // },
+        {
+          title: `${this.baseData.supRouteName}(下行) 时段`,
+          align: "center",
+          dataIndex: "time",
+        },
+        {
+          title: "总班次",
+          align: "center",
+          dataIndex: "upClasses",
+        },
+        {
+          title: "无人车或支援班次",
+          align: "center",
+          dataIndex: "upSupportClasses",
+        },
+        {
+          title: "总客流人次",
+          align: "center",
+          dataIndex: "upPassenger",
+        },
+        {
+          title: "最高车内人数",
+          align: "center",
+          dataIndex: "upMax",
+        },
+        {
+          title: "班次车流人数",
+          align: "center",
+          dataIndex: "uploadPeopleClasses",
+        },
+        {
+          title: "平均停站时间",
+          align: "center",
+          dataIndex: "upStopTime",
+        },
+        {
+          title: "平均单程时间",
+          align: "center",
+          dataIndex: "upIntersite",
+        },
+        {
+          title: "平均发班间隔",
+          align: "center",
+          dataIndex: "upInterval",
+        },
+      ],
       mainUpData: [],
-      mainDownData: "",
+      mainDownData: [],
+      supUpData: [],
+      supDownData: [],
     };
   },
   watch: {
     chartData() {
-      this.ulChartInit();
-      this.urChartInit();
-      this.dlChartInit();
-      this.drChartInit();
+      setTimeout(() => {
+        this.ulChartInit();
+        this.urChartInit();
+        this.dlChartInit();
+        this.drChartInit();
+      }, 500);
     },
     seeType() {
       if (this.seeType == "a") {
@@ -163,13 +382,20 @@ export default {
           this.dlChartInit();
           this.drChartInit();
         }, 500);
+      } else if (this.seeType == "b") {
+        this.tableInit();
       }
     },
   },
   created() {
     this.tableInit();
   },
-  mounted() {},
+  mounted() {
+    this.ulChartInit();
+    this.urChartInit();
+    this.dlChartInit();
+    this.drChartInit();
+  },
   methods: {
     tableInit() {
       this.mainUpData = [];
@@ -182,12 +408,43 @@ export default {
         }
         this.mainUpData.push(data[i]);
       }
-      //   this.mainUpData = data;
-      console.log("mainUpData", this.mainUpData);
-      //   this.mainUpData = this.chartData.mainUpWordMap;
-      this.mainDownData = this.chartData.mainDownWordMap;
-      let supUpData = this.chartData.mainUpWordMap;
-      let supDownData = this.chartData.mainUpWordMap;
+
+      this.mainDownData = [];
+      let data1 = this.chartData.mainDownWordMap;
+      for (let i in data) {
+        if (i < 10) {
+          data[i].time = `0${i}:00-0${i}:59`;
+        } else {
+          data[i].time = `${i}:00-${i}:59`;
+        }
+        this.mainDownData.push(data[i]);
+      }
+
+      this.supUpData = [];
+      let data2 = this.chartData.subUpWordMap;
+      for (let i in data) {
+        if (i < 10) {
+          data[i].time = `0${i}:00-0${i}:59`;
+        } else {
+          data[i].time = `${i}:00-${i}:59`;
+        }
+        this.supUpData.push(data[i]);
+      }
+
+      this.supDownData = [];
+      let data3 = this.chartData.subDownWordMap;
+      for (let i in data) {
+        if (i < 10) {
+          data[i].time = `0${i}:00-0${i}:59`;
+        } else {
+          data[i].time = `${i}:00-${i}:59`;
+        }
+        this.supDownData.push(data[i]);
+      }
+      //   this.mainDownData = this.chartData.mainDownWordMap;
+      //   console.log("mainUpData", this.mainUpData);
+      //   let supUpData = this.chartData.mainUpWordMap;
+      //   let supDownData = this.chartData.mainUpWordMap;
     },
     ulChartInit() {
       const that = this;
@@ -882,6 +1139,55 @@ export default {
       .up-part {
         margin-top: 20px;
       }
+    }
+
+    .con-table {
+      .up-part,
+      .down-part {
+        display: flex;
+        height: 484px;
+        .left-part,
+        .right-part {
+          width: 50%;
+          height: 100%;
+          box-sizing: border-box;
+          div {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+      .down-part {
+        margin-top: 20px;
+      }
+    }
+    .table-blue {
+      /deep/.ant-table-thead tr th {
+        background: #b8deff !important;
+      }
+      /deep/.ant-table-hide-scrollbar {
+        min-width: 5px !important;
+      }
+    }
+    .table-blue ::-webkit-scrollbar {
+      width: 5px;
+      //   height: 2px;
+      //   background: #ccc;
+      //   border-radius: 10px; /*外层轨道*/
+    }
+    .table-green {
+      /deep/.ant-table-thead tr th {
+        background: #bce9f0 !important;
+      }
+      /deep/.ant-table-hide-scrollbar {
+        min-width: 5px !important;
+      }
+    }
+    .table-green ::-webkit-scrollbar {
+      width: 5px;
+      //   height: 2px;
+      //   background: #ccc;
+      //   border-radius: 10px; /*外层轨道*/
     }
   }
 }
