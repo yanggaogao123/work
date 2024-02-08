@@ -9,9 +9,6 @@
 .j-table-force-nowrap .ant-table-selection-column {
   padding: 12px 22px !important;
 }
-.j-table-force-nowrap.ant-table-wrapper .ant-table-content {
-  overflow-x: auto;
-}
 .j-table-force-nowrap .ant-table-tbody .ant-table-row:nth-child(n) {
   background: #fff !important;
 }

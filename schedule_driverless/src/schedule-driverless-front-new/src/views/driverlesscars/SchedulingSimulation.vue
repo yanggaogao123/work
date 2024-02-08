@@ -237,7 +237,7 @@ export default {
     getAdrealInfo() {
       let send = {
         routeId: this.routeId,
-        runDate: `${this.runDate} ${this.time}`,
+        runDate: `${moment(this.runDate).format("YYYY-MM-DD")} ${this.time}`,
         supportRouteId: this.supRouteId,
       };
       let params = this.mes;
@@ -310,7 +310,7 @@ export default {
         routeId: this.routeId,
         supportRouteId: this.supRouteId,
         // runDate: "2024-01-09 00:00:00",
-        runDate: `${this.runDate} 00:00:00`,
+        runDate: `${moment(this.runDate).format("YYYY-MM-DD")} 00:00:00`,
         planType: 2,
       };
       let params = this.mes;
@@ -336,7 +336,7 @@ export default {
         routeId: this.routeId,
         supportRouteId: this.supRouteId,
         // runDate: "2024-01-10",
-        runDate: this.runDate,
+        runDate: moment(this.runDate).format("YYYY-MM-DD"),
       };
       let params = this.mes;
       axios.post(this.url.getRuningScheduleConfig, send, params).then((res) => {

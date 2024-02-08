@@ -331,6 +331,15 @@ const routes = [
     },
   },
   {
+    path: "/MonitoringDispatching",
+    name: "MonitoringDispatching",
+    component: () =>
+      import("../views/driverlesscars/MonitoringDispatching.vue"),
+    meta: {
+      title: "调度监控",
+    },
+  },
+  {
     path: "/about",
     name: "about",
     // route level code-splitting
