@@ -23,17 +23,8 @@
             </a-select>
           </a-form-item>
           <a-form-item label="关联线路">
-            <a-select
-              allowClear
-              v-model="supRouteId"
-              placeholder="请选择主线路"
-              style="width: 200px"
-              @change="seleChange"
-            >
-              <a-select-option
-                v-for="item in supRouteList"
-                :value="item.supportRouteId"
-              >
+            <a-select allowClear v-model="supRouteId" placeholder="请选择主线路" style="width: 200px" @change="seleChange">
+              <a-select-option v-for="item in supRouteList" :value="item.supportRouteId">
                 {{ item.supportRouteName }}
               </a-select-option>
             </a-select>
@@ -59,9 +50,7 @@
           </a-form-item> -->
 
           <a-form-item>
-            <a-button type="primary" @click="searchIt" icon="search"
-              >查询</a-button
-            >
+            <a-button type="primary" @click="searchIt" icon="search">查询</a-button>
           </a-form-item>
 
           <a-form-item style="float: right">
@@ -73,33 +62,24 @@
           </a-form-item>
         </a-form>
       </header>
-      <car-type-two-modal
-        v-show="carBool == 'b'"
-        :sendData="sendData"
-      ></car-type-two-modal>
-      <car-type-three-modal
-        v-show="carBool == 'c'"
-        :sendData="sendData"
-      ></car-type-three-modal>
+      <car-type-two-modal v-show="carBool == 'b'" :sendData="sendData"></car-type-two-modal>
+      <car-type-three-modal v-show="carBool == 'c'" :sendData="sendData"></car-type-three-modal>
 
-      <monitoring-table-modal
-        v-show="tableBool"
-        :sendData="sendData"
-      ></monitoring-table-modal>
+      <monitoring-table-modal v-show="tableBool" :sendData="sendData"></monitoring-table-modal>
     </div>
   </a-card>
 </template>
 
 <script>
-import Vue from "vue";
-import axios from "axios";
-import "@/assets/less/base.css";
-import moment from "moment";
-import CarTypeTwoModal from "./modules/CarTypeTwoModal.vue";
-import CarTypeThreeModal from "./modules/CarTypeThreeModal.vue";
-import MonitoringTableModal from "./modules/MonitoringTableModal.vue";
+import Vue from 'vue';
+import axios from 'axios';
+import '@/assets/less/base.css';
+import moment from 'moment';
+import CarTypeTwoModal from './modules/CarTypeTwoModal.vue';
+import CarTypeThreeModal from './modules/CarTypeThreeModal.vue';
+import MonitoringTableModal from './modules/MonitoringTableModal.vue';
 export default {
-  name: "MonitoringDispatching",
+  name: 'MonitoringDispatching',
   components: {
     CarTypeTwoModal,
     CarTypeThreeModal,
@@ -114,42 +94,41 @@ export default {
         getRouteList: `${process.env.VUE_APP_BUS_API}/route/getRouteList`,
         getUnionRouteInfo: `${process.env.VUE_APP_BUS_API}/route/getUnionRouteInfo`,
         getMinPlanTime: `${process.env.VUE_APP_BUS_API}/simulation/getMinPlanTime`,
-        getRouteUpDownInfo: `${process.env.VUE_APP_BUS_API}/route/getRouteUpDownInfo`,
         busConfigure: `${process.env.VUE_APP_BUS_API}/schedule/busConfigure`,
         getScheduleCountResult: `${process.env.VUE_APP_BUS_API}/scheduleCount/getScheduleCountResult`,
         getRuningScheduleConfig: `${process.env.VUE_APP_BUS_API}/schedule/getRuningScheduleConfig`,
         runBus: `${process.env.VUE_APP_BUS_API}/schedule/runBus`,
         getMonitorInfo: `${process.env.VUE_APP_BUS_API}/schedule/getMonitorInfo`,
       },
-      pageValue: "a",
-      mes: "",
-      routeId: "194",
-      supRouteId: "420",
-      routeName: "36路",
-      supRouteName: "76A路",
-      runDate: "2024-02-05",
-      // routeId: "",
-      // supRouteId: "",
-      // routeName: "",
-      // supRouteName: "",
-      // runDate: moment(),
+      pageValue: 'a',
+      mes: '',
+      // routeId: '194',
+      // supRouteId: '420',
+      // routeName: '36路',
+      // supRouteName: '76A路',
+      // runDate: '2024-02-05',
+      routeId: '',
+      supRouteId: '',
+      routeName: '',
+      supRouteName: '',
+      runDate: moment(),
       allRouteList: [],
       routeList: [],
       supRouteList: [],
       tableData: { firstRouteStaList: [], scheduleBusList: [] },
-      planType: "1",
+      planType: '1',
       tableBool: false,
       centerData: { mainMap: {}, subMap: {}, titleMap: {} },
       sendData: {},
-      centerData: "",
-      chartData: "",
+      centerData: '',
+      chartData: '',
       baseData: {},
       chartBool: false,
-      carBool: "a",
+      carBool: 'a',
 
       planType: 2,
-      pageValue: "c",
-      time: "",
+      pageValue: '',
+      time: '',
       playBool: true,
     };
   },
@@ -164,28 +143,26 @@ export default {
     getData() {
       const queryString = window.location.search;
       const searchParams = new URLSearchParams(queryString);
-      const paramString = searchParams.get("paramString");
+      const paramString = searchParams.get('paramString');
       const params = new URLSearchParams();
-      params.append("paramString", paramString);
+      params.append('paramString', paramString);
       this.mes = params;
       console.log(params.toString());
-      axios
-        .get(`${this.url.getRouteList}?${params}`, {}, { params })
-        .then((res) => {
-          console.log(res);
-          if (res.data.retCode != 0) {
-            this.$message.error(res.data.retMsg);
-            return;
-          }
-          this.allRouteList = res.data.data;
-        });
+      axios.get(`${this.url.getRouteList}?${params}`, {}, { params }).then((res) => {
+        console.log(res);
+        if (res.data.retCode != 0) {
+          this.$message.error(res.data.retMsg);
+          return;
+        }
+        this.allRouteList = res.data.data;
+      });
 
       axios
         .post(
           `${this.url.getMonitorInfo}`,
           {
             routeId: this.routeId,
-            runDate: `${moment(this.runDate).format("YYYY-MM-DD")} 00:00:00`,
+            runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
           },
           { params }
         )
@@ -198,7 +175,7 @@ export default {
           `${this.url.getMonitorInfo}`,
           {
             routeId: this.supRouteId,
-            runDate: `${moment(this.runDate).format("YYYY-MM-DD")} 00:00:00`,
+            runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
           },
           { params }
         )
@@ -208,14 +185,12 @@ export default {
     },
     handleSearch(value) {
       console.log(value);
-      if (value == "") {
+      if (value == '') {
         this.routeList = [];
         return;
       }
       this.routeList = [];
-      this.routeList = this.allRouteList.filter((route) =>
-        route.routeName.includes(value)
-      );
+      this.routeList = this.allRouteList.filter((route) => route.routeName.includes(value));
       console.log(this.routeList);
     },
     handleChange(value, option) {
@@ -226,25 +201,22 @@ export default {
       this.routeId = value;
       this.routeName = arr[0].routeName;
       this.getMinPlanTime();
-      axios
-        .post(this.url.getUnionRouteInfo, { routeId: value }, { params })
-        .then((res) => {
-          console.log("关联线路信息", res);
-          if (res.data.retCode != 0) {
-            this.$message.error(res.data.retMsg);
-            return;
-          }
-          this.supRouteList = res.data.data;
-        });
+      axios.post(this.url.getUnionRouteInfo, { routeId: value }, { params }).then((res) => {
+        console.log('关联线路信息', res);
+        if (res.data.retCode != 0) {
+          this.$message.error(res.data.retMsg);
+          return;
+        }
+        this.supRouteList = res.data.data;
+      });
     },
     seleChange(value) {
       // console.log(value);
       // console.log(this.supRouteList);
-      let arr = this.supRouteList.filter(
-        (route) => route.supportRouteId == value
-      );
+      let arr = this.supRouteList.filter((route) => route.supportRouteId == value);
       this.supRouteId = value;
       this.supRouteName = arr[0].supportRouteName;
+      this.carType = arr[0].type;
     },
     onDateChange(date, dateString) {
       console.log(date, dateString);
@@ -253,23 +225,32 @@ export default {
     },
     async searchIt() {
       if (!this.routeId || !this.supRouteId || !this.runDate) {
-        this.$message.error("请选择相关选项再查询");
+        this.$message.error('请选择相关选项再查询');
         return;
       }
       this.tableBool = true;
-      await this.getMinPlanTime();
-      // this.getRouteUpDownInfo();
-      // this.getBusConfigure();
+      // await this.getMinPlanTime();
       await this.getRuningScheduleConfig();
-      // await this.getScheduleCountResult();
-      await this.getAdrealInfo();
+      // await this.getAdrealInfo();
+      // this.sendData = {
+      //   routeId: this.routeId,
+      //   routeName: this.routeName,
+      //   supRouteName: this.supRouteName,
+      //   supRouteId: this.supRouteId,
+      //   runDate: this.runDate,
+
+      //   // time: this.time,
+      //   // busRunData: res.data,
+      //   centerData: this.centerData,
+      // };
     },
     // 车子仿真数据
     getAdrealInfo() {
       let send = {
         routeId: this.routeId,
-        runDate: `${moment(this.runDate).format("YYYY-MM-DD")} ${this.time}`,
+        runDate: `${moment(this.runDate).format('YYYY-MM-DD')} ${this.time}`,
         supportRouteId: this.supRouteId,
+        planType: '1',
       };
       let params = this.mes;
       axios.post(this.url.adrealInfo, send, params).then((res) => {
@@ -290,22 +271,22 @@ export default {
           centerData: this.centerData,
         };
         if ([0, 1, 2].includes(res.data.data.simulationType)) {
-          this.carBool = "b";
+          this.carBool = 'b';
         } else if ([3, 4, 4].includes(res.data.data.simulationType)) {
-          this.carBool = "c";
+          this.carBool = 'c';
         }
-        console.log("carBool", this.carBool);
+        console.log('carBool', this.carBool);
       });
     },
     // 最早发班时间
     getMinPlanTime() {
       let send = {
         routeId: this.routeId,
-        planDate: moment(this.runDate).format("YYYY-MM-DD"),
+        planDate: moment(this.runDate).format('YYYY-MM-DD'),
       };
       let params = this.mes;
       axios.post(this.url.getMinPlanTime, send, params).then((res) => {
-        console.log("最早发班时间", res.data);
+        console.log('最早发班时间', res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
           return;
@@ -313,22 +294,12 @@ export default {
         this.time = res.data.minPlanTime;
       });
     },
-    getRouteUpDownInfo() {
-      let send = { routeId: this.routeId, supportRouteId: this.supRouteId };
-      let params = this.mes;
-      axios.post(this.url.getRouteUpDownInfo, send, params).then((res) => {
-        console.log("获取上下行站点和首末班时间", res.data);
-        if (res.data.retCode != 0) {
-          this.$message.error(res.data.retMsg);
-          return;
-        }
-      });
-    },
+
     getBusConfigure() {
       let send = { routeId: this.routeId, supportRouteId: this.supRouteId };
       let params = this.mes;
       axios.post(this.url.busConfigure, send, params).then((res) => {
-        console.log("查询线路配车", res.data);
+        console.log('查询线路配车', res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
           return;
@@ -341,12 +312,12 @@ export default {
         routeId: this.routeId,
         supportRouteId: this.supRouteId,
         // runDate: "2024-01-09 00:00:00",
-        runDate: `${moment(this.runDate).format("YYYY-MM-DD")} 00:00:00`,
+        runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
         planType: 2,
       };
       let params = this.mes;
       axios.post(this.url.getScheduleCountResult, send, params).then((res) => {
-        console.log("统计报表", res.data);
+        console.log('统计报表', res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
           return;
@@ -367,16 +338,36 @@ export default {
         routeId: this.routeId,
         supportRouteId: this.supRouteId,
         // runDate: "2024-01-10",
-        runDate: moment(this.runDate).format("YYYY-MM-DD"),
+        runDate: moment(this.runDate).format('YYYY-MM-DD'),
       };
       let params = this.mes;
       axios.post(this.url.getRuningScheduleConfig, send, params).then((res) => {
-        console.log("车辆配置信息", res.data);
+        console.log('车辆配置信息', res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
-          return;
+          this.centerData = {
+            titleMap: {},
+            mainMap: {},
+            subMap: {},
+          };
+          // return;
+        } else {
+          this.centerData = res.data.data;
         }
-        this.centerData = res.data.data;
+
+        this.sendData = {
+          routeId: this.routeId,
+          routeName: this.routeName,
+          supRouteName: this.supRouteName,
+          supRouteId: this.supRouteId,
+          runDate: this.runDate,
+          centerData: this.centerData,
+        };
+        if ([0, 1, 2, 5].includes(this.carType)) {
+          this.carBool = 'b';
+        } else if ([3, 4, 6, 7].includes(this.carType)) {
+          this.carBool = 'c';
+        }
       });
     },
   },

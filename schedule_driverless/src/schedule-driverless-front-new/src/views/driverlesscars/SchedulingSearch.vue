@@ -1,227 +1,205 @@
 <template>
   <a-card :bordered="false">
     <div id="main">
-      <header>
-        <a-form layout="inline">
-          <a-form-item label="主线路">
-            <a-select
-              show-search
-              allowClear
-              :value="routeId"
-              placeholder="请选择主线路"
-              :default-active-first-option="false"
-              :show-arrow="false"
-              :filter-option="false"
-              :not-found-content="null"
-              style="width: 200px"
-              @search="handleSearch"
-              @change="handleChange"
-            >
-              <a-select-option v-for="item in routeList" :value="item.routeId">
-                {{ item.routeName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item label="关联线路">
-            <a-select
-              allowClear
-              v-model="supRouteId"
-              placeholder="请选择主线路"
-              style="width: 200px"
-              @change="seleChange"
-            >
-              <a-select-option
-                v-for="item in supRouteList"
-                :value="item.supportRouteId"
+      <a-spin tip="Loading..." :spinning="spinning">
+        <header>
+          <a-form layout="inline">
+            <a-form-item label="主线路">
+              <a-select
+                show-search
+                allowClear
+                :value="routeId"
+                placeholder="请选择主线路"
+                :default-active-first-option="false"
+                :show-arrow="false"
+                :filter-option="false"
+                :not-found-content="null"
+                style="width: 200px"
+                @search="handleSearch"
+                @change="handleChange"
               >
-                {{ item.supportRouteName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item label="日期">
-            <a-date-picker
-              placeholder="请选择日期"
-              moment="YYYY-MM-DD"
-              v-model="runDate"
-              @change="onDateChange"
-            />
-          </a-form-item>
+                <a-select-option v-for="item in routeList" :value="item.routeId">
+                  {{ item.routeName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item label="关联线路">
+              <a-select allowClear v-model="supRouteId" placeholder="请选择主线路" style="width: 200px" @change="seleChange">
+                <a-select-option v-for="item in supRouteList" :value="item.supportRouteId">
+                  {{ item.supportRouteName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item label="日期">
+              <a-date-picker placeholder="请选择日期" moment="YYYY-MM-DD" v-model="runDate" @change="onDateChange" />
+            </a-form-item>
 
-          <a-form-item label="排班">
-            <a-select
-              placeholder="请选择排班方案"
-              style="width: 160px"
-              v-model="planType"
-            >
-              <a-select-option value="1">最优排班</a-select-option>
-              <a-select-option value="2">预设排班</a-select-option>
-            </a-select>
-          </a-form-item>
+            <a-form-item label="排班">
+              <a-select placeholder="请选择排班方案" style="width: 160px" v-model="planType">
+                <a-select-option :value="1">最优排班</a-select-option>
+                <a-select-option :value="2">预设排班</a-select-option>
+              </a-select>
+            </a-form-item>
 
-          <a-form-item>
-            <a-button type="primary" @click="searchIt" icon="search"
-              >查询</a-button
-            >
-          </a-form-item>
+            <a-form-item>
+              <a-button type="primary" @click="searchIt" icon="search">查询</a-button>
+            </a-form-item>
 
-          <a-form-item style="float: right">
-            <a-radio-group v-model="pageValue" @change="onChange">
-              <a-radio-button value="a">计划表</a-radio-button>
-              <a-radio-button value="b">车位图</a-radio-button>
-              <a-radio-button value="c">排班仿真</a-radio-button>
-            </a-radio-group>
-          </a-form-item>
-        </a-form>
-      </header>
-      <section>
-        <div class="con-head">
-          <div class="con-info">
-            <div style="display: inline-block">
-              排班计划（当前为 <span>预设计划</span>，最后一次生成计划时间为
-              {{ centerData.titleMap.lastPlanTime }}
-              ）
+            <a-form-item style="float: right">
+              <a-radio-group v-model="pageValue" @change="onChange">
+                <a-radio-button value="a">计划表</a-radio-button>
+                <a-radio-button value="b">车位图</a-radio-button>
+                <a-radio-button value="c">排班仿真</a-radio-button>
+              </a-radio-group>
+            </a-form-item>
+          </a-form>
+        </header>
+        <section>
+          <div class="con-head">
+            <div class="con-info">
+              <div style="display: inline-block">
+                排班计划（当前为 <span>预设计划</span>，最后一次生成计划时间为
+                {{ centerData.titleMap.lastPlanTime }}
+                ）
+              </div>
+              <div style="display: inline-block">
+                总（趟次:{{ centerData.titleMap.totalClasses }} /援10 派车:43/援10 里程{{ centerData.titleMap.totalRunMileage }}km 工时{{ centerData.titleMap.totalDuration }}h ）
+              </div>
             </div>
-            <div style="display: inline-block">
-              总（趟次:{{ centerData.titleMap.totalClasses }} /援10 派车:43/援10
-              里程{{ centerData.titleMap.totalRunMileage }}km 工时{{
-                centerData.titleMap.totalDuration
-              }}h ）
-            </div>
-          </div>
 
-          <!-- <div class="head-info">
+            <!-- <div class="head-info">
             排班计划（当前为 ，最后一次生成计划时间为2023-10-17
             12:30:00）总（趟次:80 /援10 派车:43/援10 里程564km 工时98h ）
           </div> -->
-          <div class="btn-area">
-            <a-button @click="createIt">生成排班</a-button>
-            <a-button>挂车</a-button>
-            <a-button>参数设置</a-button>
-            <a-button>同步计划</a-button>
-            <a-button>导出横竖表</a-button>
-          </div>
-        </div>
-        <div class="con-table" v-if="tableBool">
-          <div class="tit-num">
-            <div class="tit-left">循次</div>
-            <div class="tit-right">
-              <ul>
-                <li>趟次数</li>
-                <li v-for="(item, i) in tableData.firstRouteStaList">
-                  {{ i % 2 == 0 ? 1 : 2 }}
-                </li>
-              </ul>
-              <ul class="tit-station">
-                <li>始发站点</li>
-                <li v-for="(item, i) in tableData.firstRouteStaList">
-                  {{ item.routeStationName }}
-                </li>
-                <!-- <li v-for="(item, i) in 30">始发站点</li> -->
-              </ul>
-              <ul>
-                <li>
-                  <div>原班次/78</div>
-                  <div>支援班次/78</div>
-                </li>
-                <li v-for="(item, i) in tableData.firstRouteStaList">
-                  <div>原班次</div>
-                  <div>支援班次</div>
-                </li>
-              </ul>
+            <div class="btn-area">
+              <a-button @click="createIt">生成排班</a-button>
+              <a-button>挂车</a-button>
+              <a-button>参数设置</a-button>
+              <a-button>同步计划</a-button>
+              <a-button>导出横竖表</a-button>
             </div>
           </div>
-          <div class="tit-order">
-            <div class="tit-left">车序</div>
-            <div class="tit-right">
-              <ul>
-                <li>全天时段车次</li>
-                <li v-for="(item, i) in tableData.firstRouteStaList">
-                  <div>{{ item.classes }}</div>
-                  <div>{{ item.supportClasses }}</div>
-                </li>
-              </ul>
-              <ul>
-                <li>营运起止时段</li>
-                <li v-for="(item, i) in tableData.firstRouteStaList">
-                  {{ item.beginTime }}-{{ item.endTime }}
-                </li>
-              </ul>
-              <ul>
-                <li>上/下行平均间隔</li>
-                <li v-for="(item, i) in tableData.firstRouteStaList">
-                  <div>{{ item.upInterval }}</div>
-                  <div>{{ item.downInterval }}</div>
-                </li>
-              </ul>
-              <ul>
-                <li>
-                  <div>停站率</div>
-                  <div>满载率</div>
-                </li>
+          <div class="con-table" v-if="tableBool">
+            <div class="tit-num">
+              <div class="tit-left">循次</div>
+              <div class="tit-right">
+                <ul>
+                  <li>趟次数</li>
+                  <li v-for="(item, i) in tableData.firstRouteStaList">
+                    {{ i % 2 == 0 ? 1 : 2 }}
+                  </li>
+                </ul>
+                <ul class="tit-station">
+                  <li>始发站点</li>
+                  <li v-for="(item, i) in tableData.firstRouteStaList">
+                    {{ item.routeStationName }}
+                  </li>
+                  <!-- <li v-for="(item, i) in 30">始发站点</li> -->
+                </ul>
+                <ul>
+                  <li>
+                    <div>原班次/78</div>
+                    <div>支援班次/78</div>
+                  </li>
+                  <li v-for="(item, i) in tableData.firstRouteStaList">
+                    <div>原班次</div>
+                    <div>支援班次</div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="tit-order">
+              <div class="tit-left">车序</div>
+              <div class="tit-right">
+                <ul>
+                  <li>全天时段车次</li>
+                  <li v-for="(item, i) in tableData.firstRouteStaList">
+                    <div>{{ item.classes }}</div>
+                    <div>{{ item.supportClasses }}</div>
+                  </li>
+                </ul>
+                <ul>
+                  <li>营运起止时段</li>
+                  <li v-for="(item, i) in tableData.firstRouteStaList">{{ item.beginTime }}-{{ item.endTime }}</li>
+                </ul>
+                <ul>
+                  <li>上/下行平均间隔</li>
+                  <li v-for="(item, i) in tableData.firstRouteStaList">
+                    <div>{{ item.upInterval }}</div>
+                    <div>{{ item.downInterval }}</div>
+                  </li>
+                </ul>
+                <ul>
+                  <li>
+                    <div>停站率</div>
+                    <div>满载率</div>
+                  </li>
 
-                <li v-for="(item, i) in tableData.firstRouteStaList">
-                  <div>{{ item.parkPercent }}</div>
-                  <div>{{ item.fullPercent }}</div>
+                  <li v-for="(item, i) in tableData.firstRouteStaList">
+                    <div>{{ item.parkPercent }}</div>
+                    <div>{{ item.fullPercent }}</div>
+                  </li>
+                </ul>
+                <ul>
+                  <li>
+                    <span class="three">
+                      <div>车辆</div>
+                      <div>行车时间</div>
+                      <div>营运时间</div>
+                    </span>
+                  </li>
+                  <li v-for="(item, i) in tableData.firstRouteStaList">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="sec-con">
+              <ul v-for="(item, i) in tableData.scheduleBusList">
+                <li :class="item.firstDirection == '0' ? 'blue' : 'green'">
+                  {{ item.firstBusNumber }}
                 </li>
-              </ul>
-              <ul>
                 <li>
                   <span class="three">
-                    <div>车辆</div>
-                    <div>行车时间</div>
-                    <div>营运时间</div>
+                    <div :title="item.busNameFull">{{ item.busNameFull }}</div>
+                    <div :title="item.totalTripTime">
+                      {{ item.totalTripTime }}
+                    </div>
+                    <div :title="item.totalRunTime">{{ item.totalRunTime }}</div>
                   </span>
                 </li>
-                <li v-for="(item, i) in tableData.firstRouteStaList">
-                  <div></div>
-                  <div></div>
-                  <div></div>
+                <li v-for="ktem in item.scheduleList">
+                  <template v-if="ktem.tripBeginTime">
+                    {{ moment(ktem.tripBeginTime).format('HH:mm') }}~
+                    {{ moment(ktem.tripEndTime).format('HH:mm') }}
+                  </template>
+                  <template v-else></template>
                 </li>
               </ul>
             </div>
           </div>
-          <div class="sec-con">
-            <ul v-for="(item, i) in tableData.scheduleBusList">
-              <li :class="item.firstDirection == '0' ? 'blue' : 'green'">
-                {{ item.firstBusNumber }}
-              </li>
-              <li>
-                <span class="three">
-                  <div :title="item.busNameFull">{{ item.busNameFull }}</div>
-                  <div :title="item.totalTripTime">
-                    {{ item.totalTripTime }}
-                  </div>
-                  <div :title="item.totalRunTime">{{ item.totalRunTime }}</div>
-                </span>
-              </li>
-              <li v-for="ktem in item.scheduleList">
-                <template v-if="ktem.tripBeginTime">
-                  {{ moment(ktem.tripBeginTime).format("HH:mm") }}~
-                  {{ moment(ktem.tripEndTime).format("HH:mm") }}
-                </template>
-                <template v-else></template>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-      <scheduling-create-modal
-        ref="SchedulingCreateModal"
-      ></scheduling-create-modal>
+        </section>
+        <scheduling-create-modal ref="SchedulingCreateModal"></scheduling-create-modal>
+        <scheduling-change-car-modal ref="SchedulingChangeCarModal"></scheduling-change-car-modal>
+      </a-spin>
     </div>
   </a-card>
 </template>
 
 <script>
-import Vue from "vue";
-import axios from "axios";
-import "@/assets/less/base.css";
-import moment from "moment";
-import SchedulingCreateModal from "./modules/SchedulingCreateModal.vue";
+import Vue from 'vue';
+import axios from 'axios';
+import '@/assets/less/base.css';
+import moment from 'moment';
+import SchedulingCreateModal from './modules/SchedulingCreateModal.vue';
+import SchedulingChangeCarModal from './modules/SchedulingChangeCarModal.vue';
 export default {
-  name: "SchedulingSearch",
+  name: 'SchedulingSearch',
   components: {
     SchedulingCreateModal,
+    SchedulingChangeCarModal,
   },
   data() {
     return {
@@ -237,23 +215,24 @@ export default {
         getScheduleCountResult: `${process.env.VUE_APP_BUS_API}/scheduleCount/getScheduleCountResult`,
         getRuningScheduleConfig: `${process.env.VUE_APP_BUS_API}/schedule/getRuningScheduleConfig`,
       },
-      pageValue: "a",
-      mes: "",
+      spinning: false,
+      pageValue: 'a',
+      mes: '',
       //   routeId: "194",
       //   supRouteId: "420",
       //   routeName: "36路",
       //   supRouteName: "76A路",
       //   runDate: "2023-12-18",
-      routeId: "",
-      supRouteId: "",
-      routeName: "",
-      supRouteName: "",
+      routeId: '',
+      supRouteId: '',
+      routeName: '',
+      supRouteName: '',
       runDate: moment(),
       allRouteList: [],
       routeList: [],
       supRouteList: [],
       tableData: { firstRouteStaList: [], scheduleBusList: [] },
-      planType: "1",
+      planType: 1,
       tableBool: false,
       centerData: { mainMap: {}, subMap: {}, titleMap: {} },
     };
@@ -269,32 +248,28 @@ export default {
     getData() {
       const queryString = window.location.search;
       const searchParams = new URLSearchParams(queryString);
-      const paramString = searchParams.get("paramString");
+      const paramString = searchParams.get('paramString');
       const params = new URLSearchParams();
-      params.append("paramString", paramString);
+      params.append('paramString', paramString);
       this.mes = params;
       console.log(params.toString());
-      axios
-        .get(`${this.url.getRouteList}?${params}`, {}, { params })
-        .then((res) => {
-          console.log(res);
-          if (res.data.retCode != 0) {
-            this.$message.error(res.data.retMsg);
-            return;
-          }
-          this.allRouteList = res.data.data;
-        });
+      axios.get(`${this.url.getRouteList}?${params}`, {}, { params }).then((res) => {
+        console.log(res);
+        if (res.data.retCode != 0) {
+          this.$message.error(res.data.retMsg);
+          return;
+        }
+        this.allRouteList = res.data.data;
+      });
     },
     handleSearch(value) {
       console.log(value);
-      if (value == "") {
+      if (value == '') {
         this.routeList = [];
         return;
       }
       this.routeList = [];
-      this.routeList = this.allRouteList.filter((route) =>
-        route.routeName.includes(value)
-      );
+      this.routeList = this.allRouteList.filter((route) => route.routeName.includes(value));
       console.log(this.routeList);
     },
     handleChange(value, option) {
@@ -305,23 +280,19 @@ export default {
       this.routeId = value;
       this.routeName = arr[0].routeName;
       //   this.getMinPlanTime();
-      axios
-        .post(this.url.getUnionRouteInfo, { routeId: value }, { params })
-        .then((res) => {
-          console.log("关联线路信息", res);
-          if (res.data.retCode != 0) {
-            this.$message.error(res.data.retMsg);
-            return;
-          }
-          this.supRouteList = res.data.data;
-        });
+      axios.post(this.url.getUnionRouteInfo, { routeId: value }, { params }).then((res) => {
+        console.log('关联线路信息', res);
+        if (res.data.retCode != 0) {
+          this.$message.error(res.data.retMsg);
+          return;
+        }
+        this.supRouteList = res.data.data;
+      });
     },
     seleChange(value) {
       // console.log(value);
       // console.log(this.supRouteList);
-      let arr = this.supRouteList.filter(
-        (route) => route.supportRouteId == value
-      );
+      let arr = this.supRouteList.filter((route) => route.supportRouteId == value);
       this.supRouteId = value;
       this.supRouteName = arr[0].supportRouteName;
     },
@@ -331,13 +302,15 @@ export default {
     },
     searchIt() {
       if (!this.routeId || !this.supRouteId || !this.runDate) {
-        this.$message.error("请选择相关选项再查询");
+        this.$message.error('请选择相关选项再查询');
+        return;
       }
+      this.spinning = true;
       const queryString = window.location.search;
       const searchParams = new URLSearchParams(queryString);
-      const paramString = searchParams.get("paramString");
+      const paramString = searchParams.get('paramString');
       const params = new URLSearchParams();
-      params.append("paramString", paramString);
+      params.append('paramString', paramString);
       this.mes = params;
       console.log(params.toString());
 
@@ -352,13 +325,14 @@ export default {
             // planType: 2,
             routeId: this.routeId,
             supportRouteId: this.supRouteId,
-            runDate: `${moment(this.runDate).format("YYYY-MM-DD")} 00:00:00 `,
+            runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
             planType: this.planType,
           },
           { params }
         )
         .then((res) => {
           console.log(res);
+          this.spinning = false;
           if (res.data.retCode != 0) {
             this.$message.error(res.data.retMsg);
             return;
@@ -374,7 +348,7 @@ export default {
     },
     createIt() {
       if (!this.routeId || !this.supRouteId || !this.runDate) {
-        this.$message.error("请先查询排班后再点击生成按钮");
+        this.$message.error('请先查询排班后再点击生成按钮');
         return;
       }
       this.$refs.SchedulingCreateModal.edit({
@@ -391,11 +365,11 @@ export default {
         routeId: this.routeId,
         supportRouteId: this.supRouteId,
         // runDate: "2024-01-10",
-        runDate: this.runDate,
+        runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
       };
       let params = this.mes;
       axios.post(this.url.getRuningScheduleConfig, send, params).then((res) => {
-        console.log("车辆配置信息", res.data);
+        console.log('车辆配置信息', res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
           return;

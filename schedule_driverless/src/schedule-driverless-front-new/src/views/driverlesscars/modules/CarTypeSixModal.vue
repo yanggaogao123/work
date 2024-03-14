@@ -1,68 +1,21 @@
 <template>
   <section id="section">
     <div class="car-content">
-      <!-- <div class="bus-info-left">
-        <div class="bus-button">
-          <img src="@/assets/driverlesscars/leftIcon.png" alt="" />
-          <span>上行总站车</span>
-        </div>
-        <div class="bus-con">
-          <div class="con-li">
-            <div class="tit">920路</div>
-            <ul class="table-tit">
-              <li>上行车</li>
-              <li>时间</li>
-              <li>任务</li>
-            </ul>
-            <ul class="table-con">
-              <li>
-                <div>2323</div>
-                <div>09:00</div>
-                <div>全程</div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="bus-info-right">
-        <div class="bus-button">
-          <img src="@/assets/driverlesscars/rightIcon.png" alt="" />
-          <span>下行总站车</span>
-        </div>
-        <div class="bus-con">
-          <div class="con-li">
-            <div class="tit">920路</div>
-            <ul class="table-tit">
-              <li>下行车</li>
-              <li>时间</li>
-              <li>任务</li>
-            </ul>
-            <ul class="table-con">
-              <li>
-                <div>2323</div>
-                <div>09:00</div>
-                <div>全程</div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div> -->
-      <div class="out-car">
+      <div class="left-car">
         <div class="content">
           <!-- 左侧总站公交 -->
           <div class="left-z-car">
-            <div class="name">{{ routeName }}</div>
             <div class="bus" style="margin: 0 0 10px 10px" v-for="item in downFinalCars">
               <div class="bus-container">
                 <div
                   class="bus-bar"
                   :style="{
                     background: `conic-gradient(
-                                      #5CC065 0% 0%,
-                                      #5CC065 0% 0%,
-                                      #b6b6b6 0% 100%,
-                                      #b6b6b6 100% 100%
-                                  )`,
+                                    #5CC065 0% 0%,
+                                    #5CC065 0% 0%,
+                                    #b6b6b6 0% 100%,
+                                    #b6b6b6 100% 100%
+                                )`,
                   }"
                 ></div>
                 <div class="bus-text">
@@ -73,7 +26,7 @@
           </div>
 
           <!-- 公交线路图 -->
-          <div class="car-box">
+          <div class="car-box" :class="`type${carType}`">
             <!-- 上行公交 -->
             <div class="top-car">
               <div class="top-bg"></div>
@@ -401,11 +354,38 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" /> -->
                 </div>
               </div>
             </div>
-
+            <div class="center-car">
+              <div class="cen-left">
+                <div class="route-name">{{ routeName }}</div>
+                <div class="cen-info">
+                  <div class="line1">
+                    <div class="line-left">
+                      <div>计划支援班次{{ centerData.mainMap.totalSupportClasses }}</div>
+                      <div>支援开始结束{{ centerData.mainMap.supportBeginTime }}--{{ centerData.mainMap.supportEndTime }}</div>
+                    </div>
+                    <div class="line-right">首轮 上-- 下--</div>
+                  </div>
+                  <div class="line2">
+                    <div class="line-left">
+                      <div>
+                        总配车<span>{{ centerData.mainMap.totalBusNum }}</span>
+                      </div>
+                      <div>
+                        单班车数<span>{{ centerData.mainMap.singleBusNum }}</span>
+                      </div>
+                      <div>
+                        双班车数<span>{{ centerData.mainMap.doubleBusNum }}</span>
+                      </div>
+                    </div>
+                    <div class="line-right">非运营车--</div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <!-- 下行公交 -->
             <div class="bottom-car">
               <div class="bottom-bg"></div>
@@ -725,34 +705,28 @@
                     </div>
                   </div>
 
-                  <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" /> -->
                 </div>
               </div>
             </div>
             <!-- 总站标识 -->
-            <div class="top-st" v-if="[1, 5].includes(carType)">
-              {{ arrUp[0].routeStationName }}
-            </div>
-            <div class="bottom-st" v-if="[0, 5].includes(carType)">
-              {{ arrUp[arrUp.length - 1].routeStationName }}
-            </div>
-            <!-- <div class="bottom-st"></div> -->
+            <div class="top-st">{{ arrUp[0].routeStationName }}</div>
+            <div class="bottom-st" v-show="[6, 7].includes(carType)">{{ arrUp[arrUp.length - 1].routeStationName }}</div>
           </div>
 
           <!-- 右侧总站公交 -->
           <div class="right-z-car">
-            <div class="name">{{ routeName }}</div>
             <div class="bus" v-for="item in upFinalCars">
               <div class="bus-container">
                 <div
                   class="bus-bar"
                   :style="{
                     background: `conic-gradient(
-                                      #5CC065 0% 0%,
-                                      #5CC065 0% 0%,
-                                      #b6b6b6 0% 100%,
-                                      #b6b6b6 100% 100%
-                                  )`,
+                                    #5CC065 0% 0%,
+                                    #5CC065 0% 0%,
+                                    #b6b6b6 0% 100%,
+                                    #b6b6b6 100% 100%
+                                )`,
                   }"
                 ></div>
                 <div class="bus-text">
@@ -763,22 +737,21 @@
           </div>
         </div>
       </div>
-      <div class="in-car" :class="`type${carType}`">
+      <div class="right-car">
         <div class="content">
           <!-- 左侧总站公交 -->
           <div class="left-z-car">
-            <div class="name">{{ supRouteName }}</div>
             <div class="bus" style="margin: 0 0 10px 10px" v-for="item in downFinalCarsTwo">
               <div class="bus-container">
                 <div
                   class="bus-bar"
                   :style="{
                     background: `conic-gradient(
-                                      #5CC065 0% 0%,
-                                      #5CC065 0% 0%,
-                                      #b6b6b6 0% 100%,
-                                      #b6b6b6 100% 100%
-                                  )`,
+                                    #5CC065 0% 0%,
+                                    #5CC065 0% 0%,
+                                    #b6b6b6 0% 100%,
+                                    #b6b6b6 100% 100%
+                                )`,
                   }"
                 ></div>
                 <div class="bus-text">
@@ -789,7 +762,7 @@
           </div>
 
           <!-- 公交线路图 -->
-          <div class="car-box">
+          <div class="car-box" :class="`type${carType}`">
             <!-- 上行公交 -->
             <div class="top-car">
               <div class="top-bg"></div>
@@ -1116,76 +1089,36 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" /> -->
                 </div>
               </div>
             </div>
             <div class="center-car">
-              <div class="cen-left">
-                <span>{{ routeName }}</span>
-                <span>{{ supRouteName }}</span>
-              </div>
               <div class="cen-right">
-                <ul>
-                  <li>上行运行时间</li>
-                  <li>下行运行时间</li>
-                  <li>总配车数</li>
-                  <li>单班车数</li>
-                  <li>双班车数</li>
-                  <li>计划支援总班次数</li>
-                  <li>支援开始时间</li>
-                  <li>支援结束时间</li>
-                </ul>
-                <ul class="cen-car1">
-                  <li>
-                    {{ centerData.mainMap.upBeginTime ? `${centerData.mainMap.upBeginTime}-${centerData.mainMap.upEndTime}` : `--` }}
-                  </li>
-                  <li>
-                    {{ centerData.mainMap.downBeginTime ? `${centerData.mainMap.downBeginTime}-${centerData.mainMap.downEndTime}` : `--` }}
-                  </li>
-                  <li>
-                    {{ centerData.mainMap.totalBusNum }}
-                  </li>
-                  <li>
-                    {{ centerData.mainMap.singleBusNum }}
-                  </li>
-                  <li>
-                    {{ centerData.mainMap.doubleBusNum }}
-                  </li>
-                  <li>
-                    {{ centerData.mainMap.totalSupportClasses }}
-                  </li>
-                  <li>
-                    {{ centerData.mainMap.supportBeginTime }}
-                  </li>
-                  <li>
-                    {{ centerData.mainMap.supportEndTime }}
-                  </li>
-                </ul>
-                <ul class="cen-car2">
-                  <li>
-                    {{ centerData.subMap.upBeginTime ? `${centerData.subMap.upBeginTime}-${centerData.subMap.upEndTime}` : `--` }}
-                  </li>
-                  <li>
-                    {{ centerData.subMap.downBeginTime ? `${centerData.subMap.downBeginTime}-${centerData.subMap.downEndTime}` : `--` }}
-                  </li>
-                  <li>{{ centerData.subMap.totalBusNum }}</li>
-                  <li>
-                    {{ centerData.subMap.singleBusNum }}
-                  </li>
-                  <li>
-                    {{ centerData.subMap.doubleBusNum }}
-                  </li>
-                  <li>
-                    {{ centerData.subMap.totalSupportClasses }}
-                  </li>
-                  <li>
-                    {{ centerData.subMap.supportBeginTime }}
-                  </li>
-                  <li>
-                    {{ centerData.subMap.supportEndTime }}
-                  </li>
-                </ul>
+                <div class="route-name">{{ supRouteName }}</div>
+                <div class="cen-info">
+                  <div class="line1">
+                    <div class="line-left">
+                      <div>计划支援班次{{ centerData.subMap.totalSupportClasses }}</div>
+                      <div>支援开始结束{{ centerData.subMap.supportBeginTime }}--{{ centerData.subMap.supportEndTime }}</div>
+                    </div>
+                    <div class="line-right">首轮 上-- 下--</div>
+                  </div>
+                  <div class="line2">
+                    <div class="line-left">
+                      <div>
+                        总配车<span>{{ centerData.subMap.totalBusNum }}</span>
+                      </div>
+                      <div>
+                        单班车数<span>{{ centerData.subMap.singleBusNum }}</span>
+                      </div>
+                      <div>
+                        双班车数<span>{{ centerData.subMap.doubleBusNum }}</span>
+                      </div>
+                    </div>
+                    <div class="line-right">非运营车--</div>
+                  </div>
+                </div>
               </div>
             </div>
             <!-- 下行公交 -->
@@ -1506,14 +1439,12 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" /> -->
                 </div>
               </div>
             </div>
             <!-- 总站标识 -->
-            <div class="top-st">
-              {{ arrUpTwo[0].routeStationName }}
-            </div>
+            <div class="top-st">{{ arrUpTwo[0].routeStationName }}</div>
             <div class="bottom-st">
               {{ arrUpTwo[arrUpTwo.length - 1].routeStationName }}
             </div>
@@ -1521,7 +1452,6 @@
 
           <!-- 右侧总站公交 -->
           <div class="right-z-car">
-            <div class="name">{{ supRouteName }}</div>
             <div class="bus" v-for="item in upFinalCarsTwo">
               <div class="bus-container">
                 <div
@@ -1558,7 +1488,7 @@ import busData from './busData.json';
 // import stationOne from './stationOne.json';
 // import stationTwo from './stationTwo.json';
 export default {
-  name: 'CarTypeTwoModal',
+  name: 'CarTypeSixModal',
   props: ['sendData'],
   data() {
     return {
@@ -1569,6 +1499,7 @@ export default {
         getMonitorInfo: `${process.env.VUE_APP_BUS_API}/schedule/getMonitorInfo`,
       },
       mes: '',
+      planType: '',
       // 0:共首站，1:共末站，2:共首末站，3:首站为支援线路末站，4:末站为支援线路首站，5:首末站相邻
       carType: null,
       routeId: '',
@@ -1615,11 +1546,7 @@ export default {
       upStationTwo: [],
       arrDownTwo: [],
       downStationTwo: [],
-      centerDataTwo: {
-        titleMap: null,
-        mainMap: null,
-        subMap: null,
-      },
+      centerDataTwo: '',
       // 当前时间段的车辆数据
       needArrTwo: [],
       needBusCodeArrTwo: [],
@@ -1679,7 +1606,6 @@ export default {
     this.mes.append('paramString', paramString);
     console.log(this.mes.toString());
   },
-
   methods: {
     /****************************/
     //查询线路站点
@@ -2084,129 +2010,17 @@ section {
     }
   }
   .car-content {
-    // display: flex;
-    // flex-wrap: nowrap;
-    position: relative;
-    .bus-info-left,
-    .bus-info-right {
-      position: absolute;
-      z-index: 999;
-      top: 14px;
-      left: 0;
-      .bus-button {
-        width: 33px;
-        height: 106px;
-        background: #1890ff;
-        box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.16);
-        border-radius: 0px 8px 8px 0px;
-        padding: 4px 0 0 0;
-        cursor: pointer;
-        img {
-          display: block;
-          width: 14px;
-          margin: 0 auto;
-        }
-        span {
-          display: block;
-          margin: 0 auto;
-          // width: 100%;
-          font-size: 14px;
-          color: #ffffff;
-          line-height: 15px;
-          // text-align: center;
-          writing-mode: vertical-rl;
-        }
-      }
-      .bus-con {
-        position: absolute;
-        top: -14px;
-        left: 43px;
-        width: 190px;
-        height: 727px;
-        overflow: auto;
-        background: #e8f3fd;
-        box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.16);
-        .con-li {
-          width: 164px;
-          margin: 0 auto;
-          box-sizing: border-box;
-          border: 1px solid #99bbe8;
-          .tit {
-            width: 100%;
-            height: 40px;
-            line-height: 40px;
-            box-sizing: border-box;
-            font-size: 16px;
-            font-weight: 600;
-            padding: 0 0 0 16px;
-            border-bottom: 1px solid #99bbe8;
-          }
-          .table-tit {
-            display: flex;
-            border-bottom: 1px solid #99bbe8;
-            li {
-              flex: 1;
-              height: 36px;
-              line-height: 36px;
-              font-size: 14px;
-              text-align: center;
-              box-sizing: border-box;
-              border-right: 1px solid #99bbe8;
-              &:nth-last-child(1) {
-                border: none;
-              }
-            }
-          }
-          .table-con {
-            li {
-              display: flex;
-              border-bottom: 1px solid #99bbe8;
-              div {
-                flex: 1;
-                height: 36px;
-                line-height: 36px;
-                font-size: 14px;
-                text-align: center;
-                box-sizing: border-box;
-                border-right: 1px solid #99bbe8;
-                &:nth-last-child(1) {
-                  border: none;
-                }
-              }
-            }
-          }
-        }
-        .con-li:nth-child(2n-1) {
-          .tit {
-            background: #b8deff;
-          }
-        }
-        .con-li:nth-child(2n) {
-          .tit {
-            background: #bce9f0;
-          }
-        }
-      }
-    }
-    .bus-info-right {
-      left: auto;
-      right: 0;
-      .bus-button {
-        border-radius: 8px 0px 0px 8px;
-      }
-      .bus-con {
-        left: auto;
-        right: 43px;
-      }
-    }
-    .out-car {
-      width: 100%;
-      height: 660px;
+    display: flex;
+    flex-wrap: nowrap;
+    border-bottom: 1px solid #99bbe8;
+    .left-car {
+      width: 50%;
+      height: 320px;
 
       .content {
         // overflow: scroll;
         width: 100%;
-        height: 100%;
+        height: 320px;
         position: relative;
         display: flex;
         align-items: center;
@@ -2216,24 +2030,29 @@ section {
 
         .car-box {
           flex: 1;
-          height: 560px;
-          margin: 0 190px;
+          height: 190px;
+          margin: 0 0 0 60px;
           position: relative;
 
           .top-car {
             position: relative;
             width: 100%;
             height: 50%;
+            border: 2px solid #2680eb;
+            border-bottom: none;
+            border-top-left-radius: 52px;
+            border-top-right-radius: 52px;
 
             .top-bg {
               position: absolute;
               width: 100%;
               height: 100%;
-              border-top-left-radius: 100px;
-              border-top-right-radius: 100px;
+              border-top-left-radius: 50px;
+              border-top-right-radius: 50px;
               overflow: hidden;
-              border: 6px solid #2796fd;
+              border: 8px solid #2796fd;
               border-bottom: none;
+              // box-shadow: inset 0 0 0 2px #2680eb, /* 内边框，宽度为2px */ 0 0 0 2px #2680eb; /* 外边框，宽度为2px */
             }
           }
 
@@ -2242,15 +2061,19 @@ section {
             display: grid;
             width: 100%;
             height: 50%;
+            border: 2px solid #2680eb;
+            border-top: none;
+            border-bottom-left-radius: 52px;
+            border-bottom-right-radius: 52px;
 
             .bottom-bg {
               position: absolute;
               width: 100%;
               height: 100%;
-              border-bottom-left-radius: 100px;
-              border-bottom-right-radius: 100px;
+              border-bottom-left-radius: 50px;
+              border-bottom-right-radius: 50px;
               overflow: hidden;
-              border: 6px solid #2796fd;
+              border: 8px solid #2796fd;
               border-top: none;
             }
           }
@@ -2299,7 +2122,571 @@ section {
 
                 > span {
                   margin-top: 15px;
-                  font-size: 12px;
+                }
+              }
+
+              .model:after {
+                content: ' ';
+                position: absolute;
+                left: 0;
+                top: -1px;
+                right: 0;
+                width: 10px;
+                height: 10px;
+                background: url('../../../assets/driverlesscars/goRightNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2680eb;
+                // background: white;
+                margin: 0 auto;
+              }
+
+              .bus {
+                // display: none;
+                position: absolute;
+                top: -26px;
+                right: calc(0% - 14px);
+
+                .bus-container {
+                  position: relative;
+                  width: 50px;
+                  height: 26px;
+                  background: #ffffff;
+                  border-radius: 15px; /* 设置长方形四个角的弧度 */
+                  overflow: hidden;
+                }
+
+                .bus-bar {
+                  position: relative;
+                  width: 100%;
+                  height: 100%;
+                  background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
+                  border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
+                  clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
+                }
+
+                .bus-text {
+                  position: absolute;
+                  width: 40px;
+                  height: 16px;
+                  border-radius: 10px;
+                  font-size: 13px;
+                  line-height: 16px;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  text-align: center;
+                  color: #262626; /* 进度条颜色 */
+                  background: #ffffff;
+                }
+              }
+
+              .bus-middle {
+                // display: none;
+                position: absolute;
+                top: -26px;
+                right: calc(50% - 14px);
+
+                .bus-container {
+                  position: relative;
+                  width: 50px;
+                  height: 26px;
+                  background: #ffffff;
+                  border-radius: 15px; /* 设置长方形四个角的弧度 */
+                  overflow: hidden;
+                }
+
+                .bus-bar {
+                  position: relative;
+                  width: 100%;
+                  height: 100%;
+                  background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
+                  border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
+                  clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
+                }
+
+                .bus-text {
+                  position: absolute;
+                  width: 40px;
+                  height: 16px;
+                  border-radius: 10px;
+                  font-size: 13px;
+                  line-height: 16px;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  text-align: center;
+                  color: #262626; /* 进度条颜色 */
+                  background: #ffffff;
+                }
+              }
+
+              .logo {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 6px;
+              }
+            }
+
+            > div:first-child {
+              flex: none;
+            }
+          }
+
+          .line-car-bottom {
+            margin-top: -65px;
+
+            .line {
+              .model {
+                float: left;
+                position: relative;
+                > span {
+                  position: absolute;
+                  margin-bottom: 15px;
+                  left: 0;
+                  bottom: 0;
+                }
+              }
+
+              .model:after {
+                content: ' ';
+                position: absolute;
+                left: 0;
+                bottom: 2px;
+                right: 0;
+                width: 10px;
+                height: 10px;
+                background: url('../../../assets/driverlesscars/goLeftNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2680eb;
+                // background: white;
+                margin: 0 auto;
+              }
+
+              .bus {
+                // display: none;
+                position: absolute;
+                bottom: -20px;
+                left: calc(0% - 16px);
+
+                .bus-container {
+                  position: relative;
+                  width: 50px;
+                  height: 26px;
+                  background: #ffffff;
+                  border-radius: 15px; /* 设置长方形四个角的弧度 */
+                  overflow: hidden;
+                }
+
+                .bus-bar {
+                  position: relative;
+                  width: 100%;
+                  height: 100%;
+                  background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
+                  border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
+                  clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
+                }
+
+                .bus-text {
+                  position: absolute;
+                  width: 40px;
+                  height: 16px;
+                  border-radius: 10px;
+                  font-size: 13px;
+                  line-height: 16px;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  text-align: center;
+                  color: #262626; /* 进度条颜色 */
+                  background: #ffffff;
+                }
+              }
+
+              .bus-middle {
+                // display: none;
+                position: absolute;
+                bottom: -20px;
+                right: calc(50% - 14px);
+
+                .bus-container {
+                  position: relative;
+                  width: 50px;
+                  height: 26px;
+                  background: #ffffff;
+                  border-radius: 15px; /* 设置长方形四个角的弧度 */
+                  overflow: hidden;
+                }
+
+                .bus-bar {
+                  position: relative;
+                  width: 100%;
+                  height: 100%;
+                  background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
+                  border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
+                  clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
+                }
+
+                .bus-text {
+                  position: absolute;
+                  width: 40px;
+                  height: 16px;
+                  border-radius: 10px;
+                  font-size: 13px;
+                  line-height: 16px;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  text-align: center;
+                  color: #262626; /* 进度条颜色 */
+                  background: #ffffff;
+                }
+              }
+
+              .logo {
+                position: absolute;
+                bottom: 8px;
+                right: 0;
+                width: 6px;
+              }
+            }
+
+            > div:last-child {
+              flex: none;
+            }
+          }
+
+          .center-car {
+            z-index: 99;
+            // background: #b8deff;
+            width: 76%;
+            height: 36px;
+            position: absolute;
+            // border: 1px #3789fe dashed;
+            border-radius: 15px;
+            box-sizing: border-box;
+            // padding: 5px 0;
+            overflow: hidden;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+
+            .cen-left {
+              display: flex;
+              width: 100%;
+              box-sizing: border-box;
+              padding: 0 20px;
+              // margin: 33px 10px 0 10px;
+              .route-name {
+                display: block;
+                width: 67px;
+                height: 30px;
+                background: #1890ff;
+                border-radius: 5px 5px 5px 5px;
+                opacity: 1;
+                color: #fff;
+                font-size: 20px;
+                line-height: 30px;
+                text-align: center;
+              }
+              .cen-info {
+                width: calc(100% - 67px);
+                height: 36px;
+                border-radius: 10px;
+                background: #c4e4ff;
+                box-sizing: border-box;
+                padding: 0 10px;
+                .line1,
+                .line2 {
+                  width: 100%;
+                  height: 18px;
+                  line-height: 18px;
+                  font-size: 14px;
+                  display: flex;
+                  justify-content: space-between;
+                  .line-left,
+                  .line-right {
+                    div {
+                      display: inline-block;
+                      margin-right: 10px;
+                      span {
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+              }
+              // span:nth-child(2) {
+              //   margin-top: 10px;
+              //   background: #1bb291;
+              // }
+            }
+          }
+
+          .top-st {
+            width: 18px;
+            top: 50%;
+            left: 12px;
+            position: absolute;
+            font-weight: 600;
+            transform: translate(0, -50%);
+            -webkit-box-orient: vertical;
+            writing-mode: vertical-rl;
+          }
+          .top-st:after {
+            content: '';
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border: 2px solid #2680eb;
+            border-radius: 10px;
+            position: absolute;
+            left: -18px;
+            top: 50%;
+            transform: translate(0, -50%);
+          }
+
+          .bottom-st {
+            width: 18px;
+            top: 50%;
+            right: 12px;
+            position: absolute;
+            font-weight: 600;
+            transform: translate(0, -50%);
+          }
+          .bottom-st:after {
+            content: '';
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border: 2px solid #2680eb;
+            border-radius: 10px;
+            position: absolute;
+            right: -18px;
+            top: 50%;
+            transform: translate(0, -50%);
+            -webkit-box-orient: vertical;
+            writing-mode: vertical-rl;
+          }
+        }
+        .type3 {
+        }
+        .type4 {
+        }
+        .type6 {
+          margin: 0 10px 0 60px;
+        }
+        .type7 {
+          margin: 0 10px 0 60px;
+        }
+        .left-z-car {
+          position: absolute;
+          left: -6px;
+          top: 50%;
+          transform: translate(0, -50%);
+          width: 50px;
+          // text-align: center;
+
+          .bus {
+            display: block;
+            position: relative;
+            height: 20px;
+            margin: 0 0 10px 0;
+
+            .bus-container {
+              position: relative;
+              width: 50px;
+              height: 26px;
+              background: #ffffff;
+              border-radius: 15px; /* 设置长方形四个角的弧度 */
+              overflow: hidden;
+            }
+
+            .bus-bar {
+              position: relative;
+              width: 100%;
+              height: 100%;
+              background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
+              border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
+              clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
+            }
+
+            .bus-text {
+              position: absolute;
+              width: 40px;
+              height: 16px;
+              border-radius: 10px;
+              font-size: 13px;
+              line-height: 16px;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              color: #262626; /* 进度条颜色 */
+              background: #ffffff;
+            }
+          }
+        }
+
+        .right-z-car {
+          position: absolute;
+          right: 14px;
+          top: 50%;
+          transform: translate(0, -50%);
+          .bus {
+            display: block;
+            position: relative;
+            height: 20px;
+            margin: 0 0 10px 0;
+
+            .bus-container {
+              position: relative;
+              width: 50px;
+              height: 26px;
+              background: #ffffff;
+              border-radius: 15px; /* 设置长方形四个角的弧度 */
+              overflow: hidden;
+            }
+
+            .bus-bar {
+              position: relative;
+              width: 100%;
+              height: 100%;
+              background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
+              border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
+              clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
+            }
+
+            .bus-text {
+              position: absolute;
+              width: 40px;
+              height: 16px;
+              border-radius: 10px;
+              font-size: 13px;
+              line-height: 16px;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              color: #262626; /* 进度条颜色 */
+              background: #ffffff;
+            }
+          }
+        }
+      }
+    }
+    .right-car {
+      width: 50%;
+      height: 320px;
+
+      .content {
+        // overflow: scroll;
+        width: 100%;
+        height: 320px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+
+        .car-box {
+          flex: 1;
+          height: 190px;
+          margin: 0px 60px 0 0;
+          position: relative;
+
+          .top-car {
+            position: relative;
+            width: 100%;
+            height: 50%;
+            border: 2px solid #1ab090;
+            border-bottom: none;
+            border-top-left-radius: 52px;
+            border-top-right-radius: 52px;
+
+            .top-bg {
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              border-top-left-radius: 50px;
+              border-top-right-radius: 50px;
+              overflow: hidden;
+              border: 8px solid #2fcba9;
+              border-bottom: none;
+            }
+          }
+
+          .bottom-car {
+            position: relative;
+            display: grid;
+            width: 100%;
+            height: 50%;
+            border: 2px solid #1ab090;
+            border-top: none;
+            border-bottom-left-radius: 52px;
+            border-bottom-right-radius: 52px;
+
+            .bottom-bg {
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              border-bottom-left-radius: 50px;
+              border-bottom-right-radius: 50px;
+              overflow: hidden;
+              border: 8px solid #2fcba9;
+              border-top: none;
+            }
+          }
+
+          .line-car {
+            height: 168px;
+            width: 85%;
+            margin: 0 auto;
+            display: flex;
+            position: relative;
+
+            .line {
+              flex: 1;
+              position: relative;
+
+              .model {
+                width: 20px;
+                height: 162px;
+                line-height: 21px;
+                font-size: 14px;
+                position: relative;
+
+                > span {
+                  width: 100%;
+                  // text-align: center;
+                  display: -webkit-box;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 7;
+                  line-clamp: 7;
+                  -webkit-box-orient: vertical;
+                  writing-mode: vertical-rl;
+                  // text-orientation: upright; /* 保持文字正立，可选 */
+                }
+              }
+            }
+          }
+
+          .line-car-top {
+            margin-top: 0;
+
+            .line {
+              .model {
+                float: right;
+
+                > span {
+                  margin-top: 15px;
                 }
               }
 
@@ -2311,9 +2698,11 @@ section {
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2680eb;
-                background: white;
+                background: url('../../../assets/driverlesscars/goRightNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2fcba9;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -2410,7 +2799,7 @@ section {
           }
 
           .line-car-bottom {
-            margin-top: 120px;
+            margin-top: -65px;
 
             .line {
               .model {
@@ -2419,7 +2808,6 @@ section {
                 > span {
                   position: absolute;
                   margin-bottom: 15px;
-                  font-size: 12px;
                   left: 0;
                   bottom: 0;
                 }
@@ -2429,13 +2817,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                bottom: 0px;
+                bottom: 2px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2680eb;
-                background: white;
+                background: url('../../../assets/driverlesscars/goLeftNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2fcba9;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -2483,7 +2873,7 @@ section {
                 // display: none;
                 position: absolute;
                 bottom: -20px;
-                left: calc(50% - 16px);
+                right: calc(50% - 14px);
 
                 .bus-container {
                   position: relative;
@@ -2534,14 +2924,14 @@ section {
 
           .center-car {
             z-index: 99;
-            background: #b8deff;
-            height: 100px;
+            // background: #b8deff;
             width: 76%;
+            height: 36px;
             position: absolute;
             // border: 1px #3789fe dashed;
             border-radius: 15px;
             box-sizing: border-box;
-            padding: 5px 0;
+            // padding: 5px 0;
             overflow: hidden;
             left: 0;
             right: 0;
@@ -2549,578 +2939,17 @@ section {
             bottom: 0;
             margin: auto;
 
-            > p {
+            .cen-right {
               display: flex;
               width: 100%;
-              line-height: 30px;
-
-              > span {
-                font-size: 15px;
-                line-height: 30px;
-                text-align: center;
-                color: #444444;
-                flex: 1;
-              }
-            }
-          }
-
-          .top-st {
-            width: 18px;
-            top: 50%;
-            left: 12px;
-            position: absolute;
-            font-weight: 600;
-            transform: translate(0, -50%);
-            -webkit-box-orient: vertical;
-            writing-mode: vertical-rl;
-          }
-          .top-st:after {
-            content: '';
-            width: 18px;
-            height: 18px;
-            background: #fff;
-            border: 2px solid #2680eb;
-            border-radius: 10px;
-            position: absolute;
-            left: -18px;
-            top: 50%;
-            transform: translate(0, -50%);
-          }
-
-          .bottom-st {
-            width: 18px;
-            top: 50%;
-            right: 12px;
-            position: absolute;
-            font-weight: 600;
-            transform: translate(0, -50%);
-          }
-          .bottom-st:after {
-            content: '';
-            width: 18px;
-            height: 18px;
-            background: #fff;
-            border: 2px solid #2680eb;
-            border-radius: 10px;
-            position: absolute;
-            right: -18px;
-            top: 50%;
-            transform: translate(0, -50%);
-          }
-        }
-
-        .left-z-car {
-          position: absolute;
-          left: 50px;
-          top: 20px;
-          width: 50px;
-          // text-align: center;
-
-          .name {
-            font-size: 16px;
-            line-height: 28px;
-            width: 50px;
-            text-align: center;
-            margin: 0 0 0 10px;
-            color: #2680eb;
-          }
-          .bus {
-            display: block;
-            position: relative;
-            height: 20px;
-            margin: 0 0 10px 0;
-
-            .bus-container {
-              position: relative;
-              width: 50px;
-              height: 26px;
-              background: #ffffff;
-              border-radius: 15px; /* 设置长方形四个角的弧度 */
-              overflow: hidden;
-            }
-
-            .bus-bar {
-              position: relative;
-              width: 100%;
-              height: 100%;
-              background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-              border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-              clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-            }
-
-            .bus-text {
-              position: absolute;
-              width: 40px;
-              height: 16px;
-              border-radius: 10px;
-              font-size: 13px;
-              line-height: 16px;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              text-align: center;
-              color: #262626; /* 进度条颜色 */
-              background: #ffffff;
-            }
-          }
-        }
-
-        .right-z-car {
-          position: absolute;
-          right: 50px;
-          top: 20px;
-
-          .name {
-            font-size: 16px;
-            line-height: 28px;
-            width: 50px;
-            text-align: center;
-            // margin: 0 0 0 10px;
-            color: #2680eb;
-          }
-          .bus {
-            display: block;
-            position: relative;
-            height: 20px;
-            margin: 0 0 10px 0;
-
-            .bus-container {
-              position: relative;
-              width: 50px;
-              height: 26px;
-              background: #ffffff;
-              border-radius: 15px; /* 设置长方形四个角的弧度 */
-              overflow: hidden;
-            }
-
-            .bus-bar {
-              position: relative;
-              width: 100%;
-              height: 100%;
-              background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-              border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-              clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-            }
-
-            .bus-text {
-              position: absolute;
-              width: 40px;
-              height: 16px;
-              border-radius: 10px;
-              font-size: 13px;
-              line-height: 16px;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              text-align: center;
-              color: #262626; /* 进度条颜色 */
-              background: #ffffff;
-            }
-          }
-        }
-      }
-    }
-    .in-car {
-      position: absolute;
-      width: 100%;
-      height: 330px;
-      top: 50%;
-      left: 0;
-      transform: translate(0, -50%);
-
-      .content {
-        // overflow: scroll;
-        width: 100%;
-        height: 100%;
-        position: relative;
-        display: flex;
-        align-items: center;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-
-        .car-box {
-          flex: 1;
-          height: 260px;
-          margin: 0px 190px;
-          position: relative;
-
-          .top-car {
-            position: relative;
-            width: 100%;
-            height: 50%;
-
-            .top-bg {
-              position: absolute;
-              width: 100%;
-              height: 100%;
-              border-top-left-radius: 100px;
-              border-top-right-radius: 100px;
-              overflow: hidden;
-              border: 6px solid #2fcba9;
-              border-bottom: none;
-            }
-          }
-
-          .bottom-car {
-            position: relative;
-            display: grid;
-            width: 100%;
-            height: 50%;
-
-            .bottom-bg {
-              position: absolute;
-              width: 100%;
-              height: 100%;
-              border-bottom-left-radius: 100px;
-              border-bottom-right-radius: 100px;
-              overflow: hidden;
-              border: 6px solid #2fcba9;
-              border-top: none;
-            }
-          }
-
-          .line-car {
-            height: 168px;
-            width: 85%;
-            margin: 0 auto;
-            display: flex;
-            position: relative;
-
-            .line {
-              flex: 1;
-              position: relative;
-
-              .model {
-                width: 20px;
-                height: 162px;
-                line-height: 21px;
-                position: relative;
-                font-size: 12px;
-
-                > span {
-                  width: 100%;
-                  // text-align: center;
-                  display: -webkit-box;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  display: -webkit-box;
-                  -webkit-line-clamp: 7;
-                  line-clamp: 7;
-                  -webkit-box-orient: vertical;
-                  writing-mode: vertical-rl;
-                  // text-orientation: upright; /* 保持文字正立，可选 */
-                }
-              }
-            }
-          }
-
-          .line-car-top {
-            margin-top: 0;
-
-            .line {
-              .model {
-                float: right;
-
-                > span {
-                  margin-top: 15px;
-                  font-size: 12px;
-                }
-              }
-
-              .model:after {
-                content: ' ';
-                position: absolute;
-                left: 0;
-                top: -2px;
-                right: 0;
-                width: 10px;
-                height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2fcba9;
-                background: white;
-                margin: 0 auto;
-              }
-
-              .bus {
-                // display: none;
-                position: absolute;
-                top: -26px;
-                right: calc(0% - 14px);
-
-                .bus-container {
-                  position: relative;
-                  width: 50px;
-                  height: 26px;
-                  background: #ffffff;
-                  border-radius: 15px; /* 设置长方形四个角的弧度 */
-                  overflow: hidden;
-                }
-
-                .bus-bar {
-                  position: relative;
-                  width: 100%;
-                  height: 100%;
-                  background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-                  border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-                  clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-                }
-
-                .bus-text {
-                  position: absolute;
-                  width: 40px;
-                  height: 16px;
-                  border-radius: 10px;
-                  font-size: 13px;
-                  line-height: 16px;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
-                  text-align: center;
-                  color: #262626; /* 进度条颜色 */
-                  background: #ffffff;
-                }
-              }
-
-              .bus-middle {
-                // display: none;
-                position: absolute;
-                top: -26px;
-                right: 40%;
-
-                .bus-info {
-                  position: absolute;
-                  width: 40px;
-                  height: 20px;
-
-                  img {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                  }
-
-                  p {
-                    position: absolute;
-                    font-size: 1.2rem;
-                    line-height: 1.4rem;
-                    text-align: center;
-                    color: #fff;
-                    top: 1px;
-                    left: 0;
-                    right: 0;
-                    margin: 0 auto;
-                  }
-                }
-
-                .bus-congestion {
-                  position: absolute;
-                  width: 40px;
-                  top: -32px;
-                  text-align: center;
-                  .congestion-info {
-                    position: relative;
-                    display: inline-block;
-                    width: 40px;
-                    height: 5px;
-                    border-radius: 5px;
-                    background: #d6d6d6;
-                    overflow: hidden;
-
-                    div {
-                      position: absolute;
-                      //  width: 80%;
-                      height: 5px;
-                      border-radius: 5px;
-                      top: 0;
-                      left: 0;
-                      background: red;
-                    }
-                  }
-
-                  span {
-                    display: inline-block;
-                    font-size: 1.2rem;
-                  }
-                }
-              }
-              .logo {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 6px;
-              }
-            }
-
-            > div:first-child {
-              flex: none;
-            }
-          }
-
-          .line-car-bottom {
-            margin-top: -30px;
-
-            .line {
-              .model {
-                float: left;
-                position: relative;
-                > span {
-                  position: absolute;
-                  margin-bottom: 15px;
-                  left: 0;
-                  bottom: 0;
-                  font-size: 12px;
-                }
-              }
-
-              .model:after {
-                content: ' ';
-                position: absolute;
-                left: 0;
-                bottom: 0px;
-                right: 0;
-                width: 10px;
-                height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2fcba9;
-                background: white;
-                margin: 0 auto;
-              }
-
-              .bus {
-                // display: none;
-                position: absolute;
-                bottom: -20px;
-                left: calc(0% - 16px);
-
-                .bus-container {
-                  position: relative;
-                  width: 50px;
-                  height: 26px;
-                  background: #ffffff;
-                  border-radius: 15px; /* 设置长方形四个角的弧度 */
-                  overflow: hidden;
-                }
-
-                .bus-bar {
-                  position: relative;
-                  width: 100%;
-                  height: 100%;
-                  background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-                  border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-                  clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-                }
-
-                .bus-text {
-                  position: absolute;
-                  width: 40px;
-                  height: 16px;
-                  border-radius: 10px;
-                  font-size: 13px;
-                  line-height: 16px;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
-                  text-align: center;
-                  color: #262626; /* 进度条颜色 */
-                  background: #ffffff;
-                }
-              }
-
-              .bus-middle {
-                // display: none;
-                position: absolute;
-                bottom: -10px;
-                left: -75%;
-
-                .bus-info {
-                  position: absolute;
-                  width: 40px;
-                  height: 20px;
-
-                  img {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                  }
-
-                  p {
-                    position: absolute;
-                    font-size: 1.2rem;
-                    line-height: 1.4rem;
-                    text-align: center;
-                    color: #fff;
-                    top: 1px;
-                    left: 0;
-                    right: 0;
-                    margin: 0 auto;
-                  }
-                }
-
-                .bus-congestion {
-                  position: absolute;
-                  width: 40px;
-                  top: 20px;
-                  text-align: center;
-                  .congestion-info {
-                    position: relative;
-                    display: inline-block;
-                    width: 40px;
-                    height: 5px;
-                    border-radius: 5px;
-                    background: #d6d6d6;
-                    overflow: hidden;
-
-                    div {
-                      position: absolute;
-                      // width: 80%;
-                      height: 5px;
-                      border-radius: 5px;
-                      top: 0;
-                      left: 0;
-                      background: red;
-                    }
-                  }
-
-                  span {
-                    display: inline-block;
-                    font-size: 1.2rem;
-                  }
-                }
-              }
-
-              .logo {
-                position: absolute;
-                bottom: 8px;
-                right: 0;
-                width: 6px;
-              }
-            }
-
-            > div:last-child {
-              flex: none;
-            }
-          }
-
-          .center-car {
-            z-index: 99;
-            width: 85%;
-            height: 110px;
-            position: absolute;
-            box-sizing: border-box;
-            padding: 5px 0;
-            left: 0;
-            right: 0;
-            top: 50%;
-            margin: 0 auto;
-            transform: translate(0, -50%);
-            display: flex;
-            .cen-left {
-              margin: 33px 10px 0 10px;
-              span {
+              box-sizing: border-box;
+              padding: 0 20px;
+              // margin: 33px 10px 0 10px;
+              .route-name {
                 display: block;
                 width: 67px;
                 height: 30px;
-                background: #1890ff;
+                background: #1bb291;
                 border-radius: 5px 5px 5px 5px;
                 opacity: 1;
                 color: #fff;
@@ -3128,39 +2957,37 @@ section {
                 line-height: 30px;
                 text-align: center;
               }
-              span:nth-child(2) {
-                margin-top: 10px;
-                background: #1bb291;
-              }
-            }
-            .cen-right {
-              width: calc(100% - 77px);
-              ul {
-                display: flex;
-                width: 100%;
+              .cen-info {
+                width: calc(100% - 67px);
+                height: 36px;
+                border-radius: 10px;
+                background: #c8eff0;
                 box-sizing: border-box;
-                padding: 0 20px;
-                justify-content: space-between;
-                text-align: center;
-                margin-bottom: 10px;
-                li {
-                  width: 12.5%;
+                padding: 0 10px;
+                .line1,
+                .line2 {
+                  width: 100%;
+                  height: 18px;
+                  line-height: 18px;
+                  font-size: 14px;
+                  display: flex;
+                  justify-content: space-between;
+                  .line-left,
+                  .line-right {
+                    div {
+                      display: inline-block;
+                      margin-right: 10px;
+                      span {
+                        font-weight: 600;
+                      }
+                    }
+                  }
                 }
               }
-              .cen-car1,
-              .cen-car2 {
-                height: 34px;
-                line-height: 34px;
-                font-size: 18px;
-                border-radius: 17px;
-                // font-weight: 800;
-              }
-              .cen-car1 {
-                background: #c4e4ff;
-              }
-              .cen-car2 {
-                background: #c8eff0;
-              }
+              // span:nth-child(2) {
+              //   margin-top: 10px;
+              //   background: #1bb291;
+              // }
             }
           }
 
@@ -3194,6 +3021,8 @@ section {
             position: absolute;
             font-weight: 600;
             transform: translate(0, -50%);
+            -webkit-box-orient: vertical;
+            writing-mode: vertical-rl;
           }
           .bottom-st:after {
             content: '';
@@ -3208,22 +3037,49 @@ section {
             transform: translate(0, -50%);
           }
         }
+        .type3 {
+          .top-st:after {
+            content: '';
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border: 2px solid #2fcba9;
+            border-radius: 10px;
+            position: absolute;
+            left: -21px;
+            top: 50%;
+            transform: translate(0, -50%);
+          }
+        }
+        .type4 {
+          .top-st:after {
+            content: '';
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border: 2px solid #2fcba9;
+            border-radius: 10px;
+            position: absolute;
+            left: -21px;
+            top: 50%;
+            transform: translate(0, -50%);
+          }
+        }
+        .type6 {
+          margin: 0px 60px 0 10px;
+        }
+        .type7 {
+          margin: 0px 60px 0 10px;
+        }
 
         .left-z-car {
           position: absolute;
-          left: 50px;
-          top: 70%;
-          // transform: translate(0, -50%);
+          left: 16px;
+          top: 50%;
+          transform: translate(0, -50%);
           width: 50px;
           // text-align: center;
-          .name {
-            font-size: 16px;
-            line-height: 28px;
-            width: 50px;
-            text-align: center;
-            margin: 0 0 0 10px;
-            color: #1bb291;
-          }
+
           .bus {
             display: block;
             position: relative;
@@ -3267,17 +3123,9 @@ section {
 
         .right-z-car {
           position: absolute;
-          right: 50px;
-          top: 70%;
-          // transform: translate(0, -50%);
-          .name {
-            font-size: 16px;
-            line-height: 28px;
-            width: 50px;
-            text-align: center;
-            // margin: 0 0 0 10px;
-            color: #1bb291;
-          }
+          right: 3px;
+          top: 50%;
+          transform: translate(0, -50%);
           .bus {
             display: block;
             position: relative;
@@ -3320,33 +3168,16 @@ section {
         }
       }
     }
-    .type0 {
-      .content {
-        .car-box {
-          margin: 0 calc(190px + 5%) 0 190px;
-        }
-      }
+
+    .content::-webkit-scrollbar {
+      display: none;
     }
-    .type1 {
-      .content {
-        .car-box {
-          margin: 0 190px 0 calc(190px + 5%);
-        }
-      }
+
+    .middleRun {
+      animation: stationToMiddle 1s;
     }
-    .type2 {
-      .content {
-        .car-box {
-          margin: 0 190px;
-        }
-      }
-    }
-    .type5 {
-      .content {
-        .car-box {
-          margin: 0 calc(190px + 5%);
-        }
-      }
+    .stationRun {
+      animation: middleToStation 1s;
     }
 
     .bus-info {
@@ -3526,17 +3357,6 @@ section {
       top: 30px;
       left: 0;
       transform: translate(-44%, 0);
-    }
-
-    .content::-webkit-scrollbar {
-      display: none;
-    }
-
-    .middleRun {
-      animation: stationToMiddle 1s;
-    }
-    .stationRun {
-      animation: middleToStation 1s;
     }
 
     @keyframes stationToMiddle {

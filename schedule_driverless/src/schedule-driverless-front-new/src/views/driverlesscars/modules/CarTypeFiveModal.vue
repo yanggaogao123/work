@@ -401,7 +401,7 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" /> -->
                 </div>
               </div>
             </div>
@@ -725,7 +725,7 @@
                     </div>
                   </div>
 
-                  <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" /> -->
                 </div>
               </div>
             </div>
@@ -1116,12 +1116,64 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" /> -->
                 </div>
               </div>
             </div>
             <div class="center-car">
               <div class="cen-left">
+                <div class="route-name">{{ routeName }}</div>
+                <div class="cen-info">
+                  <div class="line1">
+                    <div class="line-left">
+                      <div>计划支援班次{{ centerData.mainMap.totalSupportClasses }}</div>
+                      <div>支援开始结束{{ centerData.mainMap.supportBeginTime }}--{{ centerData.mainMap.supportEndTime }}</div>
+                    </div>
+                    <div class="line-right">首轮 上-- 下--</div>
+                  </div>
+                  <div class="line2">
+                    <div class="line-left">
+                      <div>
+                        总配车<span>{{ centerData.mainMap.totalBusNum }}</span>
+                      </div>
+                      <div>
+                        单班车数<span>{{ centerData.mainMap.singleBusNum }}</span>
+                      </div>
+                      <div>
+                        双班车数<span>{{ centerData.mainMap.doubleBusNum }}</span>
+                      </div>
+                    </div>
+                    <div class="line-right">非运营车--</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cen-right">
+                <div class="route-name">{{ supRouteName }}</div>
+                <div class="cen-info">
+                  <div class="line1">
+                    <div class="line-left">
+                      <div>计划支援班次{{ centerData.subMap.totalSupportClasses }}</div>
+                      <div>支援开始结束{{ centerData.subMap.supportBeginTime }}--{{ centerData.subMap.supportEndTime }}</div>
+                    </div>
+                    <div class="line-right">首轮 上-- 下--</div>
+                  </div>
+                  <div class="line2">
+                    <div class="line-left">
+                      <div>
+                        总配车<span>{{ centerData.subMap.totalBusNum }}</span>
+                      </div>
+                      <div>
+                        单班车数<span>{{ centerData.subMap.singleBusNum }}</span>
+                      </div>
+                      <div>
+                        双班车数<span>{{ centerData.subMap.doubleBusNum }}</span>
+                      </div>
+                    </div>
+                    <div class="line-right">非运营车--</div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="cen-left">
                 <span>{{ routeName }}</span>
                 <span>{{ supRouteName }}</span>
               </div>
@@ -1186,7 +1238,7 @@
                     {{ centerData.subMap.supportEndTime }}
                   </li>
                 </ul>
-              </div>
+              </div> -->
             </div>
             <!-- 下行公交 -->
             <div class="bottom-car">
@@ -1506,7 +1558,7 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" /> -->
                 </div>
               </div>
             </div>
@@ -1558,7 +1610,7 @@ import busData from './busData.json';
 // import stationOne from './stationOne.json';
 // import stationTwo from './stationTwo.json';
 export default {
-  name: 'CarTypeTwoModal',
+  name: 'CarTypeFiveModal',
   props: ['sendData'],
   data() {
     return {
@@ -2087,6 +2139,7 @@ section {
     // display: flex;
     // flex-wrap: nowrap;
     position: relative;
+    border-bottom: 1px solid #99bbe8;
     .bus-info-left,
     .bus-info-right {
       position: absolute;
@@ -2201,7 +2254,7 @@ section {
     }
     .out-car {
       width: 100%;
-      height: 660px;
+      height: 500px;
 
       .content {
         // overflow: scroll;
@@ -2216,7 +2269,7 @@ section {
 
         .car-box {
           flex: 1;
-          height: 560px;
+          height: 370px;
           margin: 0 190px;
           position: relative;
 
@@ -2224,6 +2277,10 @@ section {
             position: relative;
             width: 100%;
             height: 50%;
+            border: 2px solid #2680eb;
+            border-bottom: none;
+            border-top-left-radius: 102px;
+            border-top-right-radius: 102px;
 
             .top-bg {
               position: absolute;
@@ -2232,7 +2289,7 @@ section {
               border-top-left-radius: 100px;
               border-top-right-radius: 100px;
               overflow: hidden;
-              border: 6px solid #2796fd;
+              border: 8px solid #2796fd;
               border-bottom: none;
             }
           }
@@ -2242,6 +2299,10 @@ section {
             display: grid;
             width: 100%;
             height: 50%;
+            border: 2px solid #2680eb;
+            border-top: none;
+            border-bottom-left-radius: 102px;
+            border-bottom-right-radius: 102px;
 
             .bottom-bg {
               position: absolute;
@@ -2250,7 +2311,7 @@ section {
               border-bottom-left-radius: 100px;
               border-bottom-right-radius: 100px;
               overflow: hidden;
-              border: 6px solid #2796fd;
+              border: 8px solid #2796fd;
               border-top: none;
             }
           }
@@ -2307,13 +2368,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                top: -2px;
+                top: -1px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2680eb;
-                background: white;
+                background: url('../../../assets/driverlesscars/goRightNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2680eb;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -2410,7 +2473,7 @@ section {
           }
 
           .line-car-bottom {
-            margin-top: 120px;
+            margin-top: 24px;
 
             .line {
               .model {
@@ -2429,13 +2492,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                bottom: 0px;
+                bottom: 1px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2680eb;
-                background: white;
+                background: url('../../../assets/driverlesscars/goLeftNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2680eb;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -2741,7 +2806,8 @@ section {
 
         .car-box {
           flex: 1;
-          height: 260px;
+          // height: 260px;
+          height: 170px;
           margin: 0px 190px;
           position: relative;
 
@@ -2749,6 +2815,10 @@ section {
             position: relative;
             width: 100%;
             height: 50%;
+            border: 2px solid #1ab090;
+            border-bottom: none;
+            border-top-left-radius: 102px;
+            border-top-right-radius: 102px;
 
             .top-bg {
               position: absolute;
@@ -2757,7 +2827,7 @@ section {
               border-top-left-radius: 100px;
               border-top-right-radius: 100px;
               overflow: hidden;
-              border: 6px solid #2fcba9;
+              border: 8px solid #2fcba9;
               border-bottom: none;
             }
           }
@@ -2767,6 +2837,10 @@ section {
             display: grid;
             width: 100%;
             height: 50%;
+            border: 2px solid #1ab090;
+            border-top: none;
+            border-bottom-left-radius: 102px;
+            border-bottom-right-radius: 102px;
 
             .bottom-bg {
               position: absolute;
@@ -2775,7 +2849,7 @@ section {
               border-bottom-left-radius: 100px;
               border-bottom-right-radius: 100px;
               overflow: hidden;
-              border: 6px solid #2fcba9;
+              border: 8px solid #2fcba9;
               border-top: none;
             }
           }
@@ -2832,13 +2906,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                top: -2px;
+                top: -1px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2fcba9;
-                background: white;
+                background: url('../../../assets/driverlesscars/goRightNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2fcba9;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -2957,7 +3033,7 @@ section {
           }
 
           .line-car-bottom {
-            margin-top: -30px;
+            margin-top: -76px;
 
             .line {
               .model {
@@ -2976,13 +3052,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                bottom: 0px;
+                bottom: 2px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2fcba9;
-                background: white;
+                background: url('../../../assets/driverlesscars/goLeftNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2fcba9;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -3104,7 +3182,7 @@ section {
           .center-car {
             z-index: 99;
             width: 85%;
-            height: 110px;
+            height: 36px;
             position: absolute;
             box-sizing: border-box;
             padding: 5px 0;
@@ -3114,9 +3192,14 @@ section {
             margin: 0 auto;
             transform: translate(0, -50%);
             display: flex;
+            justify-content: space-between;
             .cen-left {
-              margin: 33px 10px 0 10px;
-              span {
+              display: flex;
+              width: 50%;
+              box-sizing: border-box;
+              padding: 0 20px;
+              // margin: 33px 10px 0 10px;
+              .route-name {
                 display: block;
                 width: 67px;
                 height: 30px;
@@ -3128,40 +3211,117 @@ section {
                 line-height: 30px;
                 text-align: center;
               }
-              span:nth-child(2) {
-                margin-top: 10px;
-                background: #1bb291;
-              }
-            }
-            .cen-right {
-              width: calc(100% - 77px);
-              ul {
-                display: flex;
-                width: 100%;
+              .cen-info {
+                width: calc(100% - 67px);
+                height: 36px;
+                border-radius: 10px;
+                background: #c4e4ff;
                 box-sizing: border-box;
-                padding: 0 20px;
-                justify-content: space-between;
-                text-align: center;
-                margin-bottom: 10px;
-                li {
-                  width: 12.5%;
+                padding: 0 10px;
+                .line1,
+                .line2 {
+                  width: 100%;
+                  height: 18px;
+                  line-height: 18px;
+                  font-size: 14px;
+                  display: flex;
+                  justify-content: space-between;
+                  .line-left,
+                  .line-right {
+                    div {
+                      display: inline-block;
+                      margin-right: 10px;
+                      span {
+                        font-weight: 600;
+                      }
+                    }
+                  }
                 }
               }
-              .cen-car1,
-              .cen-car2 {
-                height: 34px;
-                line-height: 34px;
-                font-size: 18px;
-                border-radius: 17px;
-                // font-weight: 800;
-              }
-              .cen-car1 {
-                background: #c4e4ff;
-              }
-              .cen-car2 {
-                background: #c8eff0;
-              }
+              // span:nth-child(2) {
+              //   margin-top: 10px;
+              //   background: #1bb291;
+              // }
             }
+            .cen-right {
+              display: flex;
+              width: 50%;
+              box-sizing: border-box;
+              padding: 0 20px;
+              // margin: 33px 10px 0 10px;
+              .route-name {
+                display: block;
+                width: 67px;
+                height: 30px;
+                background: #1bb291;
+                border-radius: 5px 5px 5px 5px;
+                opacity: 1;
+                color: #fff;
+                font-size: 20px;
+                line-height: 30px;
+                text-align: center;
+              }
+              .cen-info {
+                width: calc(100% - 67px);
+                height: 36px;
+                border-radius: 10px;
+                background: #c8eff0;
+                box-sizing: border-box;
+                padding: 0 10px;
+                .line1,
+                .line2 {
+                  width: 100%;
+                  height: 18px;
+                  line-height: 18px;
+                  font-size: 14px;
+                  display: flex;
+                  justify-content: space-between;
+                  .line-left,
+                  .line-right {
+                    div {
+                      display: inline-block;
+                      margin-right: 10px;
+                      span {
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+              }
+              // span:nth-child(2) {
+              //   margin-top: 10px;
+              //   background: #1bb291;
+              // }
+            }
+            // .cen-right {
+            //   width: calc(100% - 77px);
+            //   ul {
+            //     display: flex;
+            //     width: 100%;
+            //     box-sizing: border-box;
+            //     padding: 0 20px;
+            //     justify-content: space-between;
+            //     text-align: center;
+            //     margin-bottom: 10px;
+            //     li {
+            //       width: 12.5%;
+            //     }
+            //   }
+            //   .cen-car1,
+            //   .cen-car2 {
+            //     height: 34px;
+            //     line-height: 34px;
+            //     font-size: 18px;
+            //     border-radius: 17px;
+            //     // font-weight: 800;
+            //   }
+            //   .cen-car1 {
+            //     background: #c4e4ff;
+            //   }
+            //   .cen-car2 {
+            //     background: #c8eff0;
+            //   }
+            // }
           }
 
           .top-st {
