@@ -41,6 +41,7 @@ public class SimulationController {
 	//进出站详情
 	public R adrealInfo(HttpServletRequest request, @RequestBody Map<String, Object> json) throws ParseException{
 		Long routeId = Long.valueOf(json.get("routeId").toString());
+		Integer planType = Integer.valueOf(json.get("planType").toString());
 		String runDateStr = json.get("runDate").toString();
 		Long supportRouteId = null;
 		if(Objects.nonNull(json.get("supportRouteId"))){
@@ -52,13 +53,13 @@ public class SimulationController {
 		DyDriverlessConfig dyDriverlessConfig;
 		if(Objects.nonNull(supportRouteId)){
 			//常规线进出站信息
-			mainList = simulationService.adrealInfo(routeId,runDateStr, ScheduleStatus.SUPPORTED_SCHEDULE.getValue());
-			subList = simulationService.adrealInfo(supportRouteId,runDateStr, ScheduleStatus.SUPPORT_SCHEDULE.getValue());
+			mainList = simulationService.adrealInfo(routeId,runDateStr, ScheduleStatus.SUPPORTED_SCHEDULE.getValue(),planType);
+			subList = simulationService.adrealInfo(supportRouteId,runDateStr, ScheduleStatus.SUPPORT_SCHEDULE.getValue(),planType);
 			dyDriverlessConfig = generateScheduleService.getDyDriverlessConfig(routeId,supportRouteId,0);
 		}else {
 			//无人车进出站信息
-			mainList = simulationService.adrealInfo(routeId,runDateStr, ScheduleStatus.DRIVERLESS_SCHEDULE.getValue());
-			subList = simulationService.adrealInfo(routeId,runDateStr,ScheduleStatus.COMMON_SCHEDULE.getValue());
+			mainList = simulationService.adrealInfo(routeId,runDateStr, ScheduleStatus.DRIVERLESS_SCHEDULE.getValue(),planType);
+			subList = simulationService.adrealInfo(routeId,runDateStr,ScheduleStatus.COMMON_SCHEDULE.getValue(),planType);
 			dyDriverlessConfig = generateScheduleService.getDyDriverlessConfig(routeId,supportRouteId,1);
 		}
 

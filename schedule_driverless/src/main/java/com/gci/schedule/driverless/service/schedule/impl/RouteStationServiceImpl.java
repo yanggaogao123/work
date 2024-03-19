@@ -1,6 +1,8 @@
 package com.gci.schedule.driverless.service.schedule.impl;
 
+import com.gci.schedule.driverless.bean.scheduleD.DyDriverlessRouteSta;
 import com.gci.schedule.driverless.bean.scheduleD.RouteSta;
+import com.gci.schedule.driverless.mapper.DyDriverlessRouteStaMapper;
 import com.gci.schedule.driverless.service.schedule.RouteStationService;
 import com.gci.schedule.driverless.util.HttpUtil;
 import com.gci.schedule.driverless.util.StringUtil;
@@ -25,6 +27,9 @@ public class RouteStationServiceImpl implements RouteStationService {
 	@Value("${routeStationsByRouteId}")
 	private String routeStationsByRouteId;
 
+	@Autowired
+	private DyDriverlessRouteStaMapper dyDriverlessRouteStaMapper;
+
 
 	private Map<Long, String> routeStaListStr = new HashMap<>();
 	private Map<Long, List<RouteSta>> routeStaList = new HashMap<>();
@@ -44,6 +49,11 @@ public class RouteStationServiceImpl implements RouteStationService {
 		//String result = restTemplate.getForObject(aptsBaseUrl + "/" + routeStationsByRouteId+"/"+routeId, String.class);
 		routeStaListStr.put(routeId, result);
 		return result;
+	}
+
+	@Override
+	public List<DyDriverlessRouteSta> selectByRouteId(Long routeId) {
+		return dyDriverlessRouteStaMapper.selectByRouteId(routeId);
 	}
 
 }

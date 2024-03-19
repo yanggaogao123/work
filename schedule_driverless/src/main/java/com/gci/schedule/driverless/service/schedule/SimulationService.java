@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface SimulationService {
-	public List<AdrealInfo> adrealInfo(Long routeId,String runDateStr,Integer scheduleStatus);
+	public List<AdrealInfo> adrealInfo(Long routeId,String runDateStr,Integer scheduleStatus,Integer planType);
 
 	/**
 	 * 得到该线路在该日期的头班车时间

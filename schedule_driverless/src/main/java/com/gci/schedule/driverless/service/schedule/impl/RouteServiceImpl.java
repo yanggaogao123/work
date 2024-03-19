@@ -6,6 +6,7 @@ import com.gci.schedule.driverless.bean.scheduleD.Route;
 import com.gci.schedule.driverless.bean.scheduleD.RouteUpDownInfo;
 import com.gci.schedule.driverless.bean.scheduleD.StationPassenger;
 import com.gci.schedule.driverless.component.RouteListCacheComponent;
+import com.gci.schedule.driverless.mapper.RouteMapper;
 import com.gci.schedule.driverless.service.schedule.RouteService;
 import com.gci.schedule.driverless.util.HttpUtils;
 import com.gci.schedule.driverless.util.JsonUtil;
@@ -34,6 +35,9 @@ public class RouteServiceImpl implements RouteService {
 
     @Autowired
     private RouteListCacheComponent routeListCacheComponent;
+
+    @Autowired
+    private RouteMapper routeMapper;
 
     @Override
     public List<RouteUpDownInfo> getRouteUpDownInfo(Long routeId) {
@@ -108,6 +112,11 @@ public class RouteServiceImpl implements RouteService {
         }
         log.info("获取线路首末班时间请求信息，param:{},返回信息，resp:{}", JSONObject.toJSONString(map), result);
         return result;
+    }
+
+    @Override
+    public List<Route> getRouteByOrganId(String organId) {
+        return routeMapper.getListByOrganId(organId);
     }
 
 }

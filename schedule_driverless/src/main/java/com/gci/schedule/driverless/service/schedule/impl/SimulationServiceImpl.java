@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -87,7 +88,7 @@ public class SimulationServiceImpl implements SimulationService {
     private String weekdayKey;
 
     @Override
-    public List<AdrealInfo> adrealInfo(Long routeId,String runDateStr,Integer scheduleStatus) {
+    public List<AdrealInfo> adrealInfo(Long routeId,String runDateStr,Integer scheduleStatus,Integer planType) {
         Map<String, Object> map = new HashMap<>();
         map.put("routeId",routeId);
         map.put("scheduleStatus",scheduleStatus);
@@ -98,6 +99,7 @@ public class SimulationServiceImpl implements SimulationService {
             e.printStackTrace();
         }
         map.put("runDate", runDate);
+        map.put("planType", planType);
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(runDate);
@@ -120,7 +122,11 @@ public class SimulationServiceImpl implements SimulationService {
         //计划读取数据库 zyj
 
         List<DySchedulePlanDriverless> scheduleList = dySchedulePlanDriverlessMapper.selectSchedulePlan(map);
-        if (scheduleList.isEmpty()) return null;
+        if (scheduleList.isEmpty()){
+            return null;
+        }else {
+            scheduleList = scheduleList.stream().filter(e -> Objects.nonNull(e.getPlanTime())).collect(Collectors.toList());
+        }
 
         List<SingleBus> singleBuses = dyBusSingleMapper.listByRouteIdAndPlanDate(routeId, DateUtil.str2Date( runDateStr.substring(0, 10) + " 00:00:00", "yyyy-MM-dd HH:mm:ss"));
         List<String> collect = singleBuses.stream().map(item -> item.getStartDirection() + ":" + item.getStartOrderNumber()).collect(Collectors.toList());
@@ -364,6 +370,12 @@ public class SimulationServiceImpl implements SimulationService {
             }
         });
         System.out.println("zyj log adrealSimulateList.size() 22 " + adrealSimulateList.size());
+        //获取站点简称
+        List<DyDriverlessRouteSta> staList =routeStationService.selectByRouteId(routeId);
+        Map<Long,List<DyDriverlessRouteSta>> staMap = new HashMap<>();
+        if(!CollectionUtils.isEmpty(staList)){
+            staMap = staList.stream().collect(Collectors.groupingBy(DyDriverlessRouteSta::getRouteStaId));
+        }
         Map<Integer, Double> fullLoadRatioMap=new HashMap<Integer, Double>();
         //组装《进出站详情》
         for (int i = 0; i < adrealSimulateList.size(); i++) {
@@ -421,7 +433,13 @@ public class SimulationServiceImpl implements SimulationService {
             adrealInfo.setDirection(adrealSimulate.getDirection());//方向
             if (adrealSimulate.getRouteStaId() != null) {
                 adrealInfo.setRouteStationId(adrealSimulate.getRouteStaId().intValue());
-                adrealInfo.setRouteStationName(adrealSimulate.getRouteStaName());
+                if(staMap.containsKey(adrealSimulate.getRouteStaId())){
+                    //设置站点简称
+                    adrealInfo.setRouteStationName(staMap.get(adrealSimulate.getRouteStaId()).get(0).getRouteStationSimplename());
+                }else {
+                    adrealInfo.setRouteStationName(adrealSimulate.getRouteStaName());
+                }
+
             }
 
 

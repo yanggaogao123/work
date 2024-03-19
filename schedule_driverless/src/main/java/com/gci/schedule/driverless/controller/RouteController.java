@@ -3,6 +3,7 @@ package com.gci.schedule.driverless.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.gci.schedule.driverless.bean.common.R;
 import com.gci.schedule.driverless.bean.scheduleD.DriverlessUpDownInfoVo;
+import com.gci.schedule.driverless.bean.scheduleD.Route;
 import com.gci.schedule.driverless.bean.scheduleD.RouteUpDownInfo;
 import com.gci.schedule.driverless.service.schedule.GenerateScheduleService;
 import com.gci.schedule.driverless.service.schedule.RouteService;
@@ -57,9 +58,10 @@ public class RouteController {
 	//@SysLog
 	public R getRouteList(@RequestParam Map<String, String> params, HttpServletRequest req){
 		String organId = HttpRequestUtil.getOrganId(req);
-		List<Map> list = routeService.getRouteListNew(organId);
+//		List<Map> list = routeService.getRouteListNew(organId);
 //		List<Map> list = routeService.getRouteListNew("20");//区间排班计划 262
 //		List<Map> list = routeService.getRouteListNew("18");//921路 359  测试
+		List<Route> list = routeService.getRouteByOrganId(organId);
 		return R.ok().put("data",list);
 	}
 

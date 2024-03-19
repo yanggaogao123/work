@@ -86,13 +86,12 @@ public class ScheduleParamsSingleServiceImpl implements ScheduleParamsSingleServ
         return scheduleParamsSingleMapper.selectByRouteId(routeId);
     }
 
-    /*@Override
-    public List<Integer> getShiftsTypeByRouteIdAndPlanDate(Integer routeId, String planDate, Integer ptemplateId) {
-        if (routeId == null || "".equals(planDate)) {
+    @Override
+    public List<Integer> getShiftsTypeByRouteIdAndPlanDate(Integer routeId, Date date, Integer ptemplateId) {
+        if (Objects.isNull(routeId) || Objects.isNull(date)) {
             throw new MyException("500", "请选择线路和日期");
         }
         if (Objects.isNull(ptemplateId)) {
-            Date date = DateUtil.str2Date(planDate, "yyyy-MM-dd");
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             int week = calendar.get(Calendar.DAY_OF_WEEK);
@@ -104,6 +103,6 @@ public class ScheduleParamsSingleServiceImpl implements ScheduleParamsSingleServ
         List<ScheduleParamShift> shifts = scheduleParamsSingleMapper.getShiftByTemplateId(ptemplateId);
         List<Integer> collect = shifts.stream().map(ScheduleParamShift::getShiftType).distinct().sorted().collect(Collectors.toList());
         return collect;
-    }*/
+    }
 
 }

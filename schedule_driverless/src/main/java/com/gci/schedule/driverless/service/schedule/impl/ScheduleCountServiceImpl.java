@@ -68,6 +68,9 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
         if(CollectionUtils.isEmpty(mainScheduleList)||CollectionUtils.isEmpty(subScheduleList)){
             log.info("【仿真统计】- 排班计划信息不存在，routeId:{}",param.getRouteId());
             return R.error("排班计划信息不存在");
+        }else {
+            mainScheduleList = mainScheduleList.stream().filter(e -> Objects.nonNull(e.getPlanTime())).collect(Collectors.toList());
+            subScheduleList = subScheduleList.stream().filter(e -> Objects.nonNull(e.getPlanTime())).collect(Collectors.toList());
         }
         List<StationPassenger> mainStationPassengerList = bigDataService.getStationPassengerList(DateUtil.date2Str(mainScheduleList.get(0).getPassengerData(),DateUtil.date_sdf),param.getRouteId().toString());
         List<StationPassenger> subStationPassengerList = bigDataService.getStationPassengerList(DateUtil.date2Str(subScheduleList.get(0).getPassengerData(),DateUtil.date_sdf),param.getRouteId().toString());
@@ -188,12 +191,12 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             Integer mainUpPassenger = 0;
             Integer mainDownPassenger = 0;
             if(upMainStationPassengerMap.containsKey(Convert.toShort(timeNum))){
-                mainUpPassenger = upMainStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getCurpeople).sum();
+                mainUpPassenger = upMainStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getUpcount).sum();
                 Optional<Integer> max = upMainStationPassengerMap.get(Convert.toShort(timeNum)).stream().map(StationPassenger::getCurpeople).reduce(Integer::max);
                 upMainMax = max.get();
             }
             if(downMainStationPassengerMap.containsKey(Convert.toShort(timeNum))){
-                mainDownPassenger = downMainStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getCurpeople).sum();
+                mainDownPassenger = downMainStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getUpcount).sum();
                 Optional<Integer> max = downMainStationPassengerMap.get(Convert.toShort(timeNum)).stream().map(StationPassenger::getCurpeople).reduce(Integer::max);
                 downMainMax = max.get();
             }
@@ -208,12 +211,12 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             Integer subUpPassenger = 0;
             Integer subDownPassenger = 0;
             if(upSubStationPassengerMap.containsKey(Convert.toShort(timeNum))){
-                subUpPassenger = upSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getCurpeople).sum();
+                subUpPassenger = upSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getUpcount).sum();
                 Optional<Integer> max = upSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().map(StationPassenger::getCurpeople).reduce(Integer::max);
                 upSubMax = max.get();
             }
             if(downSubStationPassengerMap.containsKey(Convert.toShort(timeNum))){
-                subDownPassenger = downSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getCurpeople).sum();
+                subDownPassenger = downSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().mapToInt(StationPassenger::getUpcount).sum();
                 Optional<Integer> max = downSubStationPassengerMap.get(Convert.toShort(timeNum)).stream().map(StationPassenger::getCurpeople).reduce(Integer::max);
                 downSubMax = max.get();
             }
@@ -238,26 +241,26 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             //线路时段平均间隔
             Double mainUpInterval = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getInterval).average().orElse(0D);
             Double mainDownInterval = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).mapToDouble(DySchedulePlanDriverless::getInterval).average().orElse(0D);
-            mainUpIntervalMap.put(timeNum.toString(),mainUpInterval);
-            mainDownIntervalMap.put(timeNum.toString(),mainDownInterval);
+            mainUpIntervalMap.put(timeNum.toString(),Math.round(mainUpInterval));
+            mainDownIntervalMap.put(timeNum.toString(),Math.round(mainDownInterval));
 
             //支援线路时段平均间隔
             Double subUpInterval = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getInterval).average().orElse(0D);
             Double subDownInterval = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).mapToDouble(DySchedulePlanDriverless::getInterval).average().orElse(0D);
-            subUpIntervalMap.put(timeNum.toString(),subUpInterval);
-            subDownIntervalMap.put(timeNum.toString(),subDownInterval);
+            subUpIntervalMap.put(timeNum.toString(),Math.round(subUpInterval));
+            subDownIntervalMap.put(timeNum.toString(),Math.round(subDownInterval));
 
             //线路时段平均周转时间
             Double mainUpIntersite = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getFullTime).average().orElse(0D);
             Double mainDownIntersite = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).mapToDouble(DySchedulePlanDriverless::getFullTime).average().orElse(0D);
-            mainUpIntersiteMap.put(timeNum.toString(),Math.round(mainUpIntersite));
-            mainDownIntersiteMap.put(timeNum.toString(),Math.round(mainDownIntersite));
+            mainUpIntersiteMap.put(timeNum.toString(),Math.round(mainUpIntersite/60));
+            mainDownIntersiteMap.put(timeNum.toString(),Math.round(mainDownIntersite/60));
 
             //支援线路时段平均周转时间
             Double subUpIntersite = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getFullTime).average().orElse(0D);
             Double subDownIntersite = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).mapToDouble(DySchedulePlanDriverless::getFullTime).average().orElse(0D);
-            subUpIntersiteMap.put(timeNum.toString(),Math.round(subUpIntersite));
-            subDownIntersiteMap.put(timeNum.toString(),Math.round(subDownIntersite));
+            subUpIntersiteMap.put(timeNum.toString(),Math.round(subUpIntersite/60));
+            subDownIntersiteMap.put(timeNum.toString(),Math.round(subDownIntersite/60));
 
             //线路时段班次满载率
             Integer upMainfullPercent = 0;
@@ -321,15 +324,15 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             subUpWordRowMap.put("uploadPeopleClasses",subUploadPeopleNum*subUpClasses);
             subDownWordRowMap.put("downloadPeopleClasses",subDownloadPeopleNum*subDownClasses);
             //平均单程时间
-            mainUpWordRowMap.put("upIntersite",mainUpIntersite);
-            mainDownWordRowMap.put("downIntersite",mainDownIntersite);
-            subUpWordRowMap.put("upIntersite",subUpIntersite);
-            subDownWordRowMap.put("downIntersite",subDownIntersite);
+            mainUpWordRowMap.put("upIntersite",Math.round(mainUpIntersite/60));
+            mainDownWordRowMap.put("downIntersite",Math.round(mainDownIntersite/60));
+            subUpWordRowMap.put("upIntersite",Math.round(subUpIntersite/60));
+            subDownWordRowMap.put("downIntersite",Math.round(subDownIntersite/60));
             //平均发班间隔
-            mainUpWordRowMap.put("upInterval",mainUpInterval);
-            mainDownWordRowMap.put("downInterval",mainDownInterval);
-            subUpWordRowMap.put("upInterval",subUpInterval);
-            subDownWordRowMap.put("downInterval",subDownInterval);
+            mainUpWordRowMap.put("upInterval",Math.round(mainUpInterval));
+            mainDownWordRowMap.put("downInterval",Math.round(mainDownInterval));
+            subUpWordRowMap.put("upInterval",Math.round(subUpInterval));
+            subDownWordRowMap.put("downInterval",Math.round(subDownInterval));
             //平均停站时间
             Double mainUpStopTime = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getStopTime).average().orElse(0D);
             Double mainDownStopTime = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).mapToDouble(DySchedulePlanDriverless::getStopTime).average().orElse(0D);

@@ -11,7 +11,13 @@ import java.util.Map;
 public interface DySchedulePlanDriverlessMapper {
     int insert(DySchedulePlanDriverless record);
 
-    void batchInsertSchedule(List<DySchedulePlanDriverless> list);
+    int updateByPrimaryKey(DySchedulePlanDriverless record);
+
+    int deleteByPrimaryKey(Long id);
+
+    void batchDelete(List<Long> ids);
+
+    void batchInsertSchedule(@Param("planList") List<DySchedulePlanDriverless> planList);
 
     int insertSelective(DySchedulePlanDriverless record);
 
@@ -40,5 +46,14 @@ public interface DySchedulePlanDriverlessMapper {
     void deleteDyMidwayShortStation(DyMidwayShortStation params);
 
     int insertDyMidwayShortStation(DyMidwayShortStation params);
+
+
+    List<DispatchTask> dispatchTaskByFirstRound(@Param("routeId")String routeId,
+                                                @Param("direction")String direction, @Param("referenceDate")String referenceDate,
+                                                @Param("runDate")String runDate);
+
+    List<DispatchTask> dispatchTaskByMidway(@Param("routeId") String routeId,
+                                            @Param("direction") String direction, @Param("referenceDate") String referenceDate,
+                                            @Param("runDate") String runDate);
 
 }

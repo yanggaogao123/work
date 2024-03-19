@@ -16,7 +16,7 @@ var scheduleTripModule = function () {
 
         var routeId = $('#routeSelect').val();
         var runDate = $('#runDate').datebox("getValue");
-        var planType = 3;
+        var planType = 2;
 
         if (routeId == null || routeId == '' || runDate == null || runDate == '') {
             $.messager.alert('消息', '请选择参数！', 'info');
@@ -85,7 +85,8 @@ var scheduleTripModule = function () {
             data: JSON.stringify({
                 "routeId": routeId,
                 "runDate": runDate,
-                "planType": planType
+                "planType": planType,
+                "supportRouteId":420
             }),
             dataType: "json",
             timeout: 10000, //超时时间设置，单位毫秒

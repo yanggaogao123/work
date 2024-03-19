@@ -10,6 +10,19 @@
     <result column="SUPPORT_PASSENGER_NUM" jdbcType="DECIMAL" property="supportPassengerNum" />
     <result column="IS_DRIVERLESS" jdbcType="DECIMAL" property="isDriverless" />
     <result column="TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="MAIN_START_STATION_NAME" jdbcType="VARCHAR" property="mainStartStationName" />
+    <result column="MAIN_END_STATION_NAME" jdbcType="VARCHAR" property="mainEndStationName" />
+    <result column="SUB_START_STATION_NAME" jdbcType="VARCHAR" property="subStartStationName" />
+    <result column="SUB_END_STATION_NAME" jdbcType="VARCHAR" property="subEndStationName" />
+    <result column="MAIN_START_STATION_ID" jdbcType="DECIMAL" property="mainStartStationId" />
+    <result column="MAIN_END_STATION_ID" jdbcType="DECIMAL" property="mainEndStationId" />
+    <result column="SUB_START_STATION_ID" jdbcType="DECIMAL" property="subStartStationId" />
+    <result column="SUB_END_STATION_ID" jdbcType="DECIMAL" property="subEndStationId" />
+    <result column="MAIN_START_STATION_DISTANCE" jdbcType="DECIMAL" property="mainStartStaionDistance" />
+    <result column="MAIN_START_STATION_TIME" jdbcType="DECIMAL" property="mainStartStationTime" />
+    <result column="SUB_START_STATION_DISTANCE" jdbcType="DECIMAL" property="subStartStaionDistance" />
+    <result column="SUB_START_STATION_TIME" jdbcType="DECIMAL" property="subStartStationTime" />
+
   </resultMap>
   <sql id="Base_Column_List">
     ID, ROUTE_ID, ROUTE_NAME, SUPPORT_ROUTE_ID, SUPPORT_ROUTE_NAME,SUPPORT_PASSENGER_NUM,IS_DRIVERLESS,TYPE

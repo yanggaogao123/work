@@ -1,10 +1,12 @@
 package com.gci.schedule.driverless.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.gci.schedule.driverless.bean.scheduleD.ScheduleParamsClasses;
 import com.gci.schedule.driverless.util.DateUtil;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -41,7 +43,7 @@ public class GenerateScheduleParams {
     private Date runDate;
 
     //客流参考日期
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date passengerData;
 
     private Long supportRouteId;
@@ -61,6 +63,24 @@ public class GenerateScheduleParams {
     //下行早半班车
     private Integer earlyHalfBusDown;
 
+    //上行晚半班车
+    private Integer lateHalfBusUp;
+
+    //下行晚半班车
+    private Integer lateHalfBusDown;
+
+    //上行中班车
+    private Integer middleBusUp;
+
+    //下行中班车
+    private Integer middleBusDown;
+
+    //上行双班中停车
+    private Integer doubleStopBusUp;
+
+    //下行双班中停车
+    private Integer doubleStopBusDown;
+
     //单班开始时间 1500
     private String singleBeginTime;
 
@@ -72,6 +92,28 @@ public class GenerateScheduleParams {
 
     //早半班结束时间
     private String earlyEndTime;
+
+    //晚半班开始时间
+    private String lateBeginTime;
+
+    //晚半班结束时间
+    private String lateEndTime;
+
+    //中班开始时间
+    private String middleBeginTime;
+
+    //中班结束时间
+    private String middleEndTime;
+
+    //双班中停开始时间
+    private String doubleStopBeginTime;
+
+    //双班中停结束时间
+    private String doubleStopEndTime;
+
+    //定点排班参数
+    private List<ScheduleParamsClasses> regularParamsList;
+
 
     public Date getUpFristDate(){
         if(Objects.isNull(this.upFristTime)){

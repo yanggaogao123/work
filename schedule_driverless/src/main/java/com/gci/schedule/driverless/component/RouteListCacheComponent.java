@@ -55,7 +55,7 @@ public class RouteListCacheComponent implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        try {
+        /*try {
             //缓存电车线路与机构关系数据
             dicheRouteCodeAndOrganIdMap = paitiService.queryDicheRouteCodeAndOrganIdMap();
             dicheOrganIdAndBusMap = paitiService.queryDicheOrganIdAndBusMap();
@@ -84,7 +84,7 @@ public class RouteListCacheComponent implements CommandLineRunner {
                 List<Map> maps = retData.toJavaList(Map.class);
                 ORGAN_ROUTE.put(organId, maps);
             });
-        }
+        }*/
     }
 
     public void setDicheOrganIdAndBusMap(Map<String, List<Bus>> dicheOrganIdAndBusMap) {

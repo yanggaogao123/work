@@ -12,4 +12,6 @@ public interface RouteService {
     Route getRouteByRouteId(Long routeId);
 
     String getRouteUpDownInfo2(Long routeId);
+
+    List<Route> getRouteByOrganId(String organId);
 }

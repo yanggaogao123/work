@@ -65,7 +65,13 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
         <!--<table tableName="DY_SCHEDULE_PLAN_DRIVERLESS" domainObjectName="DySchedulePlanDriverless" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-        <table tableName="DY_DRIVERLESS_CONFIG" domainObjectName="DyDriverlessConfig" enableCountByExample="false" enableUpdateByExample="false"
+        <!--<table tableName="DY_DRIVERLESS_CONFIG" domainObjectName="DyDriverlessConfig" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_DRIVERLESS_PLAN_TIME" domainObjectName="DyDriverlessPlanTime" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_DRIVERLESS_BUS_CONFIG" domainObjectName="DyDriverlessBusConfig_01" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <table tableName="DY_DRIVERLESS_ROUTE_STA" domainObjectName="DyDriverlessRouteSta" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
     </context>
 </generatorConfiguration>

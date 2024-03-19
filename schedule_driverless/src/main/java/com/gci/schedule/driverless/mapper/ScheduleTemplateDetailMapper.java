@@ -9,4 +9,6 @@ import java.util.List;
 public interface ScheduleTemplateDetailMapper {
     List<ScheduleTemplateDetail> selectByRouteId(@Param("routeId") Long routeId);
 
+    Integer getTemplateIdByRouteIdAndDay(@Param("routeId") Integer routeId ,@Param("applyDay")  Integer applyDay);
+
 }

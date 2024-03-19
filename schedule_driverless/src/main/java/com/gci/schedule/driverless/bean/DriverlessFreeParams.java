@@ -6,6 +6,8 @@ import java.util.Date;
 
 @Data
 public class DriverlessFreeParams {
+    private Long busId;
+
     private String busName;
 
     private Date beginFreeTime;

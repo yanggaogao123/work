@@ -4,6 +4,8 @@ package com.gci.schedule.driverless.bean.scheduleD;
 import com.gci.schedule.driverless.util.DateUtil;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Route {
@@ -13,8 +15,12 @@ public class Route {
 	private String routeCode;
 	
 	private String routeName;
+
+	private Long organId;
 	
 	private Map<Integer, RouteSub> routeSubMap;
+
+	private Map<Long, List<RouteSta>> routeSubStaListMap=new HashMap<Long, List<RouteSta>>();
 	
 	private Date expiresTime;//失效时间
 
@@ -60,12 +66,28 @@ public class Route {
 	private void setExpiresTime(Date expiresTime) {
 		this.expiresTime = expiresTime;
 	}
-	
+
+	public Long getOrganId() {
+		return organId;
+	}
+
+	public void setOrganId(Long organId) {
+		this.organId = organId;
+	}
+
 	public boolean isExpire() {
-		if(expiresTime.before(new Date())) {
+		if(expiresTime != null && expiresTime.before(new Date())) {
 			return true;
 		}
 		return false;
+	}
+
+	public void addRouteSubStaList(Long routeSubId,List<RouteSta> routeSubStaList) {
+		routeSubStaListMap.put(routeSubId, routeSubStaList);
+	}
+
+	public List<RouteSta> getRouteSubStaList(Long routeSubId) {
+		return routeSubStaListMap.get(routeSubId);
 	}
 	
 }

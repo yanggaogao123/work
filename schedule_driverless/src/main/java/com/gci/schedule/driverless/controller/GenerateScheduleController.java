@@ -65,6 +65,20 @@ public class GenerateScheduleController {
     }
 
     /**
+     * 查询生成排班车辆配置
+     * @param params
+     * @return
+     */
+    @PostMapping("/getBusConfig")
+    public R getBusConfig(@RequestBody GenerateScheduleParams2 params) {
+        log.info("查询生成排班车辆配置 - routeId:{} 入参:{}", params.getRouteId(), JSONObject.toJSONString(params));
+        if (params.getRouteId() == null) {
+            return R.error("线路id不能为空");
+        }
+        return generateScheduleService.getBusConfig(params);
+    }
+
+    /**
      * 线路配车情况
      */
     @ResponseBody
@@ -184,14 +198,32 @@ public class GenerateScheduleController {
         return generateScheduleService.runBusAndInfoByRouteNewRunBus(routeId);
     }
 
+    //获取批量挂车任务弹出框数据-> 类型：中途出场任务，首轮发班任务
+    //params -> 方向，类型，线路，日期范围
+    //type 0->中途出场任务 1->首轮发班任务
+    @RequestMapping("/dispatchTask/{type}/{routeId}/{direction}/{referenceDate}/{runDate}")
     @ResponseBody
-    @RequestMapping("/getRuningScheduleDetail")
-    public R getRuningScheduleDetail(@RequestBody Map<String, Object> params) {
+    public R dispatchTask(
+            @PathVariable String routeId, @PathVariable String type, @PathVariable String direction,
+            @PathVariable String referenceDate, @PathVariable String runDate) {
+        List<DispatchTask> dispatchTasks = generateScheduleService.dispatchTask(type, routeId, direction, referenceDate,
+                runDate);
+        return R.ok().put("data", dispatchTasks);
+    }
+
+    /**
+     * 简图监控信息
+     * @param params
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getMonitorInfo")
+    public R getMonitorInfo(@RequestBody Map<String, Object> params) throws CloneNotSupportedException{
         log.info("监控调度支援计划 - routeId:{} 入参:{}", params.get("routeId"), JSONObject.toJSONString(params));
         if (Objects.isNull(params.get("routeId"))) {
             return R.error("线路id不能为空");
         }
-        return generateScheduleService.getRuningScheduleDetail(params);
+        return generateScheduleService.getMonitorInfo(params);
     }
 
     /**
@@ -208,4 +240,6 @@ public class GenerateScheduleController {
         }
         return generateScheduleService.getRuningScheduleConfig(params);
     }
+
+
 }

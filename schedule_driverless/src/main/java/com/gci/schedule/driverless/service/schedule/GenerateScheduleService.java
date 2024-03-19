@@ -2,10 +2,7 @@ package com.gci.schedule.driverless.service.schedule;
 
 import com.gci.schedule.driverless.bean.GenerateScheduleParams;
 import com.gci.schedule.driverless.bean.common.R;
-import com.gci.schedule.driverless.bean.scheduleD.BusConfigure;
-import com.gci.schedule.driverless.bean.scheduleD.DyDriverlessConfig;
-import com.gci.schedule.driverless.bean.scheduleD.MountCarPlan;
-import com.gci.schedule.driverless.bean.scheduleD.MountCarPlanVO;
+import com.gci.schedule.driverless.bean.scheduleD.*;
 import com.gci.schedule.driverless.bean.vo.GenerateScheduleParams2;
 import com.gci.schedule.driverless.bean.vo.ScheduleBySortParam;
 
@@ -16,6 +13,7 @@ public interface GenerateScheduleService {
     R generateSchedule(GenerateScheduleParams params);
     R generateSupportSchedule(GenerateScheduleParams2 params);
     R getScheduleBySort(ScheduleBySortParam params);
+    R getBusConfig(GenerateScheduleParams2 params);
 
     /**
      * 获取线路配车情况
@@ -42,7 +40,9 @@ public interface GenerateScheduleService {
 
     R runBusAndInfoByRouteNewRunBus(String routeId);
 
-    R getRuningScheduleDetail(Map<String, Object> params);
+    List<DispatchTask> dispatchTask(String type, String routeId, String direction, String referenceDate, String runDate);
+
+    R getMonitorInfo(Map<String, Object> params) throws CloneNotSupportedException;
 
     R getRuningScheduleConfig(Map<String, Object> params);
 }

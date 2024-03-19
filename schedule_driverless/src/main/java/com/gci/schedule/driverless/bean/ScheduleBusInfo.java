@@ -21,5 +21,11 @@ public class ScheduleBusInfo {
     //例如 上行第1号车
     private String busNameFull;
 
+    //总的行车时间 单位：分钟
+    private Double totalTripTime;
+
+    //营运时间，单位：分钟
+    private Double totalRunTime;
+
     private List<ScheduleInfo> scheduleList;
 }

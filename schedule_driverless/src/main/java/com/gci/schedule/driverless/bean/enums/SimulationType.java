@@ -7,7 +7,9 @@ public enum SimulationType {
 	SAME_FIRST_LAST(2,"共首末站"),
 	SAME_FIRST_TO_LAST(3,"首战为支援线路末站"),
 	SAME_LAST_TO_FIRST(4,"末站为支援线路首战"),
-	CLOSE_FIST_LAST(5,"首末站相邻");
+	CLOSE_FIST_LAST(5,"首末站相邻,方向相同"),
+	CLOSE_FIST_LAST_REVERSE(6,"首末站相邻,方向不同"),
+	DRIVERLESS(7,"无人车支援");
 
 
 	private int value;

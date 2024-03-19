@@ -3,7 +3,7 @@ package com.gci.schedule.driverless.bean.scheduleD;
 import lombok.Data;
 
 @Data
-public class RuningScheduleVo {
+public class RuningScheduleVo implements Cloneable{
     //1：未开始，2：执行中，3：已完成
     private Integer status;
 
@@ -24,8 +24,13 @@ public class RuningScheduleVo {
     //运行时长 ：分钟
     private Integer fullTime;
 
-    //实际发车时间 12：13
-    private String realTripBeginTime;
+    //计划时间 12：13
+    private String planTime;
 
     private String direction;
+
+    @Override
+    public RuningScheduleVo clone() throws CloneNotSupportedException {
+        return (RuningScheduleVo) super.clone();
+    }
 }

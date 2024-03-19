@@ -36,6 +36,7 @@
     <result column="STATUS" jdbcType="DECIMAL" property="status" />
     <result column="FULL_TIME" jdbcType="DECIMAL" property="fullTime" />
     <result column="PLAN_TYPE" jdbcType="DECIMAL" property="planType" />
+    <result column="TIME_STAMP" jdbcType="DECIMAL" property="timeStamp" />
   </resultMap>
   <resultMap id="getMountCarPlanMap" type="com.gci.schedule.driverless.bean.scheduleD.MountCarPlan">
     <result column="bus_code" jdbcType="VARCHAR" property="busCode"/>
@@ -80,7 +81,7 @@
       LAST_ROUTE_STA_ID, FIRST_ROUTE_STA_NAME, LAST_ROUTE_STA_NAME, 
       RUN_MILEAGE, PEAK_TYPE, FIRST_ROUND_PLAN_TIME,
       FIRST_ROUND_TASK_ID, SYNC_PLAN,CLASSES,SUPPORT_CLASSES,INTERVAL,STOP_TIME,PASSENGER_NUM,
-      PASSENGER_DATE,SUPPORT_ROUTE_ID,STATUS,FULL_TIME,PLAN_TYPE)
+      PASSENGER_DATE,SUPPORT_ROUTE_ID,STATUS,FULL_TIME,PLAN_TYPE,TIME_STAMP )
     values (SEQ_SCHEDULE_PLAN_DRIVERLESS.nextval, #{routeId,jdbcType=DECIMAL}, #{routeCode,jdbcType=VARCHAR},
       #{planDate,jdbcType=TIMESTAMP}, #{planTime,jdbcType=TIMESTAMP}, #{startDirection,jdbcType=VARCHAR}, 
       #{startOrderNumber,jdbcType=DECIMAL}, #{tripEndTime,jdbcType=TIMESTAMP}, #{serviceType,jdbcType=VARCHAR}, 
@@ -90,9 +91,88 @@
       #{runMileage,jdbcType=DECIMAL}, #{peakType,jdbcType=VARCHAR}, #{firstRoundPlanTime,jdbcType=TIMESTAMP}, 
       #{firstRoundTaskId,jdbcType=DECIMAL}, #{syncPlan,jdbcType=DECIMAL},#{classes,jdbcType=DECIMAL},#{supportClasses,jdbcType=DECIMAL},
       #{interval,jdbcType=DECIMAL},#{stopTime,jdbcType=DECIMAL},#{passengerNum,jdbcType=DECIMAL},#{passengerData,jdbcType=TIMESTAMP},
-      #{supportRouteId,jdbcType=DECIMAL},#{status,jdbcType=DECIMAL},#{fullTime,jdbcType=DECIMAL},#{planType,jdbcType=DECIMAL})
+      #{supportRouteId,jdbcType=DECIMAL},#{status,jdbcType=DECIMAL},#{fullTime,jdbcType=DECIMAL},#{planType,jdbcType=DECIMAL},#{timeStamp,jdbcType=DECIMAL})
   </insert>
-  <insert id="batchInsertSchedule">
+    <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless">
+    update DY_SCHEDULE_PLAN_DRIVERLESS
+    set ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+        ROUTE_CODE = #{routeCode,jdbcType=VARCHAR},
+        PLAN_DATE = #{planDate,jdbcType=TIMESTAMP},
+        PLAN_TIME = #{planTime,jdbcType=TIMESTAMP},
+        START_DIRECTION = #{startDirection,jdbcType=VARCHAR},
+        START_ORDER_NUMBER = #{startOrderNumber,jdbcType=DECIMAL},
+        TRIP_END_TIME = #{tripEndTime,jdbcType=TIMESTAMP},
+        SERVICE_TYPE = #{serviceType,jdbcType=VARCHAR},
+        SERVICE_NAME = #{serviceName,jdbcType=VARCHAR},
+        DIRECTION = #{direction,jdbcType=VARCHAR},
+        BUS_CODE = #{busCode,jdbcType=VARCHAR},
+        BUS_ID = #{busId,jdbcType=DECIMAL},
+        BUS_NAME = #{busName,jdbcType=VARCHAR},
+        FIRST_ROUTE_STA_ID = #{firstRouteStaId,jdbcType=DECIMAL},
+        LAST_ROUTE_STA_ID = #{lastRouteStaId,jdbcType=DECIMAL},
+        FIRST_ROUTE_STA_NAME = #{firstRouteStaName,jdbcType=VARCHAR},
+        LAST_ROUTE_STA_NAME = #{lastRouteStaName,jdbcType=VARCHAR},
+        RUN_MILEAGE = #{runMileage,jdbcType=DECIMAL},
+        PEAK_TYPE = #{peakType,jdbcType=VARCHAR},
+        FIRST_ROUND_PLAN_TIME = #{firstRoundPlanTime,jdbcType=TIMESTAMP},
+        FIRST_ROUND_TASK_ID = #{firstRoundTaskId,jdbcType=DECIMAL},
+        SYNC_PLAN = #{syncPlan,jdbcType=DECIMAL},
+        CLASSES = #{classes,jdbcType=DECIMAL},
+        SUPPORT_CLASSES = #{supportClasses,jdbcType=DECIMAL},
+        INTERVAL = #{interval,jdbcType=DECIMAL},
+        STOP_TIME = #{stopTime,jdbcType=DECIMAL},
+        PASSENGER_NUM = #{passengerNum,jdbcType=DECIMAL},
+        PASSENGER_DATE = #{passengerData,jdbcType=TIMESTAMP},
+        SUPPORT_ROUTE_ID = #{supportRouteId,jdbcType=DECIMAL},
+        STATUS = #{status,jdbcType=DECIMAL},
+        FULL_TIME = #{fullTime,jdbcType=DECIMAL},
+        PLAN_TYPE = #{planType,jdbcType=DECIMAL}
+    where SCHEDULE_ID = #{scheduleId,jdbcType=DECIMAL}
+  </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from DY_SCHEDULE_PLAN_DRIVERLESS
+    where SCHEDULE_ID = #{id,jdbcType=DECIMAL}
+  </delete>
+
+    <delete id="batchDelete" parameterType="java.util.List">
+        DELETE FROM DY_SCHEDULE_PLAN_DRIVERLESS WHERE SCHEDULE_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <insert id="batchInsertSchedule" parameterType="java.util.List" >
+        <!--<selectKey resultType="long" order="BEFORE" keyProperty="scheduleId" >
+            SELECT SEQ_SCHEDULE_PLAN_DRIVERLESS.nextval AS scheduleId FROM DUAL
+        </selectKey>-->
+
+        BEGIN
+        <foreach collection="planList" item="plan" index="index" separator="">
+            insert into DY_SCHEDULE_PLAN_DRIVERLESS ( SCHEDULE_ID,ROUTE_ID, ROUTE_CODE,
+            PLAN_DATE, PLAN_TIME, START_DIRECTION,
+            START_ORDER_NUMBER, TRIP_END_TIME, SERVICE_TYPE,
+            SERVICE_NAME, DIRECTION, BUS_CODE,
+            BUS_ID, BUS_NAME, FIRST_ROUTE_STA_ID,
+            LAST_ROUTE_STA_ID, FIRST_ROUTE_STA_NAME, LAST_ROUTE_STA_NAME,
+            RUN_MILEAGE, PEAK_TYPE, FIRST_ROUND_PLAN_TIME,
+            FIRST_ROUND_TASK_ID, SYNC_PLAN,CLASSES,SUPPORT_CLASSES,INTERVAL,STOP_TIME,PASSENGER_NUM,
+            PASSENGER_DATE,SUPPORT_ROUTE_ID,STATUS,FULL_TIME,PLAN_TYPE,TIME_STAMP )
+            VALUES(SEQ_SCHEDULE_PLAN_DRIVERLESS.NEXTVAL,#{plan.routeId,jdbcType=DECIMAL}, #{plan.routeCode,jdbcType=VARCHAR},
+            #{plan.planDate,jdbcType=TIMESTAMP}, #{plan.planTime,jdbcType=TIMESTAMP}, #{plan.startDirection,jdbcType=VARCHAR},
+            #{plan.startOrderNumber,jdbcType=DECIMAL}, #{plan.tripEndTime,jdbcType=TIMESTAMP}, #{plan.serviceType,jdbcType=VARCHAR},
+            #{plan.serviceName,jdbcType=VARCHAR}, #{plan.direction,jdbcType=VARCHAR}, #{plan.busCode,jdbcType=VARCHAR},
+            #{plan.busId,jdbcType=DECIMAL}, #{plan.busName,jdbcType=VARCHAR}, #{plan.firstRouteStaId,jdbcType=DECIMAL},
+            #{plan.lastRouteStaId,jdbcType=DECIMAL}, #{plan.firstRouteStaName,jdbcType=VARCHAR}, #{plan.lastRouteStaName,jdbcType=VARCHAR},
+            #{plan.runMileage,jdbcType=DECIMAL}, #{plan.peakType,jdbcType=VARCHAR}, #{plan.firstRoundPlanTime,jdbcType=TIMESTAMP},
+            #{plan.firstRoundTaskId,jdbcType=DECIMAL}, #{plan.syncPlan,jdbcType=DECIMAL},#{plan.classes,jdbcType=DECIMAL},#{plan.supportClasses,jdbcType=DECIMAL},
+            #{plan.interval,jdbcType=DECIMAL},#{plan.stopTime,jdbcType=DECIMAL},#{plan.passengerNum,jdbcType=DECIMAL},#{plan.passengerData,jdbcType=TIMESTAMP},
+            #{plan.supportRouteId,jdbcType=DECIMAL},#{plan.status,jdbcType=DECIMAL},#{plan.fullTime,jdbcType=DECIMAL},#{plan.planType,jdbcType=DECIMAL},#{plan.timeStamp,jdbcType=DECIMAL});
+        </foreach>
+        COMMIT;
+        END;
+    </insert>
+
+  <!--<insert id="batchInsertSchedule">
     insert into DY_SCHEDULE_PLAN_DRIVERLESS (SCHEDULE_ID, ROUTE_ID, ROUTE_CODE,
     PLAN_DATE, PLAN_TIME, START_DIRECTION,
     START_ORDER_NUMBER, TRIP_END_TIME, SERVICE_TYPE,
@@ -114,7 +194,7 @@
       from dual
     </foreach>
     ) t
-  </insert>
+  </insert>-->
   <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless">
     insert into DY_SCHEDULE_PLAN_DRIVERLESS
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -307,6 +387,7 @@
           and p.trip_end_time >= #{runDate,jdbcType=TIMESTAMP}
           and p.plan_time &lt;= #{runDate,jdbcType=TIMESTAMP} + 1 / 24
           and p.STATUS = #{scheduleStatus,jdbcType=DECIMAL}
+          and p.PLAN_TYPE = #{planType,jdbcType=DECIMAL}
     </select>
 
   <select id="getMinPlanTimeByRouteIdAndPlanDate" resultType="java.util.Date">
@@ -480,7 +561,7 @@
     </select>
 
     <update id="saveMountCar">
-        update dy_schedule_plan t
+        update DY_SCHEDULE_PLAN_DRIVERLESS t
         set
         t.BUS_ID = #{busId,jdbcType=DECIMAL},
         t.BUS_NAME = #{busName,jdbcType=VARCHAR}
@@ -493,7 +574,7 @@
     </update>
 
     <update id="saveFirstRound">
-        update dy_schedule_plan t
+        update DY_SCHEDULE_PLAN_DRIVERLESS t
         set
         t.FIRST_ROUND_PLAN_TIME = #{firstRoundPlanTime,jdbcType=TIMESTAMP},
         t.FIRST_ROUND_TASK_ID = #{firstRoundTaskId,jdbcType=DECIMAL},
@@ -547,4 +628,120 @@
           #{startOrderNumber,jdbcType=DECIMAL}
         )
     </insert>
+
+    <select id="dispatchTaskByMidway" resultMap="getDispatchTaskMap">
+        select t.service_number
+             , t.service_name
+             , t.service_type
+             , t.direction
+             , t.routesub_id
+             , t.route_sub_name
+             , t.c
+             , t.c2
+             , t.first_station_id
+             , t.first_station_name
+             , t.last_station_id
+             , t.last_station_name
+        from (select *
+              from (select t.*, row_number() over(partition by t.routesub_id order by t.c ) as c2
+                    from (select t.*
+                          from (select tt.service_number,
+                                       tt.service_name,
+                                       tt.service_type,
+                                       tt.direction,
+                                       tt.routesub_id,
+                                       tt.route_sub_name,
+                                       row_number() over(partition by t.run_date,tt.direction,tt.service_type order by t.run_date desc ) as c
+            ,tt.first_station_id,
+                                       tt.first_station_name,
+                                       tt.last_station_id,
+                                       tt.last_station_name
+                                from apts.v_dispatch_task tt
+                                         left join dy_midway_short_station t
+                                                   on (t.task_id = tt.routesub_id and t.route_id = tt.route_id)
+                                where 1 = 1
+                                  and t.route_id = #{routeId,jdbcType=VARCHAR}
+                                  and tt.direction = #{direction,jdbcType=VARCHAR}
+                                  and t.run_date >= to_date(#{referenceDate,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+                                  and t.run_date <![CDATA[ <= ]]> to_date(#{runDate,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+                                order by t.run_date desc) t
+                          union
+                          select tt.*
+                          from (select t.service_number,
+                                       t.service_name,
+                                       t.service_type,
+                                       t.direction,
+                                       t.routesub_id,
+                                       t.route_sub_name,
+                                       100000 as c
+                                        ,
+                                       t.first_station_id,
+                                       t.first_station_name,
+                                       t.last_station_id,
+                                       t.last_station_name
+                                from apts.v_dispatch_task t
+                                where 1 = 1
+                                  and t.route_id = #{routeId,jdbcType=VARCHAR}
+                                  and t.direction = #{direction,jdbcType=VARCHAR}
+                                  and t.service_type > 0
+                                order by t.direction, t.service_type) tt) t
+                    order by t.c) t
+              where t.c2 = 1) t
+        order by t.c, t.direction, t.service_type, t.first_station_id, t.service_number
+    </select>
+
+    <select id="dispatchTaskByFirstRound" resultMap="getDispatchTaskMap">
+        select t.service_number
+             , t.service_name
+             , t.service_type
+             , t.direction
+             , t.routesub_id
+             , t.route_sub_name
+             , t.c
+             , t.c2
+             , t.first_station_id
+             , t.first_station_name
+        from (select *
+              from (select t.*, row_number() over(partition by t.routesub_id order by t.c ) as c2
+                    from (select t.*
+                          from (select tt.service_number,
+                                       tt.service_name,
+                                       tt.service_type,
+                                       tt.direction,
+                                       tt.routesub_id,
+                                       tt.route_sub_name,
+                                       row_number() over(partition by t.plan_date,tt.direction,tt.service_type order by t.plan_date desc ) as c
+            ,tt.first_station_id,
+                                       tt.first_station_name
+                                from apts.v_dispatch_task tt
+                                         left join dy_schedule_plan t
+                                                   on (t.first_round_task_id = tt.routesub_id and t.route_id = tt.route_id)
+                                where 1 = 1
+                                  and t.route_id = #{routeId,jdbcType=VARCHAR}
+                                  and t.start_direction = #{direction,jdbcType=VARCHAR}
+                                  and t.plan_date >= to_date(#{referenceDate,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+                                  and t.plan_date <![CDATA[ <= ]]> to_date(#{runDate,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+                                order by t.plan_date desc) t
+                          union
+                          select tt.*
+                          from (select t.service_number,
+                                       t.service_name,
+                                       t.service_type,
+                                       t.direction,
+                                       t.routesub_id,
+                                       t.route_sub_name,
+                                       100000 as c
+                                        ,
+                                       t.first_station_id,
+                                       t.first_station_name
+                                from apts.v_dispatch_task t
+                                where 1 = 1
+                                  and t.route_id = #{routeId,jdbcType=VARCHAR}
+                                  and t.direction = #{direction,jdbcType=VARCHAR}
+                                  and t.service_type > 0
+                                order by t.direction, t.service_type) tt) t
+                    order by t.c) t
+              where t.c2 = 1) t
+        order by t.c, t.direction, t.service_type, t.first_station_id, t.service_number
+    </select>
 </mapper>

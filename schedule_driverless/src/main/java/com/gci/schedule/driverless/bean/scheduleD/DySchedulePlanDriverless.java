@@ -7,6 +7,7 @@ import com.gci.schedule.driverless.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 public class DySchedulePlanDriverless {
     private Long scheduleId;
@@ -21,6 +22,8 @@ public class DySchedulePlanDriverless {
 
     @JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date planTime;
+
+    private Long timeStamp;
 
     private String startDirection;
 
@@ -84,6 +87,14 @@ public class DySchedulePlanDriverless {
     //最优计划：1，预设计划：2
     private Integer planType;
 
+    public Long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     public Integer getPlanType() {
         return planType;
     }
@@ -93,6 +104,9 @@ public class DySchedulePlanDriverless {
     }
 
     public int getPlanTimeInt(){
+        if(Objects.isNull(this.planTime)){
+            return 0;
+        }
         return Convert.toInt(DateUtil.date2Str(this.planTime,DateUtil.hhmm));
     }
 
