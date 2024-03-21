@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyDriverlessPlanTimeMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessPlanTime">
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="RUN_DATE" jdbcType="TIMESTAMP" property="runDate" />
+    <result column="BUS_ID" jdbcType="DECIMAL" property="busId" />
+    <result column="TASK_ID" jdbcType="DECIMAL" property="taskId" />
+    <result column="TRIP_BEGIN_TIME" jdbcType="TIMESTAMP" property="tripBeginTime" />
+    <result column="TRIP_END_TIME" jdbcType="TIMESTAMP" property="tripEndTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ROUTE_ID, RUN_DATE, BUS_ID, TASK_ID, TRIP_BEGIN_TIME, TRIP_END_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DY_DRIVERLESS_PLAN_TIME
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from DY_DRIVERLESS_PLAN_TIME
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+
+  <delete id="batchDelete" parameterType="java.util.List">
+    DELETE FROM DY_DRIVERLESS_PLAN_TIME WHERE id IN
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <insert id="batchInsert" parameterType="java.util.List" >
+    BEGIN
+    <foreach collection="planList" item="plan" index="index" separator="">
+      insert into DY_DRIVERLESS_PLAN_TIME (ID, ROUTE_ID, RUN_DATE,
+      BUS_ID, TASK_ID, TRIP_BEGIN_TIME,
+      TRIP_END_TIME) VALUES (SEQ_DY_DRIVERLESS_PLAN_TIME.nextval, #{plan.routeId,jdbcType=DECIMAL}, #{plan.runDate,jdbcType=TIMESTAMP},
+      #{plan.busId,jdbcType=DECIMAL}, #{plan.taskId,jdbcType=DECIMAL}, #{plan.tripBeginTime,jdbcType=TIMESTAMP},
+      #{plan.tripEndTime,jdbcType=TIMESTAMP});
+    </foreach>
+    COMMIT;
+    END;
+  </insert>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessPlanTime">
+    insert into DY_DRIVERLESS_PLAN_TIME (ID, ROUTE_ID, RUN_DATE, 
+      BUS_ID, TASK_ID, TRIP_BEGIN_TIME, 
+      TRIP_END_TIME)
+    values (SEQ_DY_DRIVERLESS_PLAN_TIME.nextval, #{routeId,jdbcType=DECIMAL}, #{runDate,jdbcType=TIMESTAMP},
+      #{busId,jdbcType=DECIMAL}, #{taskId,jdbcType=DECIMAL}, #{tripBeginTime,jdbcType=TIMESTAMP}, 
+      #{tripEndTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessPlanTime">
+    insert into DY_DRIVERLESS_PLAN_TIME
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="routeId != null">
+        ROUTE_ID,
+      </if>
+      <if test="runDate != null">
+        RUN_DATE,
+      </if>
+      <if test="busId != null">
+        BUS_ID,
+      </if>
+      <if test="taskId != null">
+        TASK_ID,
+      </if>
+      <if test="tripBeginTime != null">
+        TRIP_BEGIN_TIME,
+      </if>
+      <if test="tripEndTime != null">
+        TRIP_END_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="routeId != null">
+        #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="runDate != null">
+        #{runDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="busId != null">
+        #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=DECIMAL},
+      </if>
+      <if test="tripBeginTime != null">
+        #{tripBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tripEndTime != null">
+        #{tripEndTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessPlanTime">
+    update DY_DRIVERLESS_PLAN_TIME
+    <set>
+      <if test="routeId != null">
+        ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="runDate != null">
+        RUN_DATE = #{runDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="busId != null">
+        BUS_ID = #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="taskId != null">
+        TASK_ID = #{taskId,jdbcType=DECIMAL},
+      </if>
+      <if test="tripBeginTime != null">
+        TRIP_BEGIN_TIME = #{tripBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tripEndTime != null">
+        TRIP_END_TIME = #{tripEndTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessPlanTime">
+    update DY_DRIVERLESS_PLAN_TIME
+    set ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      RUN_DATE = #{runDate,jdbcType=TIMESTAMP},
+      BUS_ID = #{busId,jdbcType=DECIMAL},
+      TASK_ID = #{taskId,jdbcType=DECIMAL},
+      TRIP_BEGIN_TIME = #{tripBeginTime,jdbcType=TIMESTAMP},
+      TRIP_END_TIME = #{tripEndTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+
+  <select id="getDriverlessPlanList" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessPlanTime" resultMap="BaseResultMap">
+    select * from DY_DRIVERLESS_PLAN_TIME
+    where route_id = #{routeId,jdbcType=DECIMAL} and run_date = #{runDate,jdbcType=TIMESTAMP}
+  </select>
+</mapper>

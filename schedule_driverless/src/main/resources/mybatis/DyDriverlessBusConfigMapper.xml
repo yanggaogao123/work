@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyDriverlessBusConfigMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessBusConfig">
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="SUPPORT_ROUTE_ID" jdbcType="DECIMAL" property="supportRouteId" />
+    <result column="TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="RUN_DATE" jdbcType="TIMESTAMP" property="runDate" />
+    <result column="MAIN_UP_BUS_NUM" jdbcType="DECIMAL" property="mainUpBusNum" />
+    <result column="MAIN_DOWN_BUS_NUM" jdbcType="DECIMAL" property="mainDownBusNum" />
+    <result column="MAIN_SINGLE_BUS_UP" jdbcType="DECIMAL" property="mainSingleBusUp" />
+    <result column="MAIN_SINGLE_BUS_DOWN" jdbcType="DECIMAL" property="mainSingleBusDown" />
+    <result column="MAIN_EARLY_HALF_BUS_UP" jdbcType="DECIMAL" property="mainEarlyHalfBusUp" />
+    <result column="MAIN_EARLY_HALF_BUS_DOWN" jdbcType="DECIMAL" property="mainEarlyHalfBusDown" />
+    <result column="SUB_UP_BUS_NUM" jdbcType="DECIMAL" property="subUpBusNum" />
+    <result column="SUB_DOWN_BUS_NUM" jdbcType="DECIMAL" property="subDownBusNum" />
+    <result column="SUB_SINGLE_BUS_UP" jdbcType="DECIMAL" property="subSingleBusUp" />
+    <result column="SUB_SINGLE_BUS_DOWN" jdbcType="DECIMAL" property="subSingleBusDown" />
+    <result column="SUB_EARLY_HALF_BUS_UP" jdbcType="DECIMAL" property="subEarlyHalfBusUp" />
+    <result column="SUB_EARLY_HALF_BUS_DOWN" jdbcType="DECIMAL" property="subEarlyHalfBusDown" />
+    <result column="TEMPLATE_ID" jdbcType="DECIMAL" property="templateId" />
+    <result column="SUPPORT_TEMPLATE_ID" jdbcType="DECIMAL" property="supportTemplateId" />
+    <result column="MAIN_LATE_HALF_BUS_UP" jdbcType="DECIMAL" property="mainLateHalfBusUp" />
+    <result column="MAIN_LATE_HALF_BUS_DOWN" jdbcType="DECIMAL" property="mainLateHalfBusDown" />
+    <result column="MAIN_MIDDLE_BUS_UP" jdbcType="DECIMAL" property="mainMiddleBusUp" />
+    <result column="MAIN_MIDDLE_BUS_DOWN" jdbcType="DECIMAL" property="mainMiddleBusDown" />
+    <result column="MAIN_DOUBLE_STOP_BUS_UP" jdbcType="DECIMAL" property="mainDoubleStopBusUp" />
+    <result column="MAIN_DOUBLE_STOP_BUS_DOWN" jdbcType="DECIMAL" property="mainDoubleStopBusDown" />
+    <result column="SUB_LATE_HALF_BUS_UP" jdbcType="DECIMAL" property="subLateHalfBusUp" />
+    <result column="SUB_LATE_HALF_BUS_DOWN" jdbcType="DECIMAL" property="subLateHalfBusDown" />
+    <result column="SUB_MIDDLE_BUS_UP" jdbcType="DECIMAL" property="subMiddleBusUp" />
+    <result column="SUB_MIDDLE_BUS_DOWN" jdbcType="DECIMAL" property="subMiddleBusDown" />
+    <result column="SUB_DOUBLE_STOP_BUS_UP" jdbcType="DECIMAL" property="subDoubleStopBusUp" />
+    <result column="SUB_DOUBLE_STOP_BUS_DOWN" jdbcType="DECIMAL" property="subDoubleStopBusDown" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ROUTE_ID, SUPPORT_ROUTE_ID, TYPE, RUN_DATE, MAIN_UP_BUS_NUM, MAIN_DOWN_BUS_NUM, 
+    MAIN_SINGLE_BUS_UP, MAIN_SINGLE_BUS_DOWN, MAIN_EARLY_HALF_BUS_UP, MAIN_EARLY_HALF_BUS_DOWN, 
+    SUB_UP_BUS_NUM, SUB_DOWN_BUS_NUM, SUB_SINGLE_BUS_UP, SUB_SINGLE_BUS_DOWN, SUB_EARLY_HALF_BUS_UP, 
+    SUB_EARLY_HALF_BUS_DOWN, TEMPLATE_ID, SUPPORT_TEMPLATE_ID, MAIN_LATE_HALF_BUS_UP, 
+    MAIN_LATE_HALF_BUS_DOWN, MAIN_MIDDLE_BUS_UP, MAIN_MIDDLE_BUS_DOWN, MAIN_DOUBLE_STOP_BUS_UP, 
+    MAIN_DOUBLE_STOP_BUS_DOWN, SUB_LATE_HALF_BUS_UP, SUB_LATE_HALF_BUS_DOWN, SUB_MIDDLE_BUS_UP, 
+    SUB_MIDDLE_BUS_DOWN, SUB_DOUBLE_STOP_BUS_UP, SUB_DOUBLE_STOP_BUS_DOWN
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DY_DRIVERLESS_BUS_CONFIG
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from DY_DRIVERLESS_BUS_CONFIG
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessBusConfig">
+    insert into DY_DRIVERLESS_BUS_CONFIG (ID, ROUTE_ID, SUPPORT_ROUTE_ID, 
+      TYPE, RUN_DATE, MAIN_UP_BUS_NUM, 
+      MAIN_DOWN_BUS_NUM, MAIN_SINGLE_BUS_UP, MAIN_SINGLE_BUS_DOWN, 
+      MAIN_EARLY_HALF_BUS_UP, MAIN_EARLY_HALF_BUS_DOWN, 
+      SUB_UP_BUS_NUM, SUB_DOWN_BUS_NUM, SUB_SINGLE_BUS_UP, 
+      SUB_SINGLE_BUS_DOWN, SUB_EARLY_HALF_BUS_UP, SUB_EARLY_HALF_BUS_DOWN, 
+      TEMPLATE_ID, SUPPORT_TEMPLATE_ID, MAIN_LATE_HALF_BUS_UP, 
+      MAIN_LATE_HALF_BUS_DOWN, MAIN_MIDDLE_BUS_UP, MAIN_MIDDLE_BUS_DOWN, 
+      MAIN_DOUBLE_STOP_BUS_UP, MAIN_DOUBLE_STOP_BUS_DOWN, 
+      SUB_LATE_HALF_BUS_UP, SUB_LATE_HALF_BUS_DOWN, SUB_MIDDLE_BUS_UP, 
+      SUB_MIDDLE_BUS_DOWN, SUB_DOUBLE_STOP_BUS_UP, SUB_DOUBLE_STOP_BUS_DOWN
+      )
+    values (SEQ_DY_DRIVERLESS_BUS_CONFIG.nextval, #{routeId,jdbcType=DECIMAL}, #{supportRouteId,jdbcType=DECIMAL},
+      #{type,jdbcType=DECIMAL}, #{runDate,jdbcType=TIMESTAMP}, #{mainUpBusNum,jdbcType=DECIMAL}, 
+      #{mainDownBusNum,jdbcType=DECIMAL}, #{mainSingleBusUp,jdbcType=DECIMAL}, #{mainSingleBusDown,jdbcType=DECIMAL}, 
+      #{mainEarlyHalfBusUp,jdbcType=DECIMAL}, #{mainEarlyHalfBusDown,jdbcType=DECIMAL}, 
+      #{subUpBusNum,jdbcType=DECIMAL}, #{subDownBusNum,jdbcType=DECIMAL}, #{subSingleBusUp,jdbcType=DECIMAL}, 
+      #{subSingleBusDown,jdbcType=DECIMAL}, #{subEarlyHalfBusUp,jdbcType=DECIMAL}, #{subEarlyHalfBusDown,jdbcType=DECIMAL}, 
+      #{templateId,jdbcType=DECIMAL}, #{supportTemplateId,jdbcType=DECIMAL}, #{mainLateHalfBusUp,jdbcType=DECIMAL}, 
+      #{mainLateHalfBusDown,jdbcType=DECIMAL}, #{mainMiddleBusUp,jdbcType=DECIMAL}, #{mainMiddleBusDown,jdbcType=DECIMAL}, 
+      #{mainDoubleStopBusUp,jdbcType=DECIMAL}, #{mainDoubleStopBusDown,jdbcType=DECIMAL}, 
+      #{subLateHalfBusUp,jdbcType=DECIMAL}, #{subLateHalfBusDown,jdbcType=DECIMAL}, #{subMiddleBusUp,jdbcType=DECIMAL}, 
+      #{subMiddleBusDown,jdbcType=DECIMAL}, #{subDoubleStopBusUp,jdbcType=DECIMAL}, #{subDoubleStopBusDown,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessBusConfig">
+    insert into DY_DRIVERLESS_BUS_CONFIG
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="routeId != null">
+        ROUTE_ID,
+      </if>
+      <if test="supportRouteId != null">
+        SUPPORT_ROUTE_ID,
+      </if>
+      <if test="type != null">
+        TYPE,
+      </if>
+      <if test="runDate != null">
+        RUN_DATE,
+      </if>
+      <if test="mainUpBusNum != null">
+        MAIN_UP_BUS_NUM,
+      </if>
+      <if test="mainDownBusNum != null">
+        MAIN_DOWN_BUS_NUM,
+      </if>
+      <if test="mainSingleBusUp != null">
+        MAIN_SINGLE_BUS_UP,
+      </if>
+      <if test="mainSingleBusDown != null">
+        MAIN_SINGLE_BUS_DOWN,
+      </if>
+      <if test="mainEarlyHalfBusUp != null">
+        MAIN_EARLY_HALF_BUS_UP,
+      </if>
+      <if test="mainEarlyHalfBusDown != null">
+        MAIN_EARLY_HALF_BUS_DOWN,
+      </if>
+      <if test="subUpBusNum != null">
+        SUB_UP_BUS_NUM,
+      </if>
+      <if test="subDownBusNum != null">
+        SUB_DOWN_BUS_NUM,
+      </if>
+      <if test="subSingleBusUp != null">
+        SUB_SINGLE_BUS_UP,
+      </if>
+      <if test="subSingleBusDown != null">
+        SUB_SINGLE_BUS_DOWN,
+      </if>
+      <if test="subEarlyHalfBusUp != null">
+        SUB_EARLY_HALF_BUS_UP,
+      </if>
+      <if test="subEarlyHalfBusDown != null">
+        SUB_EARLY_HALF_BUS_DOWN,
+      </if>
+      <if test="templateId != null">
+        TEMPLATE_ID,
+      </if>
+      <if test="supportTemplateId != null">
+        SUPPORT_TEMPLATE_ID,
+      </if>
+      <if test="mainLateHalfBusUp != null">
+        MAIN_LATE_HALF_BUS_UP,
+      </if>
+      <if test="mainLateHalfBusDown != null">
+        MAIN_LATE_HALF_BUS_DOWN,
+      </if>
+      <if test="mainMiddleBusUp != null">
+        MAIN_MIDDLE_BUS_UP,
+      </if>
+      <if test="mainMiddleBusDown != null">
+        MAIN_MIDDLE_BUS_DOWN,
+      </if>
+      <if test="mainDoubleStopBusUp != null">
+        MAIN_DOUBLE_STOP_BUS_UP,
+      </if>
+      <if test="mainDoubleStopBusDown != null">
+        MAIN_DOUBLE_STOP_BUS_DOWN,
+      </if>
+      <if test="subLateHalfBusUp != null">
+        SUB_LATE_HALF_BUS_UP,
+      </if>
+      <if test="subLateHalfBusDown != null">
+        SUB_LATE_HALF_BUS_DOWN,
+      </if>
+      <if test="subMiddleBusUp != null">
+        SUB_MIDDLE_BUS_UP,
+      </if>
+      <if test="subMiddleBusDown != null">
+        SUB_MIDDLE_BUS_DOWN,
+      </if>
+      <if test="subDoubleStopBusUp != null">
+        SUB_DOUBLE_STOP_BUS_UP,
+      </if>
+      <if test="subDoubleStopBusDown != null">
+        SUB_DOUBLE_STOP_BUS_DOWN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="routeId != null">
+        #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="supportRouteId != null">
+        #{supportRouteId,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="runDate != null">
+        #{runDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mainUpBusNum != null">
+        #{mainUpBusNum,jdbcType=DECIMAL},
+      </if>
+      <if test="mainDownBusNum != null">
+        #{mainDownBusNum,jdbcType=DECIMAL},
+      </if>
+      <if test="mainSingleBusUp != null">
+        #{mainSingleBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainSingleBusDown != null">
+        #{mainSingleBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="mainEarlyHalfBusUp != null">
+        #{mainEarlyHalfBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainEarlyHalfBusDown != null">
+        #{mainEarlyHalfBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subUpBusNum != null">
+        #{subUpBusNum,jdbcType=DECIMAL},
+      </if>
+      <if test="subDownBusNum != null">
+        #{subDownBusNum,jdbcType=DECIMAL},
+      </if>
+      <if test="subSingleBusUp != null">
+        #{subSingleBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subSingleBusDown != null">
+        #{subSingleBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subEarlyHalfBusUp != null">
+        #{subEarlyHalfBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subEarlyHalfBusDown != null">
+        #{subEarlyHalfBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="templateId != null">
+        #{templateId,jdbcType=DECIMAL},
+      </if>
+      <if test="supportTemplateId != null">
+        #{supportTemplateId,jdbcType=DECIMAL},
+      </if>
+      <if test="mainLateHalfBusUp != null">
+        #{mainLateHalfBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainLateHalfBusDown != null">
+        #{mainLateHalfBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="mainMiddleBusUp != null">
+        #{mainMiddleBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainMiddleBusDown != null">
+        #{mainMiddleBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="mainDoubleStopBusUp != null">
+        #{mainDoubleStopBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainDoubleStopBusDown != null">
+        #{mainDoubleStopBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subLateHalfBusUp != null">
+        #{subLateHalfBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subLateHalfBusDown != null">
+        #{subLateHalfBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subMiddleBusUp != null">
+        #{subMiddleBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subMiddleBusDown != null">
+        #{subMiddleBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subDoubleStopBusUp != null">
+        #{subDoubleStopBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subDoubleStopBusDown != null">
+        #{subDoubleStopBusDown,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessBusConfig">
+    update DY_DRIVERLESS_BUS_CONFIG
+    <set>
+      <if test="routeId != null">
+        ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="supportRouteId != null">
+        SUPPORT_ROUTE_ID = #{supportRouteId,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null">
+        TYPE = #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="runDate != null">
+        RUN_DATE = #{runDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mainUpBusNum != null">
+        MAIN_UP_BUS_NUM = #{mainUpBusNum,jdbcType=DECIMAL},
+      </if>
+      <if test="mainDownBusNum != null">
+        MAIN_DOWN_BUS_NUM = #{mainDownBusNum,jdbcType=DECIMAL},
+      </if>
+      <if test="mainSingleBusUp != null">
+        MAIN_SINGLE_BUS_UP = #{mainSingleBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainSingleBusDown != null">
+        MAIN_SINGLE_BUS_DOWN = #{mainSingleBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="mainEarlyHalfBusUp != null">
+        MAIN_EARLY_HALF_BUS_UP = #{mainEarlyHalfBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainEarlyHalfBusDown != null">
+        MAIN_EARLY_HALF_BUS_DOWN = #{mainEarlyHalfBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subUpBusNum != null">
+        SUB_UP_BUS_NUM = #{subUpBusNum,jdbcType=DECIMAL},
+      </if>
+      <if test="subDownBusNum != null">
+        SUB_DOWN_BUS_NUM = #{subDownBusNum,jdbcType=DECIMAL},
+      </if>
+      <if test="subSingleBusUp != null">
+        SUB_SINGLE_BUS_UP = #{subSingleBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subSingleBusDown != null">
+        SUB_SINGLE_BUS_DOWN = #{subSingleBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subEarlyHalfBusUp != null">
+        SUB_EARLY_HALF_BUS_UP = #{subEarlyHalfBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subEarlyHalfBusDown != null">
+        SUB_EARLY_HALF_BUS_DOWN = #{subEarlyHalfBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="templateId != null">
+        TEMPLATE_ID = #{templateId,jdbcType=DECIMAL},
+      </if>
+      <if test="supportTemplateId != null">
+        SUPPORT_TEMPLATE_ID = #{supportTemplateId,jdbcType=DECIMAL},
+      </if>
+      <if test="mainLateHalfBusUp != null">
+        MAIN_LATE_HALF_BUS_UP = #{mainLateHalfBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainLateHalfBusDown != null">
+        MAIN_LATE_HALF_BUS_DOWN = #{mainLateHalfBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="mainMiddleBusUp != null">
+        MAIN_MIDDLE_BUS_UP = #{mainMiddleBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainMiddleBusDown != null">
+        MAIN_MIDDLE_BUS_DOWN = #{mainMiddleBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="mainDoubleStopBusUp != null">
+        MAIN_DOUBLE_STOP_BUS_UP = #{mainDoubleStopBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="mainDoubleStopBusDown != null">
+        MAIN_DOUBLE_STOP_BUS_DOWN = #{mainDoubleStopBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subLateHalfBusUp != null">
+        SUB_LATE_HALF_BUS_UP = #{subLateHalfBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subLateHalfBusDown != null">
+        SUB_LATE_HALF_BUS_DOWN = #{subLateHalfBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subMiddleBusUp != null">
+        SUB_MIDDLE_BUS_UP = #{subMiddleBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subMiddleBusDown != null">
+        SUB_MIDDLE_BUS_DOWN = #{subMiddleBusDown,jdbcType=DECIMAL},
+      </if>
+      <if test="subDoubleStopBusUp != null">
+        SUB_DOUBLE_STOP_BUS_UP = #{subDoubleStopBusUp,jdbcType=DECIMAL},
+      </if>
+      <if test="subDoubleStopBusDown != null">
+        SUB_DOUBLE_STOP_BUS_DOWN = #{subDoubleStopBusDown,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessBusConfig">
+    update DY_DRIVERLESS_BUS_CONFIG
+    set ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      SUPPORT_ROUTE_ID = #{supportRouteId,jdbcType=DECIMAL},
+      TYPE = #{type,jdbcType=DECIMAL},
+      RUN_DATE = #{runDate,jdbcType=TIMESTAMP},
+      MAIN_UP_BUS_NUM = #{mainUpBusNum,jdbcType=DECIMAL},
+      MAIN_DOWN_BUS_NUM = #{mainDownBusNum,jdbcType=DECIMAL},
+      MAIN_SINGLE_BUS_UP = #{mainSingleBusUp,jdbcType=DECIMAL},
+      MAIN_SINGLE_BUS_DOWN = #{mainSingleBusDown,jdbcType=DECIMAL},
+      MAIN_EARLY_HALF_BUS_UP = #{mainEarlyHalfBusUp,jdbcType=DECIMAL},
+      MAIN_EARLY_HALF_BUS_DOWN = #{mainEarlyHalfBusDown,jdbcType=DECIMAL},
+      SUB_UP_BUS_NUM = #{subUpBusNum,jdbcType=DECIMAL},
+      SUB_DOWN_BUS_NUM = #{subDownBusNum,jdbcType=DECIMAL},
+      SUB_SINGLE_BUS_UP = #{subSingleBusUp,jdbcType=DECIMAL},
+      SUB_SINGLE_BUS_DOWN = #{subSingleBusDown,jdbcType=DECIMAL},
+      SUB_EARLY_HALF_BUS_UP = #{subEarlyHalfBusUp,jdbcType=DECIMAL},
+      SUB_EARLY_HALF_BUS_DOWN = #{subEarlyHalfBusDown,jdbcType=DECIMAL},
+      TEMPLATE_ID = #{templateId,jdbcType=DECIMAL},
+      SUPPORT_TEMPLATE_ID = #{supportTemplateId,jdbcType=DECIMAL},
+      MAIN_LATE_HALF_BUS_UP = #{mainLateHalfBusUp,jdbcType=DECIMAL},
+      MAIN_LATE_HALF_BUS_DOWN = #{mainLateHalfBusDown,jdbcType=DECIMAL},
+      MAIN_MIDDLE_BUS_UP = #{mainMiddleBusUp,jdbcType=DECIMAL},
+      MAIN_MIDDLE_BUS_DOWN = #{mainMiddleBusDown,jdbcType=DECIMAL},
+      MAIN_DOUBLE_STOP_BUS_UP = #{mainDoubleStopBusUp,jdbcType=DECIMAL},
+      MAIN_DOUBLE_STOP_BUS_DOWN = #{mainDoubleStopBusDown,jdbcType=DECIMAL},
+      SUB_LATE_HALF_BUS_UP = #{subLateHalfBusUp,jdbcType=DECIMAL},
+      SUB_LATE_HALF_BUS_DOWN = #{subLateHalfBusDown,jdbcType=DECIMAL},
+      SUB_MIDDLE_BUS_UP = #{subMiddleBusUp,jdbcType=DECIMAL},
+      SUB_MIDDLE_BUS_DOWN = #{subMiddleBusDown,jdbcType=DECIMAL},
+      SUB_DOUBLE_STOP_BUS_UP = #{subDoubleStopBusUp,jdbcType=DECIMAL},
+      SUB_DOUBLE_STOP_BUS_DOWN = #{subDoubleStopBusDown,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+
+  <select id="getBusConfigList" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessBusConfig" resultMap="BaseResultMap">
+    select * from DY_DRIVERLESS_BUS_CONFIG
+    where route_id = #{routeId,jdbcType=DECIMAL}
+    <if test="supportRouteId != null">
+      and support_route_id = #{supportRouteId,jdbcType=DECIMAL}
+    </if>
+    <if test="type != null">
+      and type = #{type,jdbcType=DECIMAL}
+    </if>
+    and run_date = #{runDate,jdbcType=TIMESTAMP}
+  </select>
+</mapper>
