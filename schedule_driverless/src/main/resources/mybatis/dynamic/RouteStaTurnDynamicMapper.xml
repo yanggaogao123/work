@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.RouteStaTurnDynamicMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.dynamic.bean.RouteStaTurn">
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="LAST_ROUTE_STA_ID" jdbcType="DECIMAL" property="lastRouteStaId" />
+    <result column="NEXT_FIRST_ROUTE_STA_ID" jdbcType="DECIMAL" property="nextFirstRouteStaId" />
+    <result column="LAST_ROUTE_STA_NAME" jdbcType="VARCHAR" property="lastRouteStaName" />
+    <result column="NEXT_FIRST_ROUTE_STA_NAME" jdbcType="VARCHAR" property="nextFirstRouteStaName" />
+    <result column="TURN_AROUND_TIME" jdbcType="DECIMAL" property="turnAroundTime" />
+  </resultMap>
+
+  <select id="getRouteStaTurnList" resultMap="BaseResultMap">
+		select * from BS_SCHEDULE_PARAMS_TURN where route_id=#{routeId, jdbcType=DECIMAL} and template_id=#{templateId, jdbcType=DECIMAL}
+  </select>
+  
+</mapper>

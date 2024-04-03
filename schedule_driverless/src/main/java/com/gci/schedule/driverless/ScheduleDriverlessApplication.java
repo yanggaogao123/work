@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@MapperScan(basePackages = "com.gci.schedule.driverless.mapper")
+@MapperScan(basePackages = {"com.gci.schedule.driverless.dynamic.mapper","com.gci.schedule.driverless.mapper"})
 @SpringBootApplication(scanBasePackages = "com.gci.schedule.driverless")
 @EnableAsync
 @EnableScheduling

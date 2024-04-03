@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.ScheduleRouteConfigDynamicMapper">
+    
+    <select id="getFirstTriplogBeginTime" resultType="java.lang.String">
+    	select t.triplog_begin_time from BS_ROUTE_B4_FIRST_TIME t 
+	    	where t.route_id_run=#{routeId,jdbcType=NUMERIC}
+	    	and t.direction=#{direction,jdbcType=NUMERIC}
+    </select>
+    
+</mapper>
