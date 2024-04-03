@@ -1,8 +1,16 @@
 <template>
   <section id="section">
     <div class="con-head">
-      <div>排班计划（当前为 <span>预设计划</span>，最后一次生成计划时间为{{ centerData.titleMap.lastPlanTime }}）</div>
-      <div>总（趟次:{{ centerData.titleMap.totalClasses }} /援10 派车:43/援10 里程{{ centerData.titleMap.totalRunMileage }}km 工时{{ centerData.titleMap.totalDuration }}h ）</div>
+      <div class="con-info" style="display: inline-block">
+        <div style="display: inline-block">
+          排班计划（当前为 <span>{{ this.planType == 1 ? '最优排班' : '预设排班' }}</span
+          >，最后一次生成计划时间为
+          {{ centerData.titleMap.lastPlanTime }}
+          ）
+        </div>
+        <div style="display: inline-block">主线班次:{{ centerData.titleMap.totalClasses }} /被支援班次{{ centerData.titleMap.totalSupportClasses }}</div>
+        <div style="display: inline-block">关联线班次:{{ centerData.titleMap.subTotalClasses }}/被支援班次{{ centerData.titleMap.subTotalSupportClasses }}</div>
+      </div>
       <div class="time-choice">
         <img v-if="btnShow" @click="playIt()" src="@/assets/driverlesscars/play.png" alt="" />
         <img v-else @click="stopIt()" src="@/assets/driverlesscars/stop.png" alt="" />
@@ -123,7 +131,7 @@
               <p>
                 <span>上行运行时间: {{ `${centerData.mainMap.upBeginTime}-${centerData.mainMap.upEndTime}` }}</span>
                 <span class="route-name"
-                  ><div>{{ supRouteName }}</div></span
+                  ><div>{{ routeName }}</div></span
                 >
                 <span>下行运行时间: {{ `${centerData.mainMap.downBeginTime}-${centerData.mainMap.downEndTime}` }}</span>
               </p>
@@ -756,7 +764,7 @@ export default {
             routeId: that.routeId,
             runDate: moment(runDate).format('YYYY-MM-DD HH:mm:ss'),
             supportRouteId: that.supRouteId,
-            planType: this.planType,
+            planType: that.planType,
           };
           axios.post(that.url.adrealInfo, send, { params }).then((res) => {
             console.log(res);
@@ -962,7 +970,7 @@ export default {
             routeId: that.routeId,
             supportRouteId: that.supRouteId,
             runDate: moment(runDate).format('YYYY-MM-DD HH:mm:ss'),
-            planType: this.planType,
+            planType: that.planType,
           };
           axios.post(that.url.adrealInfo, send, { params }).then((res) => {
             console.log(res);
@@ -1121,24 +1129,27 @@ section {
   .con-head {
     // margin: 12px 0 0 0;
     padding: 12px;
-    div {
+    .con-info {
       display: inline-block;
-      font-size: 14px;
-      margin-right: 12px;
-    }
-    div:nth-child(1) {
-      span {
+      margin-right: 30px;
+      div {
         display: inline-block;
-        font-size: 16px;
-        font-weight: 500;
+        font-size: 14px;
+        font-weight: 600;
+        margin-right: 12px;
+      }
+      div:nth-child(1) {
+        span {
+          display: inline-block;
+          font-size: 16px;
+          font-weight: 500;
+        }
       }
     }
-    div:nth-child(2) {
-      display: inline-block;
-      font-size: 16px;
-      font-weight: 500;
-    }
+
     .time-choice {
+      display: inline-block;
+      margin-right: 20px;
       img {
         display: inline-block;
         width: 24px;

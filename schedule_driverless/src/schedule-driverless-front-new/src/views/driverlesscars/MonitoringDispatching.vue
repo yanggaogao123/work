@@ -78,6 +78,7 @@ import moment from 'moment';
 import CarTypeTwoModal from './modules/CarTypeTwoModal.vue';
 import CarTypeThreeModal from './modules/CarTypeThreeModal.vue';
 import MonitoringTableModal from './modules/MonitoringTableModal.vue';
+
 export default {
   name: 'MonitoringDispatching',
   components: {
@@ -270,9 +271,9 @@ export default {
           busRunData: res.data,
           centerData: this.centerData,
         };
-        if ([0, 1, 2].includes(res.data.data.simulationType)) {
+        if ([0, 1, 2, 5].includes(res.data.data.simulationType)) {
           this.carBool = 'b';
-        } else if ([3, 4, 4].includes(res.data.data.simulationType)) {
+        } else if ([3, 4, 6, 7].includes(res.data.data.simulationType)) {
           this.carBool = 'c';
         }
         console.log('carBool', this.carBool);

@@ -58,22 +58,18 @@
           <div class="con-head">
             <div class="con-info">
               <div style="display: inline-block">
-                排班计划（当前为 <span>预设计划</span>，最后一次生成计划时间为
+                排班计划（当前为 <span>{{ this.planType == 1 ? '最优排班' : '预设排班' }}</span
+                >，最后一次生成计划时间为
                 {{ centerData.titleMap.lastPlanTime }}
                 ）
               </div>
-              <div style="display: inline-block">
-                总（趟次:{{ centerData.titleMap.totalClasses }} /援10 派车:43/援10 里程{{ centerData.titleMap.totalRunMileage }}km 工时{{ centerData.titleMap.totalDuration }}h ）
-              </div>
+              <div style="display: inline-block">主线班次:{{ centerData.titleMap.totalClasses }} /被支援班次{{ centerData.titleMap.totalSupportClasses }}</div>
+              <div style="display: inline-block">关联线班次:{{ centerData.titleMap.subTotalClasses }}/被支援班次{{ centerData.titleMap.subTotalSupportClasses }}</div>
             </div>
 
-            <!-- <div class="head-info">
-            排班计划（当前为 ，最后一次生成计划时间为2023-10-17
-            12:30:00）总（趟次:80 /援10 派车:43/援10 里程564km 工时98h ）
-          </div> -->
             <div class="btn-area">
               <a-button @click="createIt">生成排班</a-button>
-              <a-button>挂车</a-button>
+              <a-button @click="changeCar">挂车</a-button>
               <a-button>参数设置</a-button>
               <a-button>同步计划</a-button>
               <a-button>导出横竖表</a-button>
@@ -86,7 +82,8 @@
                 <ul>
                   <li>趟次数</li>
                   <li v-for="(item, i) in tableData.firstRouteStaList">
-                    {{ i % 2 == 0 ? 1 : 2 }}
+                    <!-- {{ i % 2 == 0 ? 1 : 2 }} -->
+                    {{ item.busClasses }}
                   </li>
                 </ul>
                 <ul class="tit-station">
@@ -98,8 +95,8 @@
                 </ul>
                 <ul>
                   <li>
-                    <div>原班次/78</div>
-                    <div>支援班次/78</div>
+                    <div>原班次/{{ centerData.titleMap.totalClasses }}</div>
+                    <div>支援班次/{{ centerData.titleMap.totalSupportClasses }}</div>
                   </li>
                   <li v-for="(item, i) in tableData.firstRouteStaList">
                     <div>原班次</div>
@@ -359,6 +356,16 @@ export default {
         supRouteName: this.supRouteName,
       });
     },
+    changeCar() {
+      console.log(123);
+      this.$refs.SchedulingChangeCarModal.edit({
+        runDate: this.runDate,
+        routeId: this.routeId,
+        supRouteId: this.supRouteId,
+        routeName: this.routeName,
+        supRouteName: this.supRouteName,
+      });
+    },
     // 获取排班时间等数据
     getRuningScheduleConfig() {
       let send = {
@@ -421,17 +428,19 @@ section {
       margin-right: 12px;
       line-height: 32px;
     }
+    div {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-right: 10px;
+    }
     div:nth-child(1) {
+      font-weight: 500;
       span {
         display: inline-block;
         font-size: 16px;
         font-weight: 500;
       }
-    }
-    div:nth-child(2) {
-      display: inline-block;
-      font-size: 16px;
-      font-weight: 500;
     }
 
     .ant-btn {
@@ -517,6 +526,7 @@ section {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            border-bottom: 1px solid #dadada;
           }
         }
       }
