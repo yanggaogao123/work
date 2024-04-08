@@ -109,6 +109,14 @@ public class ScheduleParam {
 	private String tripBeginTimeB4FirstTime;//凸头班次时间
 	
 	private Long mountCarTemplateId;//挂车模板ID
+
+	private ScheduleParamsDriverless scheduleParamsDriverless;
+	
+	private List<ScheduleParamsDrInout> scheduleParamsDrInoutList;
+
+	private List<ScheduleParamsDrRouteSub> scheduleParamsDrRouteSubList;
+
+	private List<ScheduleParamsDrBus> scheduleParamsDrBusList;
 	
 	static {
 		//二巴一分
@@ -2883,5 +2891,37 @@ public class ScheduleParam {
 			return true;
 		}
 		return false;
+	}
+
+	public ScheduleParamsDriverless getScheduleParamsDriverless() {
+		return scheduleParamsDriverless;
+	}
+
+	public void setScheduleParamsDriverless(ScheduleParamsDriverless scheduleParamsDriverless) {
+		this.scheduleParamsDriverless = scheduleParamsDriverless;
+	}
+
+	public List<ScheduleParamsDrInout> getScheduleParamsDrInoutList() {
+		return scheduleParamsDrInoutList;
+	}
+
+	public void setScheduleParamsDrInoutList(List<ScheduleParamsDrInout> scheduleParamsDrInoutList) {
+		this.scheduleParamsDrInoutList = scheduleParamsDrInoutList;
+	}
+
+	public List<ScheduleParamsDrRouteSub> getScheduleParamsDrRouteSubList() {
+		return scheduleParamsDrRouteSubList;
+	}
+
+	public void setScheduleParamsDrRouteSubList(List<ScheduleParamsDrRouteSub> scheduleParamsDrRouteSubList) {
+		this.scheduleParamsDrRouteSubList = scheduleParamsDrRouteSubList;
+	}
+
+	public List<ScheduleParamsDrBus> getScheduleParamsDrBusList() {
+		return scheduleParamsDrBusList;
+	}
+
+	public void setScheduleParamsDrBusList(List<ScheduleParamsDrBus> scheduleParamsDrBusList) {
+		this.scheduleParamsDrBusList = scheduleParamsDrBusList;
 	}
 }

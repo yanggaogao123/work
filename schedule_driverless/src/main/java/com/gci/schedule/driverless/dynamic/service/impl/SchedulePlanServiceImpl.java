@@ -13,6 +13,7 @@ import com.gci.schedule.driverless.dynamic.mapper.*;
 import com.gci.schedule.driverless.dynamic.service.*;
 import com.gci.schedule.driverless.dynamic.test.*;
 import com.gci.schedule.driverless.dynamic.test.DateUtil.DateFormatUtil;
+import com.gci.schedule.driverless.dynamic.util.StringUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,12 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 	private ScheduleRouteConfigDynamicMapper scheduleRouteConfigDynamicMapper;
 	@Autowired
 	private StationDynamicMapper StationDynamicMapper;
+	@Autowired
+	private ScheduleParamsDriverlessMapper scheduleParamsDriverlessMapper;
+	@Autowired
+	private ScheduleParamsDrInoutMapper scheduleParamsDrInoutMapper;
+	@Autowired
+	private ScheduleParamsDrRouteSubMapper scheduleParamsDrRouteSubMapper;
 
 	long beginTimeMillis=System.currentTimeMillis();
 
@@ -663,14 +670,108 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 				throw new MyException("-1", DateFormatUtil.DATE.getDateString(scheduleParamPreset.getStartWorkRunDate())+"没有排班记录");
 			scheduleParam.setSchedulePlanReference(schedulePlanList);
         }
+
+		if (scheduleParamPreset.getRouteIdDriverless() != null && scheduleParamPreset.getBusNumberDriverless() != null
+				&& scheduleParamPreset.getBusNumberDriverless() > 0) {
+			/**
+			 * 	    @Autowired
+			 *    private ScheduleParamsDriverlessMapper scheduleParamsDriverlessMapper;
+			 *    @Autowired
+			 *    private ScheduleParamsDrInoutMapper scheduleParamsDrInoutMapper;
+			 *    @Autowired
+			 *    private ScheduleParamsDrRouteSubMapper scheduleParamsDrRouteSubMapper;
+			 * */
+			List<ScheduleParamsDriverless> driverlessList = scheduleParamsDriverlessMapper.getByTemplateId(templateId);
+			List<ScheduleParamsDrInout> inoutList = scheduleParamsDrInoutMapper.getByTemplateId(templateId);
+			List<ScheduleParamsDrRouteSub> routeSubList = scheduleParamsDrRouteSubMapper.getByTemplateId(templateId);
+
+			if (driverlessList == null || driverlessList.isEmpty()) {
+				throw new MyException("-1", "无人车线路运营参数设置不能为空！");
+			}
+			ScheduleParamsDriverless driverless = driverlessList.get(0);
+			if ((StringUtil.isEmpty(driverless.getUpFirstTime()) && StringUtil.isNotEmpty(driverless.getUpLatestTime()))
+					|| (StringUtil.isNotEmpty(driverless.getUpFirstTime()) && StringUtil.isEmpty(driverless.getUpLatestTime()))) {
+				throw new MyException("-1", "无人车配置上行首末班时间有误！");
+			}
+			if ((StringUtil.isEmpty(driverless.getDownFirstTime()) && StringUtil.isNotEmpty(driverless.getDownLatestTime()))
+					|| (StringUtil.isNotEmpty(driverless.getDownFirstTime()) && StringUtil.isEmpty(driverless.getDownLatestTime()))) {
+				throw new MyException("-1", "无人车配置下行首末班时间有误！");
+			}
+			if (StringUtil.isEmpty(driverless.getUpFirstTime()) && StringUtil.isEmpty(driverless.getUpLatestTime())
+					&& StringUtil.isEmpty(driverless.getDownFirstTime()) && StringUtil.isEmpty(driverless.getDownLatestTime())) {
+				throw new MyException("-1", "无人车配置上下行首末班时间有误！");
+			}
+			if (driverless.getVehicleContent() == null) {
+				throw new MyException("-1", "无人车配置车内容量不能为空！");
+			}
+			if (driverless.getAnchorDurationMin() == null) {
+				throw new MyException("-1", "无人车配置最小停站时间不能为空！");
+			}
+			if("0".equals(driverless.getUpDirection())&&"0".equals(driverless.getDownDirection())) {
+				driverless.setUpDirection("1");
+				if(!scheduleParam.isLoopLine()) {
+					driverless.setDownDirection("1");
+				}
+			}
+			scheduleParam.setScheduleParamsDriverless(driverless);
+
+			if (routeSubList == null || routeSubList.isEmpty()) {
+				throw new MyException("-1", "无人车配置常规公交营运任务参数配置不能为空！");
+			}
+			scheduleParam.setScheduleParamsDrRouteSubList(routeSubList);
+
+			scheduleParam.setScheduleParamsDrInoutList(inoutList);
+
+			List<ScheduleParamsDrBus> drBusList = new ArrayList<>();
+			scheduleParam.setScheduleParamsDrBusList(drBusList);
+
+			//todo 文远接口暂无数据，测试
+			ScheduleParamsDrBus bus1 = new ScheduleParamsDrBus();
+			drBusList.add(bus1);
+			bus1.setBusNameWY("bus1");
+			ScheduleParamsDrPlan bus1plan1 = new ScheduleParamsDrPlan();
+			bus1.getPlanList().add(bus1plan1);
+			bus1plan1.setBusNameWY("bus1");
+			bus1plan1.setDispatchDate("2023-12-20");
+			bus1plan1.setRouteIdWY("11");
+			bus1plan1.setBeginTime("09:00");
+			bus1plan1.setEndTime("10:00");
+			bus1plan1.setFirstStationId(102023l);
+			bus1plan1.setLastStationId(102023l);
+			ScheduleParamsDrPlan bus1plan2 = new ScheduleParamsDrPlan();
+			bus1.getPlanList().add(bus1plan2);
+			bus1plan2.setBusNameWY("bus1");
+			bus1plan2.setDispatchDate("2023-12-20");
+			bus1plan2.setRouteIdWY("11");
+			bus1plan2.setBeginTime("15:00");
+			bus1plan2.setEndTime("17:00");
+			bus1plan2.setFirstStationId(102023l);
+			bus1plan2.setLastStationId(102023l);
+
+			ScheduleParamsDrBus bus2 = new ScheduleParamsDrBus();
+			drBusList.add(bus2);
+			bus2.setBusNameWY("bus2");
+			ScheduleParamsDrPlan bus2plan1 = new ScheduleParamsDrPlan();
+			bus2.getPlanList().add(bus2plan1);
+			bus2plan1.setBusNameWY("bus2");
+			bus2plan1.setDispatchDate("2023-12-20");
+			bus2plan1.setRouteIdWY("11");
+			bus2plan1.setBeginTime("11:00");
+			bus2plan1.setEndTime("14:00");
+			bus2plan1.setFirstStationId(201083l);
+			bus2plan1.setLastStationId(201083l);
+
+			if (drBusList != null && !drBusList.isEmpty()) {
+				if (inoutList == null || inoutList.isEmpty()) {
+					throw new MyException("-1", "无人车配置自动驾驶营运任务参数配置不能为空！");
+				}
+			}
+		}
+
         RouteSchedule routeSchedule=null;
         System.out.println("生成开始："+(System.currentTimeMillis()-beginTimeMillis));
 
-		if(scheduleParam.isLoopLineDouble()) {
-			routeSchedule=new ScheduleGenerate4Loop(scheduleParam).generate();//todo
-		}else {
-			routeSchedule=new ScheduleGenerateTest(scheduleParam).generate();//todo
-		}
+		routeSchedule = new ScheduleGenerateTest(scheduleParam).generate();//todo
         if(routeSchedule.getTripMap().size()>99) {
 			throw new MyException("-10", "生成计划配车超过99台，请确认排班参数设置是否正确");
         }

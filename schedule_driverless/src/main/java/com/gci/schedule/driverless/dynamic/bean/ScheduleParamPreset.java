@@ -64,6 +64,10 @@ public class ScheduleParamPreset {
 	
 	private List<RouteFirstAndLatestTime> multiPeriodList;//定点班车分时段，如21:00-01:00、4:00-6:00
 
+	private Long routeIdDriverless;
+
+	private Integer busNumberDriverless;
+
 	public Integer getCover() {
 		return cover;
 	}
@@ -263,6 +267,22 @@ public class ScheduleParamPreset {
 
 	public void setMultiPeriodList(List<RouteFirstAndLatestTime> multiPeriodList) {
 		this.multiPeriodList = multiPeriodList;
+	}
+
+	public Long getRouteIdDriverless() {
+		return routeIdDriverless;
+	}
+
+	public void setRouteIdDriverless(Long routeIdDirverless) {
+		this.routeIdDriverless = routeIdDirverless;
+	}
+
+	public Integer getBusNumberDriverless() {
+		return busNumberDriverless;
+	}
+
+	public void setBusNumberDriverless(Integer busNumberDirverless) {
+		this.busNumberDriverless = busNumberDirverless;
 	}
 
 	@Override
