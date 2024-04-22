@@ -75,6 +75,12 @@ public class RouteStationPassenger implements Cloneable{
 
     private Long uniqueRouteId;// unique_route_id
 
+    private RouteStationPassenger routeStationPassengerTurn;//短线掉头点
+
+    private RouteSta routeStaTurn;//短线掉头点
+
+    private int subNumber = 0;
+
     public Short getCompeteCurrentNumber() {
         return competeCurrentNumber;
     }
@@ -345,6 +351,39 @@ public class RouteStationPassenger implements Cloneable{
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public RouteStationPassenger getRouteStationPassengerTurn() {
+        return routeStationPassengerTurn;
+    }
+
+    public void setRouteStationPassengerTurn(RouteStationPassenger routeStationPassengerTurn) {
+        this.routeStationPassengerTurn = routeStationPassengerTurn;
+    }
+
+    public RouteSta getRouteStaTurn() {
+        return routeStaTurn;
+    }
+
+    public void setRouteStaTurn(RouteSta routeStaTurn) {
+        this.routeStaTurn = routeStaTurn;
+    }
+
+    public int getSubNumber() {
+        return subNumber;
+    }
+
+    public void addSubNumber(Integer subNumber) {
+        if (subNumber != null) {
+            this.subNumber += subNumber;
+        }
+    }
+
+    public int getCurrentNumberRealTime() {
+        if (currentNumber == null) {
+            return 0;
+        }
+        return currentNumber - subNumber;
     }
 
     @Override

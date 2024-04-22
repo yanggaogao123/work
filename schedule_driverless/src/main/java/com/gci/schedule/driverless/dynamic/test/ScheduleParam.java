@@ -12,6 +12,7 @@ import com.gci.schedule.driverless.dynamic.util.StringUtil;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class ScheduleParam {
@@ -67,7 +68,7 @@ public class ScheduleParam {
 	private boolean isLoopLine;//环线标识
 	
 	private Map<Integer,Map<String, RouteStationPassenger>> highSectionPassengerMap=new HashMap<Integer, Map<String,RouteStationPassenger>>();//各时段高断面客流
-	
+
 	private Map<Integer,Map<String, Integer>> minLongClassesNumberMap=new HashMap<Integer, Map<String,Integer>>();//各时段最低发班要求
 
 	private ScheduleParamPreset scheduleParamPreset;//排班配车情况
@@ -117,7 +118,9 @@ public class ScheduleParam {
 	private List<ScheduleParamsDrRouteSub> scheduleParamsDrRouteSubList;
 
 	private List<ScheduleParamsDrBus> scheduleParamsDrBusList;
-	
+
+	private Map<Long, RouteSta> routeStaMap;
+
 	static {
 		//二巴一分
 		/*routeIdTestList.add(12630L);//652路
@@ -1589,6 +1592,9 @@ public class ScheduleParam {
 	}
 	
 	public Integer getWasteTime(Date tripBeginTime,int direction) {
+		if (tripBeginTime == null) {
+			return null;
+		}
 		if(tripBeginTime.after(getLatestTime(direction))) {//过了末班车时间
 			tripBeginTime=getLatestTime(direction);
 		}
@@ -1752,6 +1758,35 @@ public class ScheduleParam {
 		}
 		return null;
 	}
+
+	public Date getLatestTimeDriverless(int direction) {
+		Date latestTimeMain = getLatestTime(direction);
+		if (latestTimeMain == null) {
+			return null;
+		}
+		if(direction==0 && getScheduleParamsDriverless().getUpFirstTime()!=null && getScheduleParamsDriverless().getUpLatestTime()!=null) {
+			Calendar firstTime=DateUtil.getCalendarHM(getScheduleParamsDriverless().getUpFirstTime());
+			Calendar latestTime=DateUtil.getCalendarHM(getScheduleParamsDriverless().getUpLatestTime());
+			if(firstTime.getTime().after(latestTime.getTime())) {//末班车加一天
+				latestTime.add(Calendar.DATE, 1);
+			}else if(latestTime.getTime().before(DateUtil.getDateHM("0400"))) {//末班车早于0400
+				latestTime.add(Calendar.DATE, 1);
+			}
+			return latestTime.getTime();
+		} else {
+			if(getScheduleParamsDriverless().getDownFirstTime()!=null && getScheduleParamsDriverless().getDownLatestTime()!=null) {
+				Calendar firstTime=DateUtil.getCalendarHM(getScheduleParamsDriverless().getDownFirstTime());
+				Calendar latestTime=DateUtil.getCalendarHM(getScheduleParamsDriverless().getDownLatestTime());
+				if(firstTime.getTime().after(latestTime.getTime())) {//末班车加一天
+					latestTime.add(Calendar.DATE, 1);
+				}else if(latestTime.getTime().before(DateUtil.getDateHM("0400"))) {//末班车早于0400
+					latestTime.add(Calendar.DATE, 1);
+				}
+				return latestTime.getTime();
+			}
+		}
+		return latestTimeMain;
+	}
 	
 	public String getFirstTimeStr(int direction) {
 		String firstTime=null;
@@ -1788,6 +1823,26 @@ public class ScheduleParam {
 		}
 		if(firstTime!=null&&firstTime.before(DateUtil.getDateHM("0400"))) {//首班车早于0400
 			firstTime=DateUtil.getDateAddDay(firstTime, 1);
+		}
+		return firstTime;
+	}
+
+	public Date getFirstTimeDriverless(int direction) {
+		Date firstTimeMain = getFirstTime(direction);
+		if (firstTimeMain == null) {
+			return null;
+		}
+		Date firstTime=null;
+		if(direction==0&&getScheduleParamsDriverless().getUpFirstTime()!=null) {
+			firstTime=DateUtil.getCalendarHM(getScheduleParamsDriverless().getUpFirstTime()).getTime();
+		}else if(direction==1&&getScheduleParamsDriverless().getDownFirstTime()!=null){
+			firstTime=DateUtil.getCalendarHM(getScheduleParamsDriverless().getDownFirstTime()).getTime();
+		}
+		if(firstTime!=null&&firstTime.before(DateUtil.getDateHM("0400"))) {//首班车早于0400
+			firstTime=DateUtil.getDateAddDay(firstTime, 1);
+		}
+		if (firstTime == null) {
+			firstTime = firstTimeMain;
 		}
 		return firstTime;
 	}
@@ -2186,11 +2241,85 @@ public class ScheduleParam {
 		}
 		Collections.sort(scheduleHalfHourList, new ScheduleHalfHourComparator());
 	}
-	
+
+	public long getHighSectionPassenger(int direction, Date beginTime, Date endTime) {
+		long passenger = 0l;
+		while (beginTime.before(endTime)) {
+			try {
+				RouteStationPassenger high = getHighSectionPassenger(direction, beginTime);
+				if (high != null && high.getCurrentNumber() != null) {
+					passenger += high.getCurrentNumber();
+				}
+			} catch (Exception e) {
+
+			}
+			beginTime = DateUtil.getDateAddMinute(beginTime, 30);
+		}
+		return passenger;
+	}
+
 	public RouteStationPassenger getHighSectionPassenger(int direction,Date runTime) {
 		return getHighSectionPassenger(direction,DateFormatUtil.HM.getDateString(runTime));
 	}
-	
+
+	public RouteStationPassenger getHighSectionPassengerRealTime(int direction, Date runTime) {
+		List<RouteStationPassenger> routeStationPassengerList = getRouteStationPassenger(runTime, direction);
+		if(routeStationPassengerList==null || routeStationPassengerList.isEmpty()) {
+			return null;
+		}
+		RouteStationPassenger highSectionPassenger = null;
+		for(RouteStationPassenger passenger:routeStationPassengerList) {
+			if(highSectionPassenger==null||passenger.getCurrentNumber()>highSectionPassenger.getCurrentNumberRealTime()) {
+				highSectionPassenger=passenger;
+			}
+		}
+		int runTimeNum = DateUtil.getTimeMinute(runTime)/30;
+		if(highSectionPassenger==null) {
+			highSectionPassenger=new RouteStationPassenger();
+			short currentNumber = 0;
+			highSectionPassenger.setRunTimeNum((short)runTimeNum);
+			highSectionPassenger.setDirection(String.valueOf(direction));
+			highSectionPassenger.setCurrentNumber(currentNumber);
+		} else {
+			if (highSectionPassenger.getCurrentNumberRealTime() > 0 && highSectionPassenger.getOrderNumber() != null) {
+				double currentNumberShort = highSectionPassenger.getCurrentNumberRealTime() * 1;
+				int shortTimes = 0;
+				RouteSta routeSta = null;
+				for (int i = routeStationPassengerList.size() - 1; i >= 0; i--) {
+					RouteStationPassenger passenger = routeStationPassengerList.get(i);
+					if (passenger != null && passenger.getOrderNumber() <= highSectionPassenger.getOrderNumber()) {
+						break;
+					}
+					if (passenger != null && passenger.getCurrentNumberRealTime() <= currentNumberShort) {
+						if (routeStaMap.get(passenger.getRouteStaId()) != null) {
+							routeSta = routeStaMap.get(passenger.getRouteStaId());
+						}
+						shortTimes++;
+					} else {
+						shortTimes = 0;
+					}
+					if (shortTimes >= 5) {
+						highSectionPassenger.setRouteStationPassengerTurn(passenger);
+						highSectionPassenger.setRouteStaTurn(routeSta);
+					}
+				}
+			}
+		}
+		return highSectionPassenger;
+	}
+
+	public void subSectionPassengerRealTime(int direction, Date runTime, Long routeStaId, Integer subPassenger) {
+		List<RouteStationPassenger> routeStationPassengerList = getRouteStationPassenger(runTime, direction);
+		if (routeStationPassengerList != null) {
+			for (RouteStationPassenger passenger : routeStationPassengerList) {
+				passenger.addSubNumber(subPassenger);
+				if (routeStaId != null && routeStaId.equals(passenger.getRouteStaId())) {
+					break;
+				}
+			}
+		}
+	}
+
 	public RouteStationPassenger getHighSectionPassenger(int direction,String runTime) {
 		Map<String, RouteStationPassenger> map=highSectionPassengerMap.get(direction);
 		if(map==null) {
@@ -2923,5 +3052,28 @@ public class ScheduleParam {
 
 	public void setScheduleParamsDrBusList(List<ScheduleParamsDrBus> scheduleParamsDrBusList) {
 		this.scheduleParamsDrBusList = scheduleParamsDrBusList;
+	}
+
+	public int getBusNumberDriverlessPreset() {
+		return scheduleParamPreset.getBusNumberDriverless()==null?0:scheduleParamPreset.getBusNumberDriverless();
+	}
+
+	public Long getRouteIdDriverless() {
+		return scheduleParamPreset.getRouteIdDriverless();
+	}
+
+	public List<ScheduleParamsDrRouteSub> getScheduleParamsDrRouteSubList(Integer direction) {
+		if (direction == null) {
+			return scheduleParamsDrRouteSubList;
+		}
+		return scheduleParamsDrRouteSubList.stream().filter((a) -> a.getDirection() != null && a.getDirection() == direction).collect(Collectors.toList());
+	}
+
+	public Map<Long, RouteSta> getRouteStaMap() {
+		return routeStaMap;
+	}
+
+	public void setRouteStaMap(Map<Long, RouteSta> routeStaMap) {
+		this.routeStaMap = routeStaMap;
 	}
 }

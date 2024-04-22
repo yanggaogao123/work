@@ -2,6 +2,7 @@ package com.gci.schedule.driverless.dynamic.test;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gci.schedule.driverless.dynamic.bean.ScheduleParamShift;
+import com.gci.schedule.driverless.dynamic.bean.ScheduleParamsDrBus;
 import com.gci.schedule.driverless.dynamic.enums.ShiftType;
 
 import java.util.Date;
@@ -44,6 +45,8 @@ public class Bus implements Cloneable{
 	private Long startRouteStaId;//中途出车站点
 	
 	private SingleBusConf singleBusConf;
+
+	private ScheduleParamsDrBus scheduleParamsDrBus;
 	
 	public boolean isHasMiddleStop() {
 		return hasMiddleStop;
@@ -164,7 +167,15 @@ public class Bus implements Cloneable{
 	public void setStartRouteStaId(Long startRouteStaId) {
 		this.startRouteStaId = startRouteStaId;
 	}
-	
+
+	public ScheduleParamsDrBus getScheduleParamsDrBus() {
+		return scheduleParamsDrBus;
+	}
+
+	public void setScheduleParamsDrBus(ScheduleParamsDrBus scheduleParamsDrBus) {
+		this.scheduleParamsDrBus = scheduleParamsDrBus;
+	}
+
 	public void setSingleBusConf(int runTripNumberMorning, int runTripNumberEvening) {
 		singleBusConf=new SingleBusConf(runTripNumberMorning, runTripNumberEvening);
 	}

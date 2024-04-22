@@ -2,6 +2,7 @@ package com.gci.schedule.driverless.dynamic.test;
 
 import com.gci.schedule.driverless.dynamic.bean.RouteSta;
 import com.gci.schedule.driverless.dynamic.bean.RouteStaTurn;
+import com.gci.schedule.driverless.dynamic.bean.ScheduleParamsDrInoutTime;
 import com.gci.schedule.driverless.dynamic.enums.ServiceType;
 
 import java.util.Calendar;
@@ -66,7 +67,11 @@ public class Trip implements Cloneable{
 	private Date firstRoundPlanTime;//首轮时间
     
     private Long firstRoundTaskId;//首轮任务
-	
+
+	private Long firstRouteStaIdNext;//下一轮首站站点ID
+
+	private ScheduleParamsDrInoutTime inoutTime;
+
 	public Trip() {}
 	
 	public Trip(Bus bus, Date tripBeginTime, ScheduleParam scheduleParam, RouteStaTurn routeStaTurn) {
@@ -462,6 +467,21 @@ public class Trip implements Cloneable{
 			return DateUtil.getMinuteInterval(tripLast.getTripBeginTime(), tripBeginTime);
 		return null;
 	}
-	
+
+	public Long getFirstRouteStaIdNext() {
+		return firstRouteStaIdNext;
+	}
+
+	public void setFirstRouteStaIdNext(Long firstRouteStaIdNext) {
+		this.firstRouteStaIdNext = firstRouteStaIdNext;
+	}
+
+	public ScheduleParamsDrInoutTime getInoutTime() {
+		return inoutTime;
+	}
+
+	public void setInoutTime(ScheduleParamsDrInoutTime inoutTime) {
+		this.inoutTime = inoutTime;
+	}
 }
 

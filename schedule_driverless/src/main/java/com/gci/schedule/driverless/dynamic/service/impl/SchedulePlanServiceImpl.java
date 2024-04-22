@@ -173,6 +173,11 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
         scheduleParam.setVehicleContent(vehicleContent);
 		List<RouteSta> routeStaList = routeStationDynamicService.getRouteStaListByRouteId(routeId);
         scheduleParam.setRouteStaList(routeStaList);
+		Map<Long, RouteSta> routeStaMap = new HashMap<>();
+		for (RouteSta routeSta : routeStaList) {
+			routeStaMap.put(routeSta.getRouteStationId(), routeSta);
+		}
+		scheduleParam.setRouteStaMap(routeStaMap);
         if(isLoopLine(scheduleParam)) {
 			scheduleParam.setLoopLine(true);
         }else {
@@ -718,6 +723,14 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 			if (routeSubList == null || routeSubList.isEmpty()) {
 				throw new MyException("-1", "无人车配置常规公交营运任务参数配置不能为空！");
 			}
+			for (ScheduleParamsDrRouteSub routeSub : routeSubList) {
+				RouteSta routeSta = routeStaMap.get(routeSub.getLastRouteStaId());
+				if (routeSta != null) {
+					routeSub.setLastRouteSta(routeSta);
+				} else {
+					throw new MyException("-1", "无人车配置常规公交营运任务找不到末站站点，请检查任务设置！");
+				}
+			}
 			scheduleParam.setScheduleParamsDrRouteSubList(routeSubList);
 
 			scheduleParam.setScheduleParamsDrInoutList(inoutList);
@@ -732,38 +745,63 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 			ScheduleParamsDrPlan bus1plan1 = new ScheduleParamsDrPlan();
 			bus1.getPlanList().add(bus1plan1);
 			bus1plan1.setBusNameWY("bus1");
-			bus1plan1.setDispatchDate("2023-12-20");
+			bus1plan1.setDispatchDate("2024-04-02");
 			bus1plan1.setRouteIdWY("11");
-			bus1plan1.setBeginTime("09:00");
-			bus1plan1.setEndTime("10:00");
+			bus1plan1.setBeginTime("10:00");
+			bus1plan1.setEndTime("11:00");
 			bus1plan1.setFirstStationId(102023l);
 			bus1plan1.setLastStationId(102023l);
 			ScheduleParamsDrPlan bus1plan2 = new ScheduleParamsDrPlan();
 			bus1.getPlanList().add(bus1plan2);
 			bus1plan2.setBusNameWY("bus1");
-			bus1plan2.setDispatchDate("2023-12-20");
+			bus1plan2.setDispatchDate("2024-04-02");
 			bus1plan2.setRouteIdWY("11");
-			bus1plan2.setBeginTime("15:00");
-			bus1plan2.setEndTime("17:00");
+			bus1plan2.setBeginTime("14:00");
+			bus1plan2.setEndTime("15:00");
 			bus1plan2.setFirstStationId(102023l);
 			bus1plan2.setLastStationId(102023l);
 
-			ScheduleParamsDrBus bus2 = new ScheduleParamsDrBus();
-			drBusList.add(bus2);
-			bus2.setBusNameWY("bus2");
-			ScheduleParamsDrPlan bus2plan1 = new ScheduleParamsDrPlan();
-			bus2.getPlanList().add(bus2plan1);
-			bus2plan1.setBusNameWY("bus2");
-			bus2plan1.setDispatchDate("2023-12-20");
-			bus2plan1.setRouteIdWY("11");
-			bus2plan1.setBeginTime("11:00");
-			bus2plan1.setEndTime("14:00");
-			bus2plan1.setFirstStationId(201083l);
-			bus2plan1.setLastStationId(201083l);
+			ScheduleParamsDrPlan bus1plan3 = new ScheduleParamsDrPlan();
+			bus1.getPlanList().add(bus1plan3);
+			bus1plan3.setBusNameWY("bus1");
+			bus1plan3.setDispatchDate("2024-04-02");
+			bus1plan3.setRouteIdWY("11");
+			bus1plan3.setBeginTime("17:00");
+			bus1plan3.setEndTime("18:00");
+			bus1plan3.setFirstStationId(102023l);
+			bus1plan3.setLastStationId(102023l);
+
+//			ScheduleParamsDrBus bus2 = new ScheduleParamsDrBus();
+//			drBusList.add(bus2);
+//			bus2.setBusNameWY("bus2");
+//			ScheduleParamsDrPlan bus2plan1 = new ScheduleParamsDrPlan();
+//			bus2.getPlanList().add(bus2plan1);
+//			bus2plan1.setBusNameWY("bus2");
+//			bus2plan1.setDispatchDate("2024-04-02");
+//			bus2plan1.setRouteIdWY("11");
+//			bus2plan1.setBeginTime("17:00");
+//			bus2plan1.setEndTime("22:00");
+//			bus2plan1.setFirstStationId(201083l);
+//			bus2plan1.setLastStationId(201083l);
 
 			if (drBusList != null && !drBusList.isEmpty()) {
 				if (inoutList == null || inoutList.isEmpty()) {
 					throw new MyException("-1", "无人车配置自动驾驶营运任务参数配置不能为空！");
+				}
+				Map<Long, ScheduleParamsDrInout> inMap = new HashMap<>();
+				Map<Long, ScheduleParamsDrInout> outMap = new HashMap<>();
+				for (ScheduleParamsDrInout scheduleParamsDrInout : inoutList) {
+					inMap.put(scheduleParamsDrInout.getStationIdInFirst(), scheduleParamsDrInout);
+					outMap.put(scheduleParamsDrInout.getStationIdOutLast(), scheduleParamsDrInout);
+				}
+
+				for (ScheduleParamsDrBus drBus : drBusList) {
+					for (ScheduleParamsDrPlan scheduleParamsDrPlan : drBus.getPlanList()) {
+						scheduleParamsDrPlan.setTripTime();
+						scheduleParamsDrPlan.setDriverlessIn(inMap.get(scheduleParamsDrPlan.getLastStationId()));
+						scheduleParamsDrPlan.setDriverlessOut(outMap.get(scheduleParamsDrPlan.getFirstStationId()));
+					}
+					Collections.sort(drBus.getPlanList(), Comparator.comparing(ScheduleParamsDrPlan::getTripBeginTime));
 				}
 			}
 		}

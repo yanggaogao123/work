@@ -39,4 +39,10 @@ public class ScheduleParamsDrRouteSub {
 
     private String nextFirstRouteStaName;
 
+    private Long firstStationId;
+
+    private Long lastStationId;
+
+    private RouteSta lastRouteSta;
+
 }
