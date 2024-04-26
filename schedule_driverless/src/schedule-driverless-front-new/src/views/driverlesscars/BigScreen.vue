@@ -3,7 +3,39 @@
     <div class="container" id="container">
       <div class="content">
         <!-- 头部 -->
-        <header class="header"></header>
+        <header class="header">
+          <img class="flash-left" src="@/assets/driverlesscars/falsh.gif" alt="" />
+          <img class="flash-right" src="@/assets/driverlesscars/falsh.gif" alt="" />
+          <div class="header-con">
+            <div class="header-left">
+              <div class="search-box">
+                <img src="@/assets/driverlesscars/bs-top-left.png" alt="" />
+                <div class="search-con">
+                  <input type="text" class="ipt" @keyup="searchIpt" v-model="searchName" />
+                  <a-icon type="up" @click="showSearchList" v-show="!searchListBool" />
+                  <a-icon type="down" @click="showSearchList" v-show="searchListBool" />
+                  <ul class="ipt-list" v-show="searchListBool">
+                    <li @click="clickList(item)" v-for="(item, i) in allRouteList">{{ item.routeName }}-{{ item.supportRouteName }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="weather">{{ moment().format('YYYY-MM-DD') }}</div>
+            </div>
+            <div class="header-middle">公交混编自动驾驶高效调度平台</div>
+            <div class="header-right">
+              <img src="@/assets/driverlesscars/bs-top-right.png" alt="" />
+
+              <div class="header-right-con">
+                <ul class="bus-list" id="movingDiv">
+                  <li v-for="(item, i) in supList">{{ item.status == 1 ? '无人车' : '支援车' }} {{ item.busName }} {{ moment(item.planTime).format('HH:mm') }}</li>
+                  <!-- <li>支援车 D102 7:10</li>
+                  <li>支援车 D102 7:10</li>
+                  <li>支援车 D102 7:10</li> -->
+                </ul>
+              </div>
+            </div>
+          </div>
+        </header>
         <section class="section">
           <div class="section-con">
             <!-- 图表 -->
@@ -17,7 +49,10 @@
               </div>
             </div>
             <!-- 简图 -->
-            <div class="car-box"></div>
+            <div class="car-box">
+              <!-- <big-screen-car-one-modal></big-screen-car-one-modal> -->
+              <big-screen-car-two-modal :sendData="baseData"></big-screen-car-two-modal>
+            </div>
             <!-- 图表 -->
             <div class="chart-box">
               <div class="chart-left">
@@ -42,6 +77,8 @@ import '@/assets/less/base.css';
 import moment from 'moment';
 import BigScreenChartOneModal from './modules/BigScreenChartOneModal.vue';
 import BigScreenChartTwoModal from './modules/BigScreenChartTwoModal.vue';
+import BigScreenCarOneModal from './modules/BigScreenCarOneModal.vue';
+import BigScreenCarTwoModal from './modules/BigScreenCarTwoModal.vue';
 
 // 获取容器元素
 // var container = document.querySelector('.container');
@@ -67,7 +104,7 @@ function updateScale() {
 
 export default {
   name: 'BigScreen',
-  components: { BigScreenChartOneModal, BigScreenChartTwoModal },
+  components: { BigScreenChartOneModal, BigScreenChartTwoModal, BigScreenCarOneModal, BigScreenCarTwoModal },
   data() {
     return {
       url: {
@@ -82,6 +119,11 @@ export default {
         getRuningScheduleConfig: `${process.env.VUE_APP_BUS_API}/schedule/getRuningScheduleConfig`,
         runBus: `${process.env.VUE_APP_BUS_API}/schedule/runBus`,
         getMonitorInfo: `${process.env.VUE_APP_BUS_API}/schedule/getMonitorInfo`,
+
+        // 模糊搜索线路组接口
+        getByRouteNameKey: `${process.env.VUE_APP_BUS_API}/route/getByRouteNameKey`,
+        // 未来一小时支援车
+        getOneHourSupportPlan: `${process.env.VUE_APP_BUS_API}/schedule/getOneHourSupportPlan`,
       },
       pageValue: 'a',
       mes: '',
@@ -113,10 +155,19 @@ export default {
       pageValue: '',
       time: '',
       playBool: true,
+
+      // 搜索框数据
+      searchName: '',
+      searchObj: {},
+      searchListBool: false,
+
+      // 滚动框数据
+      supList: [],
+      movingTimer: '',
     };
   },
   created() {
-    // this.getData();
+    this.getData();
   },
   mounted() {
     // 获取容器元素
@@ -138,7 +189,7 @@ export default {
       params.append('paramString', paramString);
       this.mes = params;
       console.log(params.toString());
-      axios.get(`${this.url.getRouteList}?${params}`, {}, { params }).then((res) => {
+      axios.post(`${this.url.getByRouteNameKey}`, {}, { params }).then((res) => {
         console.log(res);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
@@ -147,32 +198,93 @@ export default {
         this.allRouteList = res.data.data;
       });
 
-      axios
-        .post(
-          `${this.url.getMonitorInfo}`,
-          {
-            routeId: this.routeId,
-            runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
-          },
-          { params }
-        )
-        .then((res) => {
-          console.log(res);
-        });
+      // axios
+      //   .post(
+      //     `${this.url.getMonitorInfo}`,
+      //     {
+      //       routeId: this.routeId,
+      //       runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
+      //     },
+      //     { params }
+      //   )
+      //   .then((res) => {
+      //     console.log(res);
+      //   });
 
-      axios
-        .post(
-          `${this.url.getMonitorInfo}`,
-          {
-            routeId: this.supRouteId,
-            runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
-          },
-          { params }
-        )
-        .then((res) => {
-          console.log(res);
-        });
+      // axios
+      //   .post(
+      //     `${this.url.getMonitorInfo}`,
+      //     {
+      //       routeId: this.supRouteId,
+      //       runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
+      //     },
+      //     { params }
+      //   )
+      //   .then((res) => {
+      //     console.log(res);
+      //   });
     },
+
+    // 搜索栏
+    showSearchList() {
+      this.searchListBool = !this.searchListBool;
+    },
+    clickList(item) {
+      this.searchObj = item;
+      this.searchName = `${item.routeName}-${item.supportRouteName}`;
+      this.routeId = item.routeId;
+      this.supRouteId = item.supportRouteId;
+      this.searchListBool = false;
+
+      let params = this.mes;
+      axios.post(`${this.url.getOneHourSupportPlan}`, { routeId: this.routeId, supportRouteId: this.supRouteId }, { params }).then((res) => {
+        console.log(res);
+        if (res.data.retCode != 0) {
+          this.$message.error(res.data.retMsg);
+          return;
+        }
+        this.supList = res.data.data;
+
+        clearInterval(this.movingTimer);
+
+        // 获取需要移动的div元素
+        const movingDiv = document.getElementById('movingDiv');
+
+        // 定义初始位置和每次移动的距离
+        let currentPosition = 0;
+        const moveDistance = 50;
+
+        // 定义向上移动的函数
+        function moveUp() {
+          // 向上移动指定距离
+          currentPosition -= moveDistance;
+          movingDiv.style.top = currentPosition + 'px';
+
+          // 当到达底部时，自动返回到最顶部
+          if (currentPosition <= -movingDiv.offsetHeight) {
+            currentPosition = 0;
+            movingDiv.style.top = currentPosition + 'px';
+          }
+        }
+
+        // 定时触发向上移动函数
+        this.movingTimer = setInterval(moveUp, 2000); // 每秒触发一次向上移动函数
+      });
+    },
+    searchIpt() {
+      axios.post(`${this.url.getByRouteNameKey}`, { routeNameKey: this.searchName }).then((res) => {
+        console.log(res);
+        if (res.data.retCode != 0) {
+          this.$message.error(res.data.retMsg);
+          return;
+        }
+        this.searchListBool = true;
+        this.allRouteList = res.data.data;
+      });
+    },
+
+    /****************************/
+
     handleSearch(value) {
       console.log(value);
       if (value == '') {
@@ -398,30 +510,156 @@ html {
 .content {
   width: 100%;
   height: 100%;
-  background: #0b1340;
+  background: #091a4f;
   position: relative;
   .header {
     // position: absolute;
     width: 100%;
-    height: 90px;
-    background: url('../../assets/driverlesscars/tit.png') no-repeat 100% 100%;
-    background-size: 100% 100%;
+    height: 120px;
+    position: relative;
+    display: flex;
+    .flash-left,
+    .flash-right {
+      width: 50%;
+      height: 100%;
+    }
+    .flash-right {
+      transform: scaleX(-1);
+    }
+    .header-con {
+      position: absolute;
+      width: 100%;
+      height: 90px;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      .header-left {
+        .search-box {
+          position: relative;
+          display: inline-block;
+          margin: 0 0 0 50px;
+          img {
+            width: 360px;
+            height: 90px;
+          }
+          .search-con {
+            position: absolute;
+            top: 30px;
+            left: 100px;
+            .ipt {
+              width: 180px;
+              height: 36px;
+              border: none;
+              background-color: transparent;
+              color: #fff;
+              line-height: 36px;
+              font-size: 24px;
+            }
+            i {
+              font-size: 20px;
+              color: #fff;
+            }
+            .ipt-list {
+              position: absolute;
+              top: 42px;
+              left: 0px;
+              z-index: 2;
+              color: rgb(230, 247, 255);
+              font-size: 20px;
+              height: 160px;
+              overflow: auto;
+              li {
+                width: 249px;
+                height: 48px;
+                border-radius: 0px;
+                border: none;
+                background: rgba(9, 25, 79, 0.8);
+                cursor: pointer;
+                line-height: 48px;
+                margin-bottom: 4px;
+                &:hover {
+                  background: #005873;
+                }
+              }
+              &::-webkit-scrollbar {
+                display: none; /* Chrome Safari */
+              }
+            }
+          }
+        }
+        .weather {
+          display: inline-block;
+          font-size: 18px;
+          color: rgb(189, 222, 239);
+          letter-spacing: 2px;
+          font-weight: normal;
+          line-height: 100px;
+          vertical-align: top;
+          margin-left: 20px;
+        }
+      }
+      .header-middle {
+        width: 520px;
+        position: absolute;
+        color: #fff;
+        font-size: 32px;
+        font-weight: 600;
+        line-height: 80px;
+        letter-spacing: 5px;
+        left: 0;
+        right: 0;
+        top: 0;
+        margin: 0 auto;
+      }
+      .header-right {
+        position: relative;
+        margin-right: 50px;
+        img {
+          width: 300px;
+          height: 90px;
+        }
+        .header-right-con {
+          position: absolute;
+          top: 24px;
+          left: 114px;
+          width: 200px;
+          height: 50px;
+          overflow: scroll;
+          &::-webkit-scrollbar {
+            display: none; /* Chrome Safari */
+          }
+        }
+        .bus-list {
+          position: absolute;
+          color: #fff;
+          top: 0;
+          left: 0;
+          line-height: 50px;
+          font-size: 20px;
+          // transition: top 0.5s ease-in-out;
+        }
+      }
+      // background: red;
+    }
   }
   .section {
+    position: absolute;
     width: 100%;
-    height: calc(100% - 90px);
+    height: calc(100% - 100px);
+    top: 92px;
     .section-con {
       padding: 0 15px;
       .chart-box {
         width: 100%;
         height: 240px;
-        background: blue;
+        // background: blue;
         display: flex;
         justify-content: space-between;
         .chart-left,
         .chart-right {
           width: 50%;
-          background: green;
+          // background: green;
         }
         .chart-left {
           margin-right: 10px;
@@ -433,7 +671,7 @@ html {
       .car-box {
         width: 100%;
         height: 500px;
-        background: red;
+        // background: red;
       }
     }
   }

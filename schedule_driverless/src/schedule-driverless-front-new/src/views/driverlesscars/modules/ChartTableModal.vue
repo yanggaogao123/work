@@ -391,10 +391,12 @@ export default {
     this.tableInit();
   },
   mounted() {
-    this.ulChartInit();
-    this.urChartInit();
-    this.dlChartInit();
-    this.drChartInit();
+    setTimeout(() => {
+      this.ulChartInit();
+      this.urChartInit();
+      this.dlChartInit();
+      this.drChartInit();
+    }, 500);
   },
   methods: {
     tableInit() {
@@ -460,11 +462,13 @@ export default {
           trigger: 'axis',
           axisPointer: {
             type: 'cross',
-            crossStyle: {
-              color: '#999',
-            },
+            // crossStyle: {
+            //   color: '#999',
+            // },
           },
         },
+        // color: ['#5470C6', '#91CC75', '#EE6666'],
+        //
         // legend: {
         //   data: [
         //     "时段班次核载人数",
@@ -513,9 +517,11 @@ export default {
           {
             type: 'value',
             name: '上行',
-            min: 0,
-            max: 2000,
-            interval: 200,
+            position: 'left',
+            alignTicks: true,
+            axisLine: {
+              show: true,
+            },
             axisLabel: {
               formatter: '{value}',
             },
@@ -523,9 +529,7 @@ export default {
           {
             type: 'value',
             // name: "Temperature",
-            //   min: 0,
-            //   max: 25,
-            //   interval: 5,
+            alignTicks: true,
             axisLabel: {
               formatter: '{value}',
             },
@@ -565,7 +569,7 @@ export default {
           {
             name: '时段发车班次数',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -576,7 +580,7 @@ export default {
           {
             name: '时段班次满载率(%)',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -587,7 +591,7 @@ export default {
           {
             name: '时段平均间隔',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -665,9 +669,11 @@ export default {
           {
             type: 'value',
             name: '下行',
-            min: 0,
-            max: 2000,
-            interval: 200,
+            position: 'left',
+            alignTicks: true,
+            axisLine: {
+              show: true,
+            },
             axisLabel: {
               formatter: '{value}',
             },
@@ -675,9 +681,7 @@ export default {
           {
             type: 'value',
             // name: "Temperature",
-            //   min: 0,
-            //   max: 25,
-            //   interval: 5,
+            alignTicks: true,
             axisLabel: {
               formatter: '{value}',
             },
@@ -717,7 +721,7 @@ export default {
           {
             name: '时段发车班次数',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -728,7 +732,7 @@ export default {
           {
             name: '时段班次满载率(%)',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -739,7 +743,7 @@ export default {
           {
             name: '时段平均间隔',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -827,9 +831,11 @@ export default {
           {
             type: 'value',
             name: '上行',
-            min: 0,
-            max: 2000,
-            interval: 200,
+            position: 'left',
+            alignTicks: true,
+            axisLine: {
+              show: true,
+            },
             axisLabel: {
               formatter: '{value}',
             },
@@ -837,9 +843,7 @@ export default {
           {
             type: 'value',
             // name: "Temperature",
-            //   min: 0,
-            //   max: 25,
-            //   interval: 5,
+            alignTicks: true,
             axisLabel: {
               formatter: '{value}',
             },
@@ -879,7 +883,7 @@ export default {
           {
             name: '时段发车班次数',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -890,7 +894,7 @@ export default {
           {
             name: '时段班次满载率(%)',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -901,7 +905,7 @@ export default {
           {
             name: '时段平均间隔',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -979,9 +983,11 @@ export default {
           {
             type: 'value',
             name: '下行',
-            min: 0,
-            max: 2000,
-            interval: 200,
+            position: 'left',
+            alignTicks: true,
+            axisLine: {
+              show: true,
+            },
             axisLabel: {
               formatter: '{value}',
             },
@@ -989,9 +995,7 @@ export default {
           {
             type: 'value',
             // name: "Temperature",
-            //   min: 0,
-            //   max: 25,
-            //   interval: 5,
+            alignTicks: true,
             axisLabel: {
               formatter: '{value}',
             },
@@ -1031,7 +1035,7 @@ export default {
           {
             name: '时段发车班次数',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -1042,7 +1046,7 @@ export default {
           {
             name: '时段班次满载率(%)',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -1053,7 +1057,7 @@ export default {
           {
             name: '时段平均间隔',
             type: 'line',
-            // yAxisIndex: 1,
+            yAxisIndex: 1,
             tooltip: {
               valueFormatter: function (value) {
                 return value;
@@ -1129,6 +1133,7 @@ export default {
       .up-part,
       .down-part {
         display: flex;
+        width: 100%;
         height: 484px;
         .left-part,
         .right-part {

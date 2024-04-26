@@ -161,11 +161,11 @@
                         class="bus-bar"
                         :style="{
                           background: `conic-gradient(
-                                                                #ff0000 0% 0%,
-                                                                #ff0000 0% ${item.cars ? item.cars.fullLoadRatio : 0}%,
-                                                                #b6b6b6 ${item.cars ? item.cars.fullLoadRatio : 0}% 100%,
-                                                                #b6b6b6 100% 100%
-                                                            )`,
+                                                              #ff0000 0% 0%,
+                                                              #ff0000 0% ${item.cars ? item.cars.fullLoadRatio : 0}%,
+                                                              #b6b6b6 ${item.cars ? item.cars.fullLoadRatio : 0}% 100%,
+                                                              #b6b6b6 100% 100%
+                                                          )`,
                         }"
                       ></div>
 
@@ -754,6 +754,14 @@ export default {
       let cutHour;
       that.timeCounter = setInterval(function () {
         let addDate = new Date(new Date(runDate).getTime() + 1 * 1000);
+        console.log(moment(addDate).format('YYYY-MM-DD'));
+        console.log(that.areDatesEqual(moment(addDate).format('YYYY-MM-DD'), moment(runDate).format('YYYY-MM-DD')));
+        if (!that.areDatesEqual(moment(addDate).format('YYYY-MM-DD'), moment(runDate).format('YYYY-MM-DD'))) {
+          clearInterval(this.timeCounter);
+          clearInterval(this.timer);
+          clearInterval(this.timeCounterTwo);
+          clearInterval(this.timerTwo);
+        }
         that.time = moment(addDate, 'hh:mm:ss');
         runDate = addDate;
         // 判断，55min后继续请求接口数据拼在arrData上面
@@ -1119,6 +1127,11 @@ export default {
         runDate = addDate;
         //console.log("runDate"+runDate)
       }, that.speedSecond);
+    },
+    areDatesEqual(dateStr1, dateStr2) {
+      const date1 = new Date(dateStr1);
+      const date2 = new Date(dateStr2);
+      return date1.getTime() === date2.getTime();
     },
   },
 };

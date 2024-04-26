@@ -123,6 +123,7 @@ export default {
         recentRunBus: `${process.env.VUE_APP_BUS_API}/schedule/recentRunBus`,
         dispatchTask: `${process.env.VUE_APP_BUS_API}/schedule/dispatchTask`,
         saveMountCar: `${process.env.VUE_APP_BUS_API}/schedule/saveMountCar`,
+        getByRouteIdAndRouteNameKey: `${process.env.VUE_APP_BUS_API}/schedule/bus/getByRouteIdAndRouteNameKey`,
       },
       spinning: false,
       visible: false,
@@ -236,6 +237,7 @@ export default {
   },
   created() {
     this.getData();
+
     // this.testDate();
   },
   methods: {
@@ -250,6 +252,10 @@ export default {
       this.routeList = [];
       this.routeList = this.allRouteList.filter((route) => route.routeName.includes(this.routeName));
       this.routeId = Number(record.routeId);
+
+      axios.get(`${this.url.getByRouteIdAndRouteNameKey}?routeId=4950&routeNameKey=2&page=1`).then((res) => {
+        console.log('getByRouteIdAndRouteNameKey', res);
+      });
 
       await axios.get(`${this.url.mountCarPlan}/${this.routeId}/2/${moment(this.runDate).subtract(1, 'days').format('YYYY-MM-DD')}/${moment(this.runDate).format('YYYY-MM-DD')}`).then((res) => {
         console.log('2.12.查询挂车计划数据接口', res);
@@ -495,25 +501,25 @@ export default {
         this.tableData[i].busName = b;
       }
     },
-    joinUp(item, i) {
+    joinUp(item, index) {
       for (let i = 0; i < this.tableData.length; i++) {
         if (this.tableData[i].startDirection == '0' && !this.tableData[i].busName) {
           this.tableData[i].busName = item.busName;
           this.tableData[i].busId = item.busId;
+          this.useBusList = this.useBusList.filter((ktem) => ktem.busId !== item.busId);
           break;
         }
       }
-      this.useBusList = this.useBusList.filter((ktem) => ktem.busId !== item.busId);
     },
     joinDown(item, index) {
       for (let i = 0; i < this.tableData.length; i++) {
         if (this.tableData[i].startDirection == '1' && !this.tableData[i].busName) {
           this.tableData[i].busName = item.busName;
           this.tableData[i].busId = item.busId;
+          this.useBusList = this.useBusList.filter((ktem) => ktem.busId !== item.busId);
           break;
         }
       }
-      this.useBusList = this.useBusList.filter((ktem) => ktem.busId !== item.busId);
     },
   },
 };

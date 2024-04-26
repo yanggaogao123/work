@@ -148,13 +148,12 @@
                   <li v-for="(item, i) in tableData.firstRouteStaList">
                     <div></div>
                     <div></div>
-                    <div></div>
                   </li>
                 </ul>
               </div>
             </div>
             <div class="sec-con">
-              <ul v-for="(item, i) in tableData.scheduleBusList">
+              <ul v-for="(item, i) in tableData.scheduleBusList" v-if="item.firstDirection == '0'">
                 <li :class="item.firstDirection == '0' ? 'blue' : 'green'">
                   {{ item.firstBusNumber }}
                 </li>
@@ -167,7 +166,29 @@
                     <div :title="item.totalRunTime">{{ item.totalRunTime }}</div>
                   </span>
                 </li>
-                <li v-for="ktem in item.scheduleList">
+                <li v-for="ktem in item.scheduleList" :class="ktem.tripBeginTime ? '' : 'no-color'">
+                  <template v-if="ktem.tripBeginTime">
+                    {{ moment(ktem.tripBeginTime).format('HH:mm') }}~
+                    {{ moment(ktem.tripEndTime).format('HH:mm') }}
+                  </template>
+                  <template v-else></template>
+                </li>
+              </ul>
+
+              <ul v-for="(item, i) in tableData.scheduleBusList" v-if="item.firstDirection == '1'" class="down">
+                <li :class="item.firstDirection == '0' ? 'blue' : 'green'">
+                  {{ item.firstBusNumber }}
+                </li>
+                <li>
+                  <span class="three">
+                    <div :title="item.busNameFull">{{ item.busNameFull }}</div>
+                    <div :title="item.totalTripTime">
+                      {{ item.totalTripTime }}
+                    </div>
+                    <div :title="item.totalRunTime">{{ item.totalRunTime }}</div>
+                  </span>
+                </li>
+                <li v-for="ktem in item.scheduleList" :class="ktem.tripBeginTime ? '' : 'no-color'">
                   <template v-if="ktem.tripBeginTime">
                     {{ moment(ktem.tripBeginTime).format('HH:mm') }}~
                     {{ moment(ktem.tripEndTime).format('HH:mm') }}
@@ -340,6 +361,9 @@ export default {
             this.tableBool = false;
           }
           this.tableData = res.data.data;
+          setTimeout(() => {
+            document.querySelectorAll('.down')[0].classList.add('down-ul');
+          }, 500);
           //   this.allRouteList = res.data.data;
         });
     },
@@ -452,7 +476,7 @@ section {
     max-width: 100%;
     overflow-x: scroll;
     box-sizing: border-box;
-    border: 1px solid #dadada;
+    border: 1px solid #99bbe8;
     background: #e8f3fd;
     .tit-num,
     .tit-order {
@@ -465,26 +489,26 @@ section {
       .tit-left {
         flex: 0 0 auto;
         width: 30px;
-        height: 138px;
+        height: 92px;
         writing-mode: vertical-rl; /* 垂直排列，从右到左 */
         text-orientation: upright; /* 文字方向正常，从上到下 */
         white-space: nowrap; /* 防止文字换行 */
         text-align: center;
-        border-right: 1px solid #dadada;
-        border-bottom: 1px solid #dadada;
+        border-right: 1px solid #99bbe8;
+        border-bottom: 1px solid #99bbe8;
         box-sizing: border-box;
         padding-right: 5px;
       }
       .tit-right {
         ul {
-          border-bottom: 1px solid #dadada;
+          border-bottom: 1px solid #99bbe8;
           li {
             display: inline-block;
-            border-right: 1px solid #dadada;
+            border-right: 1px solid #99bbe8;
             // border-bottom: 1px solid #dadada;
             width: 170px;
-            height: 38px;
-            line-height: 38px;
+            height: 30px;
+            line-height: 30px;
             text-align: center;
             font-size: 14px;
             vertical-align: top;
@@ -492,7 +516,7 @@ section {
               width: 50%;
               height: 100%;
               vertical-align: top;
-              border-right: 1px solid #dadada;
+              border-right: 1px solid #99bbe8;
             }
             div:nth-last-child(1) {
               border: none;
@@ -505,10 +529,10 @@ section {
             }
           }
           li:nth-child(2n-1) {
-            background: #b6ede8;
+            background: #ebf9f8;
           }
           li:nth-child(2n) {
-            background: #c5e3ff;
+            background: #eff7ff;
           }
           li:nth-child(1) {
             width: 210px;
@@ -517,26 +541,27 @@ section {
           }
         }
         .tit-station {
-          height: 60px;
-          line-height: 60px;
+          height: 30px;
+          line-height: 30px;
           li {
-            height: 60px;
+            height: 30px;
             vertical-align: top;
-            line-height: 60px;
+            line-height: 30px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            border-bottom: 1px solid #dadada;
+            border-bottom: 1px solid #99bbe8;
           }
         }
       }
     }
     .tit-order {
       .tit-left {
-        height: 195px;
+        height: 155px;
       }
     }
     .sec-con {
+      margin-top: 4px;
       div {
         display: inline-block;
       }
@@ -547,8 +572,8 @@ section {
 
         li {
           display: inline-block;
-          border-right: 1px solid #dadada;
-          border-bottom: 1px solid #dadada;
+          border-right: 1px solid #99bbe8;
+          border-bottom: 1px solid #99bbe8;
           width: 170px;
           height: 38px;
           line-height: 38px;
@@ -561,7 +586,7 @@ section {
             width: 50%;
             height: 100%;
             vertical-align: top;
-            border-right: 1px solid #dadada;
+            border-right: 1px solid #99bbe8;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -595,6 +620,13 @@ section {
         .blue {
           background: #c5e3ff !important;
         }
+        .no-color {
+          background: #edf7ff !important;
+          border: none;
+        }
+      }
+      .down-ul {
+        margin-top: 4px;
       }
     }
   }

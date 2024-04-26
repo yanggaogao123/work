@@ -46,10 +46,10 @@
           </a-select>
         </a-form-item>
         <a-form-item label="客流参考日期">
-          <a-date-picker placeholder="请选择日期" moment="YYYY-MM-DD" @change="onDateChange1" style="width: 210px" />
+          <a-date-picker placeholder="请选择日期" v-model="passengerDate" moment="YYYY-MM-DD" @change="onDateChange1" style="width: 210px" />
         </a-form-item>
         <a-form-item label="周转参考日期">
-          <a-date-picker placeholder="请选择日期" moment="YYYY-MM-DD" @change="onDateChange2" style="width: 210px" />
+          <a-date-picker placeholder="请选择日期" v-model="turnaroundDate" moment="YYYY-MM-DD" @change="onDateChange2" style="width: 210px" />
         </a-form-item>
         <div class="line"></div>
       </a-form>
@@ -69,10 +69,10 @@
           </a-select>
         </a-form-item>
         <a-form-item label="客流参考日期">
-          <a-date-picker placeholder="请选择日期" moment="YYYY-MM-DD" @change="onDateChange3" style="width: 210px" />
+          <a-date-picker placeholder="请选择日期" v-model="supportPassengerDate" moment="YYYY-MM-DD" @change="onDateChange3" style="width: 210px" />
         </a-form-item>
         <a-form-item label="周转参考日期">
-          <a-date-picker placeholder="请选择日期" moment="YYYY-MM-DD" @change="onDateChange4" style="width: 210px" />
+          <a-date-picker placeholder="请选择日期" v-model="supportTurnaroundDate" moment="YYYY-MM-DD" @change="onDateChange4" style="width: 210px" />
         </a-form-item>
       </a-form>
       <div class="set-best">
@@ -271,6 +271,11 @@ export default {
       console.log(record);
       this.visible = true;
       this.runDate = record.runDate;
+      // turnaroundDate supportPassengerDate supportTurnaroundDate
+      this.passengerDate = moment().clone().subtract(7, 'days').isoWeekday(moment(this.runDate).isoWeekday()).format('YYYY-MM-DD');
+      this.turnaroundDate = moment().clone().subtract(7, 'days').isoWeekday(moment(this.runDate).isoWeekday()).format('YYYY-MM-DD');
+      this.supportPassengerDate = moment().clone().subtract(7, 'days').isoWeekday(moment(this.runDate).isoWeekday()).format('YYYY-MM-DD');
+      this.supportTurnaroundDate = moment().clone().subtract(7, 'days').isoWeekday(moment(this.runDate).isoWeekday()).format('YYYY-MM-DD');
       this.runDateStr = moment(record.runDate).format('YYYY-MM-DD dddd');
       this.routeName = record.routeName;
       this.routeList = [];
@@ -506,7 +511,7 @@ export default {
         !this.turnaroundDate ||
         !this.supRouteId ||
         !this.templateId ||
-        !this.supTemplateId ||
+        // !this.supTemplateId ||
         !this.supportPassengerDate ||
         !this.supportTurnaroundDate
       ) {

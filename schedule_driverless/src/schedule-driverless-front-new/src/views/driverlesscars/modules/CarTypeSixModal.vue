@@ -2122,7 +2122,7 @@ export default {
 
     .reset-box {
       position: absolute;
-      z-index: 2;
+      z-index: 100;
       .button {
         display: inline-block;
         vertical-align: top;
@@ -2303,6 +2303,7 @@ export default {
                 position: absolute;
                 top: -26px;
                 right: calc(0% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2343,6 +2344,7 @@ export default {
                 position: absolute;
                 top: -26px;
                 right: calc(50% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2427,6 +2429,7 @@ export default {
                 position: absolute;
                 bottom: -20px;
                 left: calc(0% - 16px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2467,6 +2470,7 @@ export default {
                 position: absolute;
                 bottom: -20px;
                 right: calc(50% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2653,6 +2657,7 @@ export default {
             position: relative;
             height: 20px;
             margin: 0 0 10px 0;
+            z-index: 100;
 
             .bus-container {
               position: relative;
@@ -2699,6 +2704,7 @@ export default {
             position: relative;
             height: 20px;
             margin: 0 0 10px 0;
+            z-index: 100;
 
             .bus-container {
               position: relative;
@@ -2868,6 +2874,7 @@ export default {
                 position: absolute;
                 top: -26px;
                 right: calc(0% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2908,6 +2915,7 @@ export default {
                 position: absolute;
                 top: -26px;
                 right: calc(50% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2991,6 +2999,7 @@ export default {
                 position: absolute;
                 bottom: -20px;
                 left: calc(0% - 16px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -3031,6 +3040,7 @@ export default {
                 position: absolute;
                 bottom: -20px;
                 right: calc(50% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -3242,6 +3252,7 @@ export default {
             position: relative;
             height: 20px;
             margin: 0 0 10px 0;
+            z-index: 100;
 
             .bus-container {
               position: relative;
@@ -3288,6 +3299,7 @@ export default {
             position: relative;
             height: 20px;
             margin: 0 0 10px 0;
+            z-index: 100;
 
             .bus-container {
               position: relative;

@@ -1,404 +1,123 @@
 <template>
   <section id="section">
+    <div class="time-content">
+      <div class="time-top">
+        <div class="top-tit">101路</div>
+        <div class="top-con">
+          <div class="con-top">
+            <ul>
+              <li class="nor" style="left: 20px"></li>
+              <li class="nor" style="left: 100px"></li>
+              <li class="unnor" style="left: 160px"></li>
+              <li class="nor" style="left: 220px"></li>
+              <li class="unnor" style="left: 300px"></li>
+            </ul>
+            <ul>
+              <li class="nor" style="left: 20px"></li>
+              <li class="nor" style="left: 300px"></li>
+              <li class="unnor" style="left: 460px"></li>
+              <li class="nor" style="left: 620px"></li>
+              <li class="unnor" style="left: 700px"></li>
+            </ul>
+          </div>
+          <div class="con-bottom">
+            <ul>
+              <li class="nor" style="left: 20px"></li>
+              <li class="nor" style="left: 100px"></li>
+              <li class="unnor" style="left: 160px"></li>
+              <li class="nor" style="left: 220px"></li>
+              <li class="unnor" style="left: 300px"></li>
+            </ul>
+            <ul>
+              <li class="nor" style="left: 60px"></li>
+              <li class="nor" style="left: 220px"></li>
+              <li class="unnor" style="left: 460px"></li>
+              <li class="nor" style="left: 620px"></li>
+              <li class="unnor" style="left: 800px"></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="time-bottom">
+        <div class="bottom-tit">106路</div>
+        <div class="bottom-con">
+          <div class="con-top">
+            <ul>
+              <li class="nor" style="left: 20px">
+                <div class="time-tips">
+                  <div class="bg"></div>
+                  <p class="p1">4512-全程-上行</p>
+                  <p class="p2">15:25-16:25</p>
+                </div>
+              </li>
+              <li class="nor" style="left: 100px"></li>
+              <li class="unnor" style="left: 160px"></li>
+              <li class="nor" style="left: 220px"></li>
+              <li class="unnor" style="left: 300px"></li>
+            </ul>
+            <ul>
+              <li class="nor" style="left: 20px"></li>
+              <li class="nor" style="left: 300px"></li>
+              <li class="unnor" style="left: 460px"></li>
+              <li class="nor" style="left: 620px"></li>
+              <li class="unnor" style="left: 700px"></li>
+            </ul>
+          </div>
+          <div class="con-bottom">
+            <ul>
+              <li class="nor" style="left: 20px"></li>
+              <li class="nor" style="left: 100px"></li>
+              <li class="unnor" style="left: 160px"></li>
+              <li class="nor" style="left: 220px"></li>
+              <li class="unnor" style="left: 300px"></li>
+            </ul>
+            <ul>
+              <li class="nor" style="left: 60px"></li>
+              <li class="nor" style="left: 220px"></li>
+              <li class="unnor" style="left: 460px"></li>
+              <li class="nor" style="left: 620px"></li>
+              <li class="unnor" style="left: 800px"></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="time-middle">
+        <div class="middle-tit">
+          <span class="bg"></span>
+          <span class="name">不准点</span>
+        </div>
+        <div class="middle-con">
+          <ul class="time-ul">
+            <li class="time-li" v-for="(item, i) in timeArray">
+              <div>{{ item }}</div>
+              <ul>
+                <li v-for="(ktem, k) in 6">
+                  <span></span>
+                </li>
+              </ul>
+            </li>
+            <p class="time-li-over">24:00</p>
+          </ul>
+        </div>
+      </div>
+    </div>
     <div class="car-content">
-      <div class="not-run">
-        <div class="not-left">
-          <span class="tit">{{ routeName }}</span>
-          <ul class="not-run-car-list">
-            <li class="not-run-car-list-li" v-for="(item, i) in notRunCar">
-              <div class="bus" @mouseenter="arrUpShowInfo(i)" @mouseleave="arrUpHideInfo(i)">
-                <div class="bus-container">
-                  <div
-                    v-if="item.runBusInfo && Number(item.runBusInfo.crowdLevel.split('%')[0]) >= 90"
-                    class="bus-bar"
-                    :style="{
-                      background: `conic-gradient(
-                                        #ff0000 0% 0%,
-                                        #ff0000 0% ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}%,
-                                        #b6b6b6 ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}% 100%,
-                                        #b6b6b6 100% 100%
-                                    )`,
-                    }"
-                  ></div>
-                  <div
-                    v-else-if="item.runBusInfo && Number(item.runBusInfo.crowdLevel.split('%')[0]) >= 80"
-                    class="bus-bar"
-                    :style="{
-                      background: `conic-gradient(
-                                            #F47A55 0% 0%,
-                                            #F47A55 0% ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}%,
-                                            #b6b6b6 ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}% 100%,
-                                            #b6b6b6 100% 100%
-                                        )`,
-                    }"
-                  ></div>
-                  <div
-                    v-else-if="item.runBusInfo && Number(item.runBusInfo.crowdLevel.split('%')[0]) >= 60"
-                    class="bus-bar"
-                    :style="{
-                      background: `conic-gradient(
-                                            #E2CE29 0% 0%,
-                                            #E2CE29 0% ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}%,
-                                            #b6b6b6 ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}% 100%,
-                                            #b6b6b6 100% 100%
-                                        )`,
-                    }"
-                  ></div>
-                  <div
-                    v-else-if="item.runBusInfo && Number(item.runBusInfo.crowdLevel.split('%')[0]) >= 0"
-                    class="bus-bar"
-                    :style="{
-                      background: `conic-gradient(
-                                            #5CC065 0% 0%,
-                                            #5CC065 0% ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}%,
-                                            #b6b6b6 ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}% 100%,
-                                            #b6b6b6 100% 100%
-                                        )`,
-                    }"
-                  ></div>
-                  <div class="bus-text">
-                    {{ item.runBusInfo ? item.runBusInfo.busName : '' }}
-                  </div>
-                </div>
-                <div class="bus-info tbi" v-show="item.infoShow">
-                  <div class="con">
-                    <div class="tit1">
-                      <div>
-                        {{ item.runBusInfo ? item.runBusInfo.numberPlate : '' }}
-                      </div>
-                      <div>
-                        <span>{{ item.runBusInfo ? item.runBusInfo.routeNameBelongTo : '' }}</span
-                        ><span class="type-text">{{ item.runBusInfo ? item.runBusInfo.serviceName : '' }}</span>
-                      </div>
-                    </div>
-                    <ul class="tit2">
-                      <li>
-                        驾驶员 :
-                        {{ item.runBusInfo ? item.runBusInfo.employeeName : '' }}
-                      </li>
-                      <li>
-                        {{ item.runBusInfo ? item.runBusInfo.employeeDuration.split('  ')[2] : '' }}
-                      </li>
-                      <li>
-                        {{ item.runBusInfo ? item.runBusInfo.employeeDuration.split('  ')[4] : '  ' }}
-                      </li>
-                      <li>
-                        {{ item.runBusInfo ? item.runBusInfo.employeeDuration.split('  ')[6] : '' }}
-                      </li>
-                    </ul>
-                    <div class="info1">
-                      <ul class="info1-tit">
-                        <li>电量</li>
-                        <li>车速</li>
-                        <li>人数</li>
-                        <li>车内拥挤</li>
-                      </ul>
-                      <ul class="info1-con">
-                        <li>{{ item.runBusInfo ? item.runBusInfo.soc : '' }}%</li>
-                        <li>
-                          <span> {{ item.runBusInfo ? item.runBusInfo.speed : '' }}km/h</span>
-                          <!-- <span>[超速]</span> -->
-                        </li>
-                        <li>
-                          {{ item.runBusInfo ? item.runBusInfo.curPeople : '' }}
-                        </li>
-                        <li>舒适</li>
-                      </ul>
-                    </div>
-                    <ul class="info2">
-                      <li>最近报站</li>
-                      <li>
-                        {{ item.runBusInfo ? item.runBusInfo.routeStationName : '' }}
-                      </li>
-                      <li>
-                        {{ item.runBusInfo ? `${item.runBusInfo.adTime.slice(9, 11)}:${item.runBusInfo.adTime.slice(11, 13)}` : '' }}
-                      </li>
-                    </ul>
-                    <div class="mission-now">
-                      <div class="mission-tit">当前任务</div>
-                      <div class="mission-con">
-                        <div class="start">
-                          <div>
-                            {{ item.runBusInfo ? item.runBusInfo.firstStationName : '' }}
-                          </div>
-                          <div>实际出站:{{ item.runBusInfo ? `${item.runBusInfo.dispatchStartTime.slice(9, 11)}:${item.runBusInfo.dispatchStartTime.slice(11, 13)}` : '' }}</div>
-                        </div>
-                        <div class="middle">
-                          <div>调度:{{ item.runBusInfo ? `${item.runBusInfo.tripBeginTime.slice(9, 11)}:${item.runBusInfo.tripBeginTime.slice(11, 13)}` : '' }}</div>
-                          <img src="@/assets/driverlesscars/through.png" alt="" />
-                        </div>
-                        <div class="end">
-                          <div>
-                            {{ item.runBusInfo ? item.runBusInfo.lastStationName : '' }}
-                          </div>
-                          <div>预计:--:--</div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- <div class="mission-next">
-                          <div class="mission-tit">下趟任务</div>
-                          <div class="mission-con">
-                            <div class="start">
-                              <div>鹤边军民西路站</div>
-                              <div>实际出站:10:32</div>
-                            </div>
-                            <div class="middle">
-                              <div>调度:10:32</div>
-                              <img
-                                src="@/assets/driverlesscars/through.png"
-                                alt="" />
-                            </div>
-                            <div class="end">
-                              <div>鹤边军民西路站</div>
-                              <div>实际出站:10:32</div>
-                            </div>
-                          </div>
-                        </div> -->
-                    <div class="time">
-                      通信 :
-                      {{ item.runBusInfo ? `${item.runBusInfo.redisTime.slice(9, 11)}:${item.runBusInfo.redisTime.slice(11, 13)}:${item.runBusInfo.redisTime.slice(13, 15)}` : '' }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div class="not-right">
-          <ul class="not-run-car-list">
-            <li class="not-run-car-list-li" v-for="(item, i) in notRunCarTwo">
-              <div class="bus" @mouseenter="arrUpShowInfo(i)" @mouseleave="arrUpHideInfo(i)">
-                <div class="bus-container">
-                  <div
-                    v-if="item.runBusInfo && Number(item.runBusInfo.crowdLevel.split('%')[0]) >= 90"
-                    class="bus-bar"
-                    :style="{
-                      background: `conic-gradient(
-                                        #ff0000 0% 0%,
-                                        #ff0000 0% ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}%,
-                                        #b6b6b6 ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}% 100%,
-                                        #b6b6b6 100% 100%
-                                    )`,
-                    }"
-                  ></div>
-                  <div
-                    v-else-if="item.runBusInfo && Number(item.runBusInfo.crowdLevel.split('%')[0]) >= 80"
-                    class="bus-bar"
-                    :style="{
-                      background: `conic-gradient(
-                                            #F47A55 0% 0%,
-                                            #F47A55 0% ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}%,
-                                            #b6b6b6 ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}% 100%,
-                                            #b6b6b6 100% 100%
-                                        )`,
-                    }"
-                  ></div>
-                  <div
-                    v-else-if="item.runBusInfo && Number(item.runBusInfo.crowdLevel.split('%')[0]) >= 60"
-                    class="bus-bar"
-                    :style="{
-                      background: `conic-gradient(
-                                            #E2CE29 0% 0%,
-                                            #E2CE29 0% ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}%,
-                                            #b6b6b6 ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}% 100%,
-                                            #b6b6b6 100% 100%
-                                        )`,
-                    }"
-                  ></div>
-                  <div
-                    v-else-if="item.runBusInfo && Number(item.runBusInfo.crowdLevel.split('%')[0]) >= 0"
-                    class="bus-bar"
-                    :style="{
-                      background: `conic-gradient(
-                                            #5CC065 0% 0%,
-                                            #5CC065 0% ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}%,
-                                            #b6b6b6 ${Number(item.runBusInfo ? item.runBusInfo.crowdLevel.split('%')[0] : 0)}% 100%,
-                                            #b6b6b6 100% 100%
-                                        )`,
-                    }"
-                  ></div>
-                  <div class="bus-text">
-                    {{ item.runBusInfo ? item.runBusInfo.busName : '' }}
-                  </div>
-                </div>
-                <div class="bus-info tbi" v-show="item.infoShow">
-                  <div class="con">
-                    <div class="tit1">
-                      <div>
-                        {{ item.runBusInfo ? item.runBusInfo.numberPlate : '' }}
-                      </div>
-                      <div>
-                        <span>{{ item.runBusInfo ? item.runBusInfo.routeNameBelongTo : '' }}</span
-                        ><span class="type-text">{{ item.runBusInfo ? item.runBusInfo.serviceName : '' }}</span>
-                      </div>
-                    </div>
-                    <ul class="tit2">
-                      <li>
-                        驾驶员 :
-                        {{ item.runBusInfo ? item.runBusInfo.employeeName : '' }}
-                      </li>
-                      <li>
-                        {{ item.runBusInfo ? item.runBusInfo.employeeDuration.split('  ')[2] : '' }}
-                      </li>
-                      <li>
-                        {{ item.runBusInfo ? item.runBusInfo.employeeDuration.split('  ')[4] : '  ' }}
-                      </li>
-                      <li>
-                        {{ item.runBusInfo ? item.runBusInfo.employeeDuration.split('  ')[6] : '' }}
-                      </li>
-                    </ul>
-                    <div class="info1">
-                      <ul class="info1-tit">
-                        <li>电量</li>
-                        <li>车速</li>
-                        <li>人数</li>
-                        <li>车内拥挤</li>
-                      </ul>
-                      <ul class="info1-con">
-                        <li>{{ item.runBusInfo ? item.runBusInfo.soc : '' }}%</li>
-                        <li>
-                          <span> {{ item.runBusInfo ? item.runBusInfo.speed : '' }}km/h</span>
-                          <!-- <span>[超速]</span> -->
-                        </li>
-                        <li>
-                          {{ item.runBusInfo ? item.runBusInfo.curPeople : '' }}
-                        </li>
-                        <li>舒适</li>
-                      </ul>
-                    </div>
-                    <ul class="info2">
-                      <li>最近报站</li>
-                      <li>
-                        {{ item.runBusInfo ? item.runBusInfo.routeStationName : '' }}
-                      </li>
-                      <li>
-                        {{ item.runBusInfo ? `${item.runBusInfo.adTime.slice(9, 11)}:${item.runBusInfo.adTime.slice(11, 13)}` : '' }}
-                      </li>
-                    </ul>
-                    <div class="mission-now">
-                      <div class="mission-tit">当前任务</div>
-                      <div class="mission-con">
-                        <div class="start">
-                          <div>
-                            {{ item.runBusInfo ? item.runBusInfo.firstStationName : '' }}
-                          </div>
-                          <div>实际出站:{{ item.runBusInfo ? `${item.runBusInfo.dispatchStartTime.slice(9, 11)}:${item.runBusInfo.dispatchStartTime.slice(11, 13)}` : '' }}</div>
-                        </div>
-                        <div class="middle">
-                          <div>调度:{{ item.runBusInfo ? `${item.runBusInfo.tripBeginTime.slice(9, 11)}:${item.runBusInfo.tripBeginTime.slice(11, 13)}` : '' }}</div>
-                          <img src="@/assets/driverlesscars/through.png" alt="" />
-                        </div>
-                        <div class="end">
-                          <div>
-                            {{ item.runBusInfo ? item.runBusInfo.lastStationName : '' }}
-                          </div>
-                          <div>预计:--:--</div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- <div class="mission-next">
-                          <div class="mission-tit">下趟任务</div>
-                          <div class="mission-con">
-                            <div class="start">
-                              <div>鹤边军民西路站</div>
-                              <div>实际出站:10:32</div>
-                            </div>
-                            <div class="middle">
-                              <div>调度:10:32</div>
-                              <img
-                                src="@/assets/driverlesscars/through.png"
-                                alt="" />
-                            </div>
-                            <div class="end">
-                              <div>鹤边军民西路站</div>
-                              <div>实际出站:10:32</div>
-                            </div>
-                          </div>
-                        </div> -->
-                    <div class="time">
-                      通信 :
-                      {{ item.runBusInfo ? `${item.runBusInfo.redisTime.slice(9, 11)}:${item.runBusInfo.redisTime.slice(11, 13)}:${item.runBusInfo.redisTime.slice(13, 15)}` : '' }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-          <span class="tit">{{ supRouteName }}</span>
-        </div>
-      </div>
-
-      <!-- 重排 -->
-      <div class="reset-box reset-top-left">
-        <div class="button" @click="resetClick(routeId, 0, routeName)">
-          <a-icon type="caret-up" />
-          <a-button type="primary"> 重排-上 </a-button>
-        </div>
-        <ul class="list">
-          <li v-if="resetList && resetList.forecastPlanResult.length > 0" v-for="item in resetList.forecastPlanResult[0].forecastPlans">
-            <div>{{ item.busName }}</div>
-            <div>{{ moment(item.planTime).format('HH:mm') }}</div>
-            <div>{{ moment(item.arrivalTime).format('HH:mm') }}</div>
-          </li>
-        </ul>
-      </div>
-      <div class="reset-box reset-bottom-left">
-        <div class="button" @click="resetClick(routeId, 1, routeName)">
-          <a-icon type="caret-up" />
-          <a-button type="primary"> 重排-下 </a-button>
-        </div>
-        <ul class="list">
-          <li v-if="resetList && resetList.forecastPlanResult.length > 0" v-for="item in resetList.forecastPlanResult[1].forecastPlans">
-            <div>{{ item.busName }}</div>
-            <div>{{ moment(item.planTime).format('HH:mm') }}</div>
-            <div>{{ moment(item.arrivalTime).format('HH:mm') }}</div>
-          </li>
-        </ul>
-      </div>
-      <div class="reset-box reset-top-right">
-        <ul class="list">
-          <li v-if="resetList && resetList.forecastPlanResult.length > 0" v-for="item in resetList.forecastPlanResult[2].forecastPlans">
-            <div>{{ item.busName }}</div>
-            <div>{{ moment(item.planTime).format('HH:mm') }}</div>
-            <div>{{ moment(item.arrivalTime).format('HH:mm') }}</div>
-          </li>
-        </ul>
-        <div class="button" @click="resetClick(supRouteId, 0, supRouteName)">
-          <a-icon type="caret-up" />
-          <a-button type="primary" style="background: #1a9e90"> 重排-上 </a-button>
-        </div>
-      </div>
-      <div class="reset-box reset-bottom-right">
-        <ul class="list">
-          <li v-if="resetList && resetList.forecastPlanResult.length > 0" v-for="item in resetList.forecastPlanResult[3].forecastPlans">
-            <div>{{ item.busName }}</div>
-            <div>{{ moment(item.planTime).format('HH:mm') }}</div>
-            <div>{{ moment(item.arrivalTime).format('HH:mm') }}</div>
-          </li>
-        </ul>
-        <div class="button" @click="resetClick(supRouteId, 1, supRouteName)">
-          <a-icon type="caret-up" />
-          <a-button type="primary" style="background: #1a9e90"> 重排-下 </a-button>
-        </div>
-      </div>
-      <reset-modal ref="ResetModal"></reset-modal>
-      <!-- ****************** -->
-
-      <div class="left-car">
+      <div class="out-car">
         <div class="content">
           <!-- 左侧总站公交 -->
           <div class="left-z-car">
+            <div class="name">{{ routeName }}</div>
             <div class="bus" style="margin: 0 0 10px 10px" v-for="item in downFinalCars">
               <div class="bus-container">
                 <div
                   class="bus-bar"
                   :style="{
                     background: `conic-gradient(
-                                    #5CC065 0% 0%,
-                                    #5CC065 0% 0%,
-                                    #b6b6b6 0% 100%,
-                                    #b6b6b6 100% 100%
-                                )`,
+                                      #5CC065 0% 0%,
+                                      #5CC065 0% 0%,
+                                      #b6b6b6 0% 100%,
+                                      #b6b6b6 100% 100%
+                                  )`,
                   }"
                 ></div>
                 <div class="bus-text">
@@ -409,7 +128,7 @@
           </div>
 
           <!-- 公交线路图 -->
-          <div class="car-box" :class="`type${carType}`">
+          <div class="car-box">
             <!-- 上行公交 -->
             <div class="top-car">
               <div class="top-bg"></div>
@@ -737,29 +456,11 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" /> -->
                 </div>
               </div>
             </div>
-            <div class="center-car">
-              <p>
-                <span>上行运行时间: {{ centerData.mainMap.upBeginTime ? `${centerData.mainMap.upBeginTime}-${centerData.mainMap.upEndTime}` : `--` }}</span>
-                <span class="route-name"
-                  ><div>{{ routeName }}</div></span
-                >
-                <span>下行运行时间: {{ centerData.mainMap.downBeginTime ? `${centerData.mainMap.downBeginTime}-${centerData.mainMap.downEndTime}` : `--` }}</span>
-              </p>
-              <p>
-                <span>总配车数: {{ centerData.mainMap.totalBusNum }}</span
-                ><span>单班车数: {{ centerData.mainMap.singleBusNum }}</span
-                ><span>双班车数: {{ centerData.mainMap.doubleBusNum }}</span>
-              </p>
-              <p>
-                <span>计划支援总班次数:{{ centerData.mainMap.totalSupportClasses }}</span
-                ><span>支援开始时间:{{ centerData.mainMap.supportBeginTime }}</span
-                ><span>支援结束时间:{{ centerData.mainMap.supportEndTime }}</span>
-              </p>
-            </div>
+
             <!-- 下行公交 -->
             <div class="bottom-car">
               <div class="bottom-bg"></div>
@@ -1079,28 +780,34 @@
                     </div>
                   </div>
 
-                  <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" /> -->
                 </div>
               </div>
             </div>
             <!-- 总站标识 -->
-            <div class="top-st">{{ arrUp.length > 0 ? arrUp[0].routeStationName : '' }}</div>
-            <div class="bottom-st" v-show="[6, 7].includes(carType)">{{ arrUp.length > 0 ? arrUp[arrUp.length - 1].routeStationName : '' }}</div>
+            <div class="top-st" v-if="[1, 5].includes(carType)">
+              {{ arrUp[0].routeStationName }}
+            </div>
+            <div class="bottom-st" v-if="[0, 5].includes(carType)">
+              {{ arrUp[arrUp.length - 1].routeStationName }}
+            </div>
+            <!-- <div class="bottom-st"></div> -->
           </div>
 
           <!-- 右侧总站公交 -->
           <div class="right-z-car">
+            <div class="name">{{ routeName }}</div>
             <div class="bus" v-for="item in upFinalCars">
               <div class="bus-container">
                 <div
                   class="bus-bar"
                   :style="{
                     background: `conic-gradient(
-                                    #5CC065 0% 0%,
-                                    #5CC065 0% 0%,
-                                    #b6b6b6 0% 100%,
-                                    #b6b6b6 100% 100%
-                                )`,
+                                      #5CC065 0% 0%,
+                                      #5CC065 0% 0%,
+                                      #b6b6b6 0% 100%,
+                                      #b6b6b6 100% 100%
+                                  )`,
                   }"
                 ></div>
                 <div class="bus-text">
@@ -1111,21 +818,22 @@
           </div>
         </div>
       </div>
-      <div class="right-car">
+      <div class="in-car" :class="`type${carType}`">
         <div class="content">
           <!-- 左侧总站公交 -->
           <div class="left-z-car">
+            <div class="name">{{ supRouteName }}</div>
             <div class="bus" style="margin: 0 0 10px 10px" v-for="item in downFinalCarsTwo">
               <div class="bus-container">
                 <div
                   class="bus-bar"
                   :style="{
                     background: `conic-gradient(
-                                    #5CC065 0% 0%,
-                                    #5CC065 0% 0%,
-                                    #b6b6b6 0% 100%,
-                                    #b6b6b6 100% 100%
-                                )`,
+                                      #5CC065 0% 0%,
+                                      #5CC065 0% 0%,
+                                      #b6b6b6 0% 100%,
+                                      #b6b6b6 100% 100%
+                                  )`,
                   }"
                 ></div>
                 <div class="bus-text">
@@ -1136,7 +844,7 @@
           </div>
 
           <!-- 公交线路图 -->
-          <div class="car-box" :class="`type${carType}`">
+          <div class="car-box">
             <!-- 上行公交 -->
             <div class="top-car">
               <div class="top-bg"></div>
@@ -1463,28 +1171,129 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goRight.png" alt="" /> -->
                 </div>
               </div>
             </div>
             <div class="center-car">
-              <p>
-                <span>上行运行时间: {{ centerData.subMap.upBeginTime ? `${centerData.subMap.upBeginTime}-${centerData.subMap.upEndTime}` : `--` }}</span>
-                <span class="route-name"
-                  ><div>{{ supRouteName }}</div></span
-                >
-                <span>下行运行时间: {{ centerData.subMap.downBeginTime ? `${centerData.subMap.downBeginTime}-${centerData.subMap.downEndTime}` : `--` }}</span>
-              </p>
-              <p>
-                <span>总配车数: {{ centerData.subMap.totalBusNum }}</span
-                ><span>单班车数: {{ centerData.subMap.singleBusNum }}</span
-                ><span>双班车数: {{ centerData.subMap.doubleBusNum }}</span>
-              </p>
-              <p>
-                <span>计划支援总班次数:{{ centerData.subMap.totalSupportClasses }}</span
-                ><span>支援开始时间:{{ centerData.subMap.supportBeginTime }}</span
-                ><span>支援结束时间:{{ centerData.subMap.supportEndTime }}</span>
-              </p>
+              <div class="cen-left">
+                <div class="route-name">{{ routeName }}</div>
+                <div class="cen-info">
+                  <div class="line1">
+                    <div class="line-left">
+                      <div>计划支援班次{{ centerData.mainMap.totalSupportClasses }}</div>
+                      <div>支援开始结束{{ centerData.mainMap.supportBeginTime }}--{{ centerData.mainMap.supportEndTime }}</div>
+                    </div>
+                    <div class="line-right">首轮 上-- 下--</div>
+                  </div>
+                  <div class="line2">
+                    <div class="line-left">
+                      <div>
+                        总配车<span>{{ centerData.mainMap.totalBusNum }}</span>
+                      </div>
+                      <div>
+                        单班车数<span>{{ centerData.mainMap.singleBusNum }}</span>
+                      </div>
+                      <div>
+                        双班车数<span>{{ centerData.mainMap.doubleBusNum }}</span>
+                      </div>
+                    </div>
+                    <div class="line-right">非运营车--</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cen-right">
+                <div class="route-name">{{ supRouteName }}</div>
+                <div class="cen-info">
+                  <div class="line1">
+                    <div class="line-left">
+                      <div>计划支援班次{{ centerData.subMap.totalSupportClasses }}</div>
+                      <div>支援开始结束{{ centerData.subMap.supportBeginTime }}--{{ centerData.subMap.supportEndTime }}</div>
+                    </div>
+                    <div class="line-right">首轮 上-- 下--</div>
+                  </div>
+                  <div class="line2">
+                    <div class="line-left">
+                      <div>
+                        总配车<span>{{ centerData.subMap.totalBusNum }}</span>
+                      </div>
+                      <div>
+                        单班车数<span>{{ centerData.subMap.singleBusNum }}</span>
+                      </div>
+                      <div>
+                        双班车数<span>{{ centerData.subMap.doubleBusNum }}</span>
+                      </div>
+                    </div>
+                    <div class="line-right">非运营车--</div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="cen-left">
+                <span>{{ routeName }}</span>
+                <span>{{ supRouteName }}</span>
+              </div>
+              <div class="cen-right">
+                <ul>
+                  <li>上行运行时间</li>
+                  <li>下行运行时间</li>
+                  <li>总配车数</li>
+                  <li>单班车数</li>
+                  <li>双班车数</li>
+                  <li>计划支援总班次数</li>
+                  <li>支援开始时间</li>
+                  <li>支援结束时间</li>
+                </ul>
+                <ul class="cen-car1">
+                  <li>
+                    {{ centerData.mainMap.upBeginTime ? `${centerData.mainMap.upBeginTime}-${centerData.mainMap.upEndTime}` : `--` }}
+                  </li>
+                  <li>
+                    {{ centerData.mainMap.downBeginTime ? `${centerData.mainMap.downBeginTime}-${centerData.mainMap.downEndTime}` : `--` }}
+                  </li>
+                  <li>
+                    {{ centerData.mainMap.totalBusNum }}
+                  </li>
+                  <li>
+                    {{ centerData.mainMap.singleBusNum }}
+                  </li>
+                  <li>
+                    {{ centerData.mainMap.doubleBusNum }}
+                  </li>
+                  <li>
+                    {{ centerData.mainMap.totalSupportClasses }}
+                  </li>
+                  <li>
+                    {{ centerData.mainMap.supportBeginTime }}
+                  </li>
+                  <li>
+                    {{ centerData.mainMap.supportEndTime }}
+                  </li>
+                </ul>
+                <ul class="cen-car2">
+                  <li>
+                    {{ centerData.subMap.upBeginTime ? `${centerData.subMap.upBeginTime}-${centerData.subMap.upEndTime}` : `--` }}
+                  </li>
+                  <li>
+                    {{ centerData.subMap.downBeginTime ? `${centerData.subMap.downBeginTime}-${centerData.subMap.downEndTime}` : `--` }}
+                  </li>
+                  <li>{{ centerData.subMap.totalBusNum }}</li>
+                  <li>
+                    {{ centerData.subMap.singleBusNum }}
+                  </li>
+                  <li>
+                    {{ centerData.subMap.doubleBusNum }}
+                  </li>
+                  <li>
+                    {{ centerData.subMap.totalSupportClasses }}
+                  </li>
+                  <li>
+                    {{ centerData.subMap.supportBeginTime }}
+                  </li>
+                  <li>
+                    {{ centerData.subMap.supportEndTime }}
+                  </li>
+                </ul>
+              </div> -->
             </div>
             <!-- 下行公交 -->
             <div class="bottom-car">
@@ -1779,24 +1588,24 @@
                           </div>
                         </div>
                         <!-- <div class="mission-next">
-                                                  <div class="mission-tit">下趟任务</div>
-                                                  <div class="mission-con">
-                                                    <div class="start">
-                                                      <div>鹤边军民西路站</div>
-                                                      <div>实际出站:10:32</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                      <div>调度:10:32</div>
-                                                      <img
-                                                        src="@/assets/driverlesscars/through.png"
-                                                        alt="" />
-                                                    </div>
-                                                    <div class="end">
-                                                      <div>鹤边军民西路站</div>
-                                                      <div>实际出站:10:32</div>
-                                                    </div>
-                                                  </div>
-                                                </div> -->
+                                <div class="mission-tit">下趟任务</div>
+                                <div class="mission-con">
+                                  <div class="start">
+                                    <div>鹤边军民西路站</div>
+                                    <div>实际出站:10:32</div>
+                                  </div>
+                                  <div class="middle">
+                                    <div>调度:10:32</div>
+                                    <img
+                                      src="@/assets/driverlesscars/through.png"
+                                      alt="" />
+                                  </div>
+                                  <div class="end">
+                                    <div>鹤边军民西路站</div>
+                                    <div>实际出站:10:32</div>
+                                  </div>
+                                </div>
+                              </div> -->
                         <div class="time">
                           通信 :
                           {{ item.runBusInfoOut ? `${item.runBusInfoOut.redisTime.slice(9, 11)}:${item.runBusInfoOut.redisTime.slice(11, 13)}:${item.runBusInfoOut.redisTime.slice(13, 15)}` : '' }}
@@ -1804,12 +1613,14 @@
                       </div>
                     </div>
                   </div>
-                  <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" />
+                  <!-- <img class="logo" src="@/assets/driverlesscars/goLeft.png" alt="" /> -->
                 </div>
               </div>
             </div>
             <!-- 总站标识 -->
-            <div class="top-st">{{ arrUpTwo.length > 0 ? arrUpTwo[0].routeStationName : '' }}</div>
+            <div class="top-st">
+              {{ arrUpTwo.length > 0 ? arrUpTwo[0].routeStationName : '' }}
+            </div>
             <div class="bottom-st">
               {{ arrUpTwo.length > 0 ? arrUpTwo[arrUpTwo.length - 1].routeStationName : '' }}
             </div>
@@ -1817,6 +1628,7 @@
 
           <!-- 右侧总站公交 -->
           <div class="right-z-car">
+            <div class="name">{{ supRouteName }}</div>
             <div class="bus" v-for="item in upFinalCarsTwo">
               <div class="bus-container">
                 <div
@@ -1853,8 +1665,18 @@ import busData from './busData.json';
 // import stationOne from './stationOne.json';
 // import stationTwo from './stationTwo.json';
 import ResetModal from './ResetModal.vue';
+
+function generateTimeArray() {
+  const times = [];
+  for (let hour = 6; hour <= 23; hour++) {
+    const time = `${hour < 10 ? '0' : ''}${hour}:00`;
+    times.push(time);
+  }
+  return times;
+}
+
 export default {
-  name: 'CarTypeThreeModal',
+  name: 'BigScreenCarOneModal',
   props: ['sendData'],
   components: {
     ResetModal,
@@ -1874,9 +1696,13 @@ export default {
         dispatchTaskFromMainStation: `${process.env.VUE_APP_BUS_API}/monitor/dispatchTaskFromMainStation`,
         routeReDispatch: `${process.env.VUE_APP_BUS_API}/monitor/routeReDispatch`,
         redispatch: `${process.env.VUE_APP_BUS_API}/monitor/redispatch`,
+
+        // 模糊搜索线路组接口
+        getByRouteNameKey: `${process.env.VUE_APP_BUS_API}/route/getByRouteNameKey`,
+        // 未来一小时支援车
+        getOneHourSupportPlan: `${process.env.VUE_APP_BUS_API}/schedule/getOneHourSupportPlan`,
       },
       mes: '',
-      planType: '',
       // 0:共首站，1:共末站，2:共首末站，3:首站为支援线路末站，4:末站为支援线路首站，5:首末站相邻
       carType: null,
       routeId: '',
@@ -1925,7 +1751,11 @@ export default {
       upStationTwo: [],
       arrDownTwo: [],
       downStationTwo: [],
-      centerDataTwo: '',
+      centerDataTwo: {
+        titleMap: null,
+        mainMap: null,
+        subMap: null,
+      },
       // 当前时间段的车辆数据
       needArrTwo: [],
       needBusCodeArrTwo: [],
@@ -1941,10 +1771,6 @@ export default {
       downFinalCarsTwo: [],
       // 上行总站停靠车辆
       upFinalCarsTwo: [],
-      // 主线非运营车
-      notRunCar: [],
-      // 支援线非运营车
-      notRunCarTwo: [],
 
       /*****************************/
 
@@ -1962,33 +1788,33 @@ export default {
       resetList: [],
       resetBool: true,
       resetData: '',
+
+      // 时间轴数据
+      timeArray: [],
     };
   },
   watch: {
-    sendData() {
-      console.log('sendData', this.sendData);
-      clearInterval(this.busTimer);
-      this.centerData = this.sendData.centerData;
-      this.runDate = this.sendData.runDate;
-      this.routeId = this.sendData.routeId;
-      this.routeName = this.sendData.routeName;
-      this.supRouteId = this.sendData.supRouteId;
-      this.supRouteName = this.sendData.supRouteName;
-      this.carType = this.sendData.carType;
-      console.log(this.carType);
-      this.getListByRouteId();
-      this.getListByRouteId2();
-      if ([3, 4, 6, 7].includes(this.carType)) {
-        this.getRunbusRelatedData();
-        this.getMonitorInfo();
-        this.getMonitorInfo2();
-        this.busTimer = setInterval(() => {
-          this.getRunbusRelatedData();
-          this.getMonitorInfo();
-          this.getMonitorInfo2();
-        }, 10000);
-      }
-    },
+    // sendData() {
+    //   console.log('sendData', this.sendData);
+    //   clearInterval(this.busTimer);
+    //   this.centerData = this.sendData.centerData;
+    //   this.runDate = this.sendData.runDate;
+    //   this.routeId = this.sendData.routeId;
+    //   this.routeName = this.sendData.routeName;
+    //   this.supRouteId = this.sendData.supRouteId;
+    //   this.supRouteName = this.sendData.supRouteName;
+    //   this.carType = this.sendData.carType;
+    //   console.log(this.carType);
+    //   this.getListByRouteId();
+    //   this.getListByRouteId2();
+    //   this.getMonitorInfo();
+    //   this.getMonitorInfo2();
+    //   this.getRunbusRelatedData();
+    //   this.busTimer = setInterval(() => {
+    //     this.getMonitorInfo();
+    //     this.getMonitorInfo2();
+    //   }, 10000);
+    // },
   },
   created() {
     const queryString = window.location.search;
@@ -1998,7 +1824,11 @@ export default {
     this.mes = new URLSearchParams();
     this.mes.append('paramString', paramString);
     console.log(this.mes.toString());
+
+    this.timeArray = generateTimeArray();
+    console.log(this.timeArray);
   },
+
   methods: {
     moment,
     /****************************/
@@ -2030,7 +1860,6 @@ export default {
           for (let i = 0; i < arr1.length - 1; i++) {
             // 将后一组的 routeStationId 存储到前一组的 nextRouteStationId 属性中
             arr1[i].nextRouteStationId = arr1[i + 1].routeStationId;
-            arr1[i].nextStationId = arr1[i + 1].stationId;
           }
           // arr1[arr1.length - 1].stationDistance = 0;
           // console.log(arr1[1]);
@@ -2048,7 +1877,6 @@ export default {
           for (let i = 0; i < arr2.length - 1; i++) {
             // 将后一组的 routeStationId 存储到前一组的 nextRouteStationId 属性中
             arr2[i].nextRouteStationId = arr2[i + 1].routeStationId;
-            arr2[i].nextStationId = arr2[i + 1].stationId;
           }
           // console.log("ARR2", arr2);
           that.arrDown = arr2;
@@ -2078,13 +1906,8 @@ export default {
           }
 
           arr1[0].stationDistance = 0;
-
-          for (let i = 0; i < arr1.length - 1; i++) {
-            // 将后一组的 routeStationId 存储到前一组的 nextRouteStationId 属性中
-            arr1[i].nextRouteStationId = arr1[i + 1].routeStationId;
-            arr1[i].nextStationId = arr1[i + 1].stationId;
-          }
-
+          // arr1[arr1.length - 1].stationDistance = 0;
+          // console.log(arr1[1]);
           that.arrUpTwo = arr1;
           that.upStationTwo = arr1[arr1.length - 1].routeStationId;
           // 下行
@@ -2096,12 +1919,9 @@ export default {
           }
           arr2.reverse();
 
-          for (let i = 0; i < arr2.length - 1; i++) {
-            // 将后一组的 routeStationId 存储到前一组的 nextRouteStationId 属性中
-            arr2[i].nextRouteStationId = arr2[i + 1].routeStationId;
-            arr2[i].nextStationId = arr2[i + 1].stationId;
-          }
-
+          // arr2[0].stationDistance = 0;
+          // arr2[arr2.length - 1].stationDistance = 0;
+          // console.log(arr2);
           that.arrDownTwo = arr2;
           that.downStationTwo = arr2[0].routeStationId;
         });
@@ -2120,23 +1940,10 @@ export default {
           return;
         }
         this.runBusInfo = res.data.runBus;
-        this.notRunCar = [];
-        this.runBusInfo.forEach((runItem, i) => {
-          if (runItem.runStatus == '2') {
-            let obj = { runBusInfo: runItem };
-            this.notRunCar.push(obj);
-          }
-        });
-        console.log('notRunCar', this.notRunCar);
         this.arrUp.forEach((item, i) => {
           // 进站
           const matchRunBusInfo = this.runBusInfo.find((runItem) => {
-            if (runItem.runStatus == '0') {
-              return runItem.stationId == item.stationId && runItem.adFlag == '0';
-            }
-            if (runItem.runStatus == '1') {
-              return runItem.routeStationId == item.routeStationId && runItem.adFlag == '0';
-            }
+            return runItem.routeStationId == item.routeStationId && runItem.adFlag == '0';
           });
           if (matchRunBusInfo) {
             item.runBusInfo = matchRunBusInfo;
@@ -2147,9 +1954,9 @@ export default {
             Vue.set(item, 'inShow', false);
           }
 
-          // 右侧总站
+          // 左侧总站
           console.log('this.arrUp.length', this.arrUp.length);
-          if (i == this.arrUp.length - 1) {
+          if (i == this.arrUp.length) {
             this.upFinalCars = this.runBusInfo.filter((runItem) => {
               return runItem.routeStationId == item.routeStationId && runItem.runStatus == '3';
             });
@@ -2157,13 +1964,7 @@ export default {
 
           // 出站
           const matchRunBusInfoOut = this.runBusInfo.find((runItem) => {
-            if (runItem.runStatus == '0') {
-              return runItem.stationId == item.nextStationId && runItem.adFlag == '1';
-            }
-            if (runItem.runStatus == '1') {
-              return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
-            }
-            // return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
+            return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
           });
           if (matchRunBusInfoOut) {
             item.runBusInfoOut = matchRunBusInfoOut;
@@ -2176,13 +1977,7 @@ export default {
         this.arrDown.forEach((item, i) => {
           // 进站
           const matchRunBusInfo = this.runBusInfo.find((runItem) => {
-            // return runItem.routeStationId == item.routeStationId && runItem.adFlag == '0';
-            if (runItem.runStatus == '0') {
-              return runItem.stationId == item.stationId && runItem.adFlag == '0';
-            }
-            if (runItem.runStatus == '1') {
-              return runItem.routeStationId == item.routeStationId && runItem.adFlag == '0';
-            }
+            return runItem.routeStationId == item.routeStationId && runItem.adFlag == '0';
           });
           if (matchRunBusInfo) {
             // item.runBusInfo = [];
@@ -2202,13 +1997,7 @@ export default {
 
           // 出站
           const matchRunBusInfoOut = this.runBusInfo.find((runItem) => {
-            if (runItem.runStatus == '0') {
-              return runItem.stationId == item.nextStationId && runItem.adFlag == '1';
-            }
-            if (runItem.runStatus == '1') {
-              return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
-            }
-            // return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
+            return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
           });
           if (matchRunBusInfoOut) {
             // item.runBusInfoOut = [];
@@ -2239,22 +2028,10 @@ export default {
           return;
         }
         this.runBusInfoTwo = res.data.runBus;
-        this.notRunCarTwo = [];
-        this.runBusInfoTwo.forEach((runItem, i) => {
-          if (runItem.runStatus == '2') {
-            let obj = { runBusInfo: runItem };
-            this.notRunCarTwo.push(obj);
-          }
-        });
         this.arrUpTwo.forEach((item, i) => {
           // 进站
           const matchRunBusInfo = this.runBusInfoTwo.find((runItem) => {
-            if (runItem.runStatus == '0') {
-              return runItem.stationId == item.stationId && runItem.adFlag == '0';
-            }
-            if (runItem.runStatus == '1') {
-              return runItem.routeStationId == item.routeStationId && runItem.adFlag == '0';
-            }
+            return runItem.routeStationId == item.routeStationId && runItem.adFlag == '0';
           });
           if (matchRunBusInfo) {
             item.runBusInfo = matchRunBusInfo;
@@ -2265,9 +2042,9 @@ export default {
             Vue.set(item, 'inShow', false);
           }
 
-          // 右侧总站
+          // 左侧总站
           console.log('this.arrUp.length', this.arrUp.length);
-          if (i == this.arrUpTwo.length - 1) {
+          if (i == this.arrUpTwo.length) {
             this.upFinalCarsTwo = this.runBusInfoTwo.filter((runItem) => {
               return runItem.routeStationId == item.routeStationId && runItem.runStatus == '3';
             });
@@ -2275,13 +2052,7 @@ export default {
 
           // 出站
           const matchRunBusInfoOut = this.runBusInfoTwo.find((runItem) => {
-            if (runItem.runStatus == '0') {
-              return runItem.stationId == item.nextStationId && runItem.adFlag == '1';
-            }
-            if (runItem.runStatus == '1') {
-              return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
-            }
-            // return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
+            return runItem.routeStationId == item.nextRouteStationId && runItem.adFlag == '1';
           });
           if (matchRunBusInfoOut) {
             item.runBusInfoOut = matchRunBusInfoOut;
@@ -2366,6 +2137,7 @@ export default {
     // 重排方法
     getRunbusRelatedData() {
       axios.get(`${this.url.runbusRelatedData}?routeIdStr=${this.routeId},${this.supRouteId}`).then((res) => {
+        // axios.get(`${this.url.runbusRelatedData}?routeIdStr=194,420`).then((res) => {
         console.log('runbusRelatedData', res.data.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
@@ -2395,227 +2167,257 @@ export default {
 </script>
 
 <style lang="less" scoped>
-section {
-  .con-head {
-    // margin: 12px 0 0 0;
-    padding: 12px;
-    div {
-      display: inline-block;
-      font-size: 14px;
-      margin-right: 12px;
-    }
-    div:nth-child(1) {
-      span {
-        display: inline-block;
+#section {
+  width: 100%;
+  // background: #dbefff;
+  position: relative;
+  .time-content {
+    width: 100%;
+    height: 80px;
+    position: relative;
+    .time-top {
+      width: 100%;
+      height: 40px;
+      background: #102962;
+      border-radius: 10px 10px 0 0;
+      .top-tit {
+        width: 100px;
+        line-height: 40px;
         font-size: 16px;
+        color: #2680eb;
+        text-align: center;
         font-weight: 500;
       }
-    }
-    div:nth-child(2) {
-      display: inline-block;
-      font-size: 16px;
-      font-weight: 500;
-    }
-    .time-choice {
-      img {
-        display: inline-block;
-        width: 24px;
-        margin-right: 5px;
-        cursor: pointer;
-      }
-    }
-    .progress-bar {
-      display: inline-block;
-      position: relative;
-      height: 34px;
-      span {
-        display: inline-block;
-        font-size: 14px;
-        line-height: 34px;
-        margin-right: 5px;
-      }
-      .bar {
-        display: inline-block;
-        width: 180px;
-        height: 2px;
-        background: #8ba0bf;
-        vertical-align: top;
-        margin: 12px 0 0 0;
-        position: relative;
-        .round {
-          position: absolute;
-          top: -8px;
+      .top-con {
+        position: absolute;
+        width: calc(100% - 194px);
+        height: 30px;
+        top: 0;
+        right: 0;
+        .con-top,
+        .con-bottom {
           width: 100%;
-          li {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border-radius: 18px;
-            background: #bfd9f3;
-            position: absolute;
-            cursor: pointer;
-            img {
+          height: 15px;
+          box-sizing: border-box;
+          ul {
+            width: 100%;
+            height: 50%;
+            position: relative;
+            li {
               position: absolute;
-              width: 23px;
-              top: -1px;
-              left: -2px;
+              width: 50px;
+              height: 4px;
+              top: 2px;
+              &.nor {
+                background: linear-gradient(to left, #1890ff, #12448b);
+              }
+              &.unnor {
+                background: linear-gradient(to left, #ff18b2, #12448b);
+              }
             }
           }
-          li:nth-child(1) {
-            top: 0;
-            left: 0;
-          }
-          li:nth-child(2) {
-            top: 0;
-            left: 80px;
-          }
-          li:nth-child(3) {
-            top: 0;
-            right: 0;
+        }
+        .con-top {
+          border-bottom: 1px dotted #475c94;
+        }
+        .con-bottom {
+          ul {
+            width: 100%;
+            height: 50%;
+            position: relative;
+            li {
+              position: absolute;
+              width: 50px;
+              height: 4px;
+              top: 2px;
+              &.nor {
+                background: linear-gradient(to right, #1890ff, #12448b);
+              }
+              &.unnor {
+                background: linear-gradient(to right, #ff18b2, #12448b);
+              }
+            }
           }
         }
-        .num {
-          position: absolute;
-          top: 8px;
-          width: 104%;
-          font-size: 12px;
-          li {
-            display: inline-block;
+      }
+    }
+    .time-bottom {
+      width: 100%;
+      height: 40px;
+      background: #0e3350;
+      border-radius: 0 0 10px 10px;
+      .bottom-tit {
+        width: 100px;
+        line-height: 40px;
+        font-size: 16px;
+        color: #1bb291;
+        text-align: center;
+        font-weight: 500;
+      }
+      .bottom-con {
+        position: absolute;
+        width: calc(100% - 194px);
+        height: 30px;
+        bottom: 0;
+        right: 0;
+        .con-top,
+        .con-bottom {
+          width: 100%;
+          height: 15px;
+          box-sizing: border-box;
+          ul {
+            width: 100%;
+            height: 50%;
+            position: relative;
+            li {
+              position: absolute;
+              width: 50px;
+              height: 4px;
+              top: 2px;
+              &.nor {
+                background: linear-gradient(to left, #1890ff, #12448b);
+              }
+              &.unnor {
+                background: linear-gradient(to left, #ff18b2, #12448b);
+              }
+              .time-tips {
+                position: absolute;
+                width: 150px;
+                height: 66px;
+                top: 4px;
+                left: 0;
+                z-index: 3;
+                .bg {
+                  width: 100%;
+                  height: 100%;
+                  background: #000;
+                  opacity: 0.4;
+                }
+                p {
+                  font-size: 16px;
+                  color: #fff;
+                  text-align: center;
+                  position: absolute;
+                  width: 100%;
+                  text-align: center;
+                  top: 0;
+                }
+                .p2 {
+                  top: 50%;
+                }
+              }
+            }
           }
-          li:nth-child(2) {
-            margin: 0 52px;
+        }
+        .con-top {
+          border-bottom: 1px dotted #475c94;
+        }
+        .con-bottom {
+          ul {
+            width: 100%;
+            height: 50%;
+            position: relative;
+            li {
+              position: absolute;
+              width: 50px;
+              height: 4px;
+              top: 2px;
+
+              &.nor {
+                background: linear-gradient(to right, #1890ff, #12448b);
+              }
+              &.unnor {
+                background: linear-gradient(to right, #ff18b2, #12448b);
+              }
+            }
+          }
+        }
+      }
+    }
+    .time-middle {
+      position: absolute;
+      width: calc(100% - 100px);
+      height: 22px;
+      background: #0e1e52;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto 0;
+      display: flex;
+      .middle-tit {
+        span {
+          display: inline-block;
+        }
+        .bg {
+          width: 9px;
+          height: 9px;
+          background: #ff19b2;
+          margin: 0 7px 0 12px;
+        }
+        .name {
+          width: 36px;
+          height: 18px;
+          font-size: 12px;
+          text-align: center;
+          line-height: 18px;
+          color: #a0b2c9;
+          margin: 0 30px 0 0;
+        }
+      }
+      .middle-con {
+        width: calc(100% - 94px);
+        height: 100%;
+        // background: red;
+        .time-ul {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          position: relative;
+
+          .time-li {
+            flex: 1;
+            // text-align: center;
+            div {
+              height: 16px;
+              line-height: 16px;
+              transform: translateX(-17px);
+              color: #fff;
+            }
+
+            ul {
+              display: flex;
+              height: 6px;
+              // justify-content: space-between;
+              li {
+                // width: 2px;
+                flex: 1;
+                height: 6px;
+                span {
+                  display: inline-block;
+                  width: 2px;
+                  height: 6px;
+                  background: #5b678e;
+                  vertical-align: top;
+                }
+              }
+            }
+          }
+
+          .time-li-over {
+            position: absolute;
+            right: 0;
+            line-height: 16px;
+            color: #fff;
           }
         }
       }
     }
   }
   .car-content {
-    display: flex;
-    flex-wrap: nowrap;
+    // display: flex;
+    // flex-wrap: nowrap;
     position: relative;
-
-    .not-run {
-      position: absolute;
-      width: 100%;
-      height: 40px;
-      top: 0;
-      left: 0;
-      display: flex;
-      justify-content: space-between;
-      .not-left {
-        width: 50%;
-        .tit {
-          display: inline-block;
-          font-size: 16px;
-          line-height: 40px;
-          margin: 0 5px;
-        }
-        .not-run-car-list {
-          display: inline-block;
-          vertical-align: top;
-          margin: 8px 0 0 0;
-          .not-run-car-list-li {
-            display: inline-block;
-            .bus {
-              // display: none;
-              // position: absolute;
-              // top: -26px;
-              // right: calc(0% - 14px);
-
-              .bus-container {
-                position: relative;
-                width: 50px;
-                height: 26px;
-                background: #ffffff;
-                border-radius: 15px; /* 设置长方形四个角的弧度 */
-                overflow: hidden;
-              }
-
-              .bus-bar {
-                position: relative;
-                width: 100%;
-                height: 100%;
-                background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-                border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-                clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-              }
-
-              .bus-text {
-                position: absolute;
-                width: 40px;
-                height: 16px;
-                border-radius: 10px;
-                font-size: 13px;
-                line-height: 16px;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                text-align: center;
-                color: #262626; /* 进度条颜色 */
-                background: #ffffff;
-              }
-            }
-          }
-        }
-      }
-      .not-right {
-        text-align: right;
-        width: 50%;
-        .not-run-car-list {
-          display: inline-block;
-          vertical-align: top;
-          margin: 8px 0 0 0;
-          .not-run-car-list-li {
-            display: inline-block;
-            .bus {
-              // display: none;
-              // position: absolute;
-              // top: -26px;
-              // right: calc(0% - 14px);
-
-              .bus-container {
-                position: relative;
-                width: 50px;
-                height: 26px;
-                background: #ffffff;
-                border-radius: 15px; /* 设置长方形四个角的弧度 */
-                overflow: hidden;
-              }
-
-              .bus-bar {
-                position: relative;
-                width: 100%;
-                height: 100%;
-                background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-                border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-                clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-              }
-
-              .bus-text {
-                position: absolute;
-                width: 40px;
-                height: 16px;
-                border-radius: 10px;
-                font-size: 13px;
-                line-height: 16px;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                text-align: center;
-                color: #262626; /* 进度条颜色 */
-                background: #ffffff;
-              }
-            }
-          }
-        }
-        .tit {
-          display: inline-block;
-          font-size: 16px;
-          line-height: 40px;
-          margin: 0 5px;
-        }
-      }
-    }
+    border-bottom: 1px solid #99bbe8;
 
     .reset-box {
       position: absolute;
@@ -2635,7 +2437,7 @@ section {
           display: inline-block;
           margin-right: 5px;
           width: 55px;
-          height: 48px;
+          height: 60px;
           box-sizing: border-box;
           background: #e8f3fd;
           border-radius: 4px 4px 4px 4px;
@@ -2643,8 +2445,6 @@ section {
           text-align: center;
           div {
             font-size: 12px;
-            line-height: 16px;
-            color: #222222;
             &:nth-child(1) {
               font-size: 14px;
             }
@@ -2653,11 +2453,11 @@ section {
       }
     }
     .reset-top-left {
-      top: 40px;
+      top: 0;
       left: 0;
     }
     .reset-top-right {
-      top: 40px;
+      top: 0;
       right: 0;
     }
     .reset-bottom-left {
@@ -2669,15 +2469,126 @@ section {
       right: 0;
     }
 
-    .left-car {
-      width: 50%;
-      height: 560px;
-      margin-top: 40px;
+    .bus-info-left,
+    .bus-info-right {
+      position: absolute;
+      z-index: 999;
+      top: 14px;
+      left: 0;
+      .bus-button {
+        width: 33px;
+        height: 106px;
+        background: #1890ff;
+        box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.16);
+        border-radius: 0px 8px 8px 0px;
+        padding: 4px 0 0 0;
+        cursor: pointer;
+        img {
+          display: block;
+          width: 14px;
+          margin: 0 auto;
+        }
+        span {
+          display: block;
+          margin: 0 auto;
+          // width: 100%;
+          font-size: 14px;
+          color: #ffffff;
+          line-height: 15px;
+          // text-align: center;
+          writing-mode: vertical-rl;
+        }
+      }
+      .bus-con {
+        position: absolute;
+        top: -14px;
+        left: 43px;
+        width: 190px;
+        height: 727px;
+        overflow: auto;
+        background: #e8f3fd;
+        box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.16);
+        .con-li {
+          width: 164px;
+          margin: 0 auto;
+          box-sizing: border-box;
+          border: 1px solid #99bbe8;
+          .tit {
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 0 0 0 16px;
+            border-bottom: 1px solid #99bbe8;
+          }
+          .table-tit {
+            display: flex;
+            border-bottom: 1px solid #99bbe8;
+            li {
+              flex: 1;
+              height: 36px;
+              line-height: 36px;
+              font-size: 14px;
+              text-align: center;
+              box-sizing: border-box;
+              border-right: 1px solid #99bbe8;
+              &:nth-last-child(1) {
+                border: none;
+              }
+            }
+          }
+          .table-con {
+            li {
+              display: flex;
+              border-bottom: 1px solid #99bbe8;
+              div {
+                flex: 1;
+                height: 36px;
+                line-height: 36px;
+                font-size: 14px;
+                text-align: center;
+                box-sizing: border-box;
+                border-right: 1px solid #99bbe8;
+                &:nth-last-child(1) {
+                  border: none;
+                }
+              }
+            }
+          }
+        }
+        .con-li:nth-child(2n-1) {
+          .tit {
+            background: #b8deff;
+          }
+        }
+        .con-li:nth-child(2n) {
+          .tit {
+            background: #bce9f0;
+          }
+        }
+      }
+    }
+    .bus-info-right {
+      left: auto;
+      right: 0;
+      .bus-button {
+        border-radius: 8px 0px 0px 8px;
+      }
+      .bus-con {
+        left: auto;
+        right: 43px;
+      }
+    }
+    .out-car {
+      width: 100%;
+      height: 500px;
 
       .content {
         // overflow: scroll;
         width: 100%;
-        height: 560px;
+        height: 100%;
         position: relative;
         display: flex;
         align-items: center;
@@ -2687,25 +2598,28 @@ section {
 
         .car-box {
           flex: 1;
-          height: 400px;
-          margin: 0 0 0 60px;
+          height: 370px;
+          margin: 0 190px;
           position: relative;
 
           .top-car {
             position: relative;
             width: 100%;
             height: 50%;
+            border: 2px solid #2680eb;
+            border-bottom: none;
+            border-top-left-radius: 102px;
+            border-top-right-radius: 102px;
 
             .top-bg {
               position: absolute;
               width: 100%;
               height: 100%;
-              border-top-left-radius: 50px;
-              border-top-right-radius: 50px;
+              border-top-left-radius: 100px;
+              border-top-right-radius: 100px;
               overflow: hidden;
-              border: 6px solid #2796fd;
+              border: 8px solid #2796fd;
               border-bottom: none;
-              // box-shadow: inset 0 0 0 2px #2680eb, /* 内边框，宽度为2px */ 0 0 0 2px #2680eb; /* 外边框，宽度为2px */
             }
           }
 
@@ -2714,15 +2628,19 @@ section {
             display: grid;
             width: 100%;
             height: 50%;
+            border: 2px solid #2680eb;
+            border-top: none;
+            border-bottom-left-radius: 102px;
+            border-bottom-right-radius: 102px;
 
             .bottom-bg {
               position: absolute;
               width: 100%;
               height: 100%;
-              border-bottom-left-radius: 50px;
-              border-bottom-right-radius: 50px;
+              border-bottom-left-radius: 100px;
+              border-bottom-right-radius: 100px;
               overflow: hidden;
-              border: 6px solid #2796fd;
+              border: 8px solid #2796fd;
               border-top: none;
             }
           }
@@ -2771,6 +2689,7 @@ section {
 
                 > span {
                   margin-top: 15px;
+                  font-size: 12px;
                 }
               }
 
@@ -2778,13 +2697,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                top: -2px;
+                top: -1px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2680eb;
-                background: white;
+                background: url('../../../assets/driverlesscars/goRightNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2680eb;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -2867,7 +2788,6 @@ section {
                   background: #ffffff;
                 }
               }
-
               .logo {
                 position: absolute;
                 top: 0;
@@ -2882,7 +2802,7 @@ section {
           }
 
           .line-car-bottom {
-            margin-top: 40px;
+            margin-top: 24px;
 
             .line {
               .model {
@@ -2891,6 +2811,7 @@ section {
                 > span {
                   position: absolute;
                   margin-bottom: 15px;
+                  font-size: 12px;
                   left: 0;
                   bottom: 0;
                 }
@@ -2900,13 +2821,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                bottom: 0px;
+                bottom: 1px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2680eb;
-                background: white;
+                background: url('../../../assets/driverlesscars/goLeftNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2680eb;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -2954,7 +2877,7 @@ section {
                 // display: none;
                 position: absolute;
                 bottom: -20px;
-                right: calc(50% - 14px);
+                left: calc(50% - 16px);
 
                 .bus-container {
                   position: relative;
@@ -3033,18 +2956,6 @@ section {
                 flex: 1;
               }
             }
-            .route-name {
-              div {
-                width: 66px;
-                height: 30px;
-                font-size: 20px;
-                line-height: 30px;
-                color: #fff;
-                background: #1890ff;
-                border-radius: 5px 5px 5px 5px;
-                margin: 0 auto;
-              }
-            }
           }
 
           .top-st {
@@ -3089,28 +3000,24 @@ section {
             right: -18px;
             top: 50%;
             transform: translate(0, -50%);
-            -webkit-box-orient: vertical;
-            writing-mode: vertical-rl;
           }
         }
-        .type3 {
-        }
-        .type4 {
-        }
-        .type6 {
-          margin: 0 10px 0 60px;
-        }
-        .type7 {
-          margin: 0 10px 0 60px;
-        }
+
         .left-z-car {
           position: absolute;
-          left: -6px;
-          top: 50%;
-          transform: translate(0, -50%);
+          left: 50px;
+          top: 20px;
           width: 50px;
           // text-align: center;
 
+          .name {
+            font-size: 16px;
+            line-height: 28px;
+            width: 50px;
+            text-align: center;
+            margin: 0 0 0 10px;
+            color: #2680eb;
+          }
           .bus {
             display: block;
             position: relative;
@@ -3150,52 +3057,21 @@ section {
               background: #ffffff;
             }
           }
-          .bus-middle {
-            // display: none;
-            position: absolute;
-            bottom: -20px;
-            left: calc(50% - 16px);
-
-            .bus-container {
-              position: relative;
-              width: 50px;
-              height: 26px;
-              background: #ffffff;
-              border-radius: 15px; /* 设置长方形四个角的弧度 */
-              overflow: hidden;
-            }
-
-            .bus-bar {
-              position: relative;
-              width: 100%;
-              height: 100%;
-              background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-              border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-              clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-            }
-
-            .bus-text {
-              position: absolute;
-              width: 40px;
-              height: 16px;
-              border-radius: 10px;
-              font-size: 13px;
-              line-height: 16px;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              text-align: center;
-              color: #262626; /* 进度条颜色 */
-              background: #ffffff;
-            }
-          }
         }
 
         .right-z-car {
           position: absolute;
-          right: 14px;
-          top: 50%;
-          transform: translate(0, -50%);
+          right: 50px;
+          top: 20px;
+
+          .name {
+            font-size: 16px;
+            line-height: 28px;
+            width: 50px;
+            text-align: center;
+            // margin: 0 0 0 10px;
+            color: #2680eb;
+          }
           .bus {
             display: block;
             position: relative;
@@ -3238,15 +3114,18 @@ section {
         }
       }
     }
-    .right-car {
-      width: 50%;
-      height: 560px;
-      margin-top: 40px;
+    .in-car {
+      position: absolute;
+      width: 100%;
+      height: 330px;
+      top: 50%;
+      left: 0;
+      transform: translate(0, -50%);
 
       .content {
         // overflow: scroll;
         width: 100%;
-        height: 560px;
+        height: 100%;
         position: relative;
         display: flex;
         align-items: center;
@@ -3256,23 +3135,28 @@ section {
 
         .car-box {
           flex: 1;
-          height: 400px;
-          margin: 0px 60px 0 0;
+          // height: 260px;
+          height: 170px;
+          margin: 0px 190px;
           position: relative;
 
           .top-car {
             position: relative;
             width: 100%;
             height: 50%;
+            border: 2px solid #1ab090;
+            border-bottom: none;
+            border-top-left-radius: 102px;
+            border-top-right-radius: 102px;
 
             .top-bg {
               position: absolute;
               width: 100%;
               height: 100%;
-              border-top-left-radius: 50px;
-              border-top-right-radius: 50px;
+              border-top-left-radius: 100px;
+              border-top-right-radius: 100px;
               overflow: hidden;
-              border: 6px solid #2fcba9;
+              border: 8px solid #2fcba9;
               border-bottom: none;
             }
           }
@@ -3282,15 +3166,19 @@ section {
             display: grid;
             width: 100%;
             height: 50%;
+            border: 2px solid #1ab090;
+            border-top: none;
+            border-bottom-left-radius: 102px;
+            border-bottom-right-radius: 102px;
 
             .bottom-bg {
               position: absolute;
               width: 100%;
               height: 100%;
-              border-bottom-left-radius: 50px;
-              border-bottom-right-radius: 50px;
+              border-bottom-left-radius: 100px;
+              border-bottom-right-radius: 100px;
               overflow: hidden;
-              border: 6px solid #2fcba9;
+              border: 8px solid #2fcba9;
               border-top: none;
             }
           }
@@ -3310,8 +3198,8 @@ section {
                 width: 20px;
                 height: 162px;
                 line-height: 21px;
-                font-size: 14px;
                 position: relative;
+                font-size: 12px;
 
                 > span {
                   width: 100%;
@@ -3339,6 +3227,7 @@ section {
 
                 > span {
                   margin-top: 15px;
+                  font-size: 12px;
                 }
               }
 
@@ -3346,13 +3235,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                top: -2px;
+                top: -1px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2fcba9;
-                background: white;
+                background: url('../../../assets/driverlesscars/goRightNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2fcba9;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -3400,39 +3291,61 @@ section {
                 // display: none;
                 position: absolute;
                 top: -26px;
-                right: calc(50% - 14px);
+                right: 40%;
 
-                .bus-container {
-                  position: relative;
-                  width: 50px;
-                  height: 26px;
-                  background: #ffffff;
-                  border-radius: 15px; /* 设置长方形四个角的弧度 */
-                  overflow: hidden;
-                }
-
-                .bus-bar {
-                  position: relative;
-                  width: 100%;
-                  height: 100%;
-                  background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-                  border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-                  clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-                }
-
-                .bus-text {
+                .bus-info {
                   position: absolute;
                   width: 40px;
-                  height: 16px;
-                  border-radius: 10px;
-                  font-size: 13px;
-                  line-height: 16px;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
+                  height: 20px;
+
+                  img {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                  }
+
+                  p {
+                    position: absolute;
+                    font-size: 1.2rem;
+                    line-height: 1.4rem;
+                    text-align: center;
+                    color: #fff;
+                    top: 1px;
+                    left: 0;
+                    right: 0;
+                    margin: 0 auto;
+                  }
+                }
+
+                .bus-congestion {
+                  position: absolute;
+                  width: 40px;
+                  top: -32px;
                   text-align: center;
-                  color: #262626; /* 进度条颜色 */
-                  background: #ffffff;
+                  .congestion-info {
+                    position: relative;
+                    display: inline-block;
+                    width: 40px;
+                    height: 5px;
+                    border-radius: 5px;
+                    background: #d6d6d6;
+                    overflow: hidden;
+
+                    div {
+                      position: absolute;
+                      //  width: 80%;
+                      height: 5px;
+                      border-radius: 5px;
+                      top: 0;
+                      left: 0;
+                      background: red;
+                    }
+                  }
+
+                  span {
+                    display: inline-block;
+                    font-size: 1.2rem;
+                  }
                 }
               }
               .logo {
@@ -3449,7 +3362,7 @@ section {
           }
 
           .line-car-bottom {
-            margin-top: 40px;
+            margin-top: -76px;
 
             .line {
               .model {
@@ -3460,6 +3373,7 @@ section {
                   margin-bottom: 15px;
                   left: 0;
                   bottom: 0;
+                  font-size: 12px;
                 }
               }
 
@@ -3467,13 +3381,15 @@ section {
                 content: ' ';
                 position: absolute;
                 left: 0;
-                bottom: 0px;
+                bottom: 2px;
                 right: 0;
                 width: 10px;
                 height: 10px;
-                border-radius: 5px;
-                border: 2px solid #2fcba9;
-                background: white;
+                background: url('../../../assets/driverlesscars/goLeftNew.png') no-repeat;
+                background-size: 100% 100%;
+                // border-radius: 5px;
+                // border: 2px solid #2fcba9;
+                // background: white;
                 margin: 0 auto;
               }
 
@@ -3520,40 +3436,62 @@ section {
               .bus-middle {
                 // display: none;
                 position: absolute;
-                top: -26px;
-                right: calc(50% - 14px);
+                bottom: -10px;
+                left: -75%;
 
-                .bus-container {
-                  position: relative;
-                  width: 50px;
-                  height: 26px;
-                  background: #ffffff;
-                  border-radius: 15px; /* 设置长方形四个角的弧度 */
-                  overflow: hidden;
-                }
-
-                .bus-bar {
-                  position: relative;
-                  width: 100%;
-                  height: 100%;
-                  background: conic-gradient(#ff0000 0% 0%, #ff0000 0% 50%, #b6b6b6 50% 100%, #b6b6b6 100% 100%);
-                  border-radius: 20px; /* 设置进度条四个角的弧度，与容器相同 */
-                  clip-path: inset(0 0 0 0 round 20px); /* 设置进度条四个角的弧度，与容器相同 */
-                }
-
-                .bus-text {
+                .bus-info {
                   position: absolute;
                   width: 40px;
-                  height: 16px;
-                  border-radius: 10px;
-                  font-size: 13px;
-                  line-height: 16px;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
+                  height: 20px;
+
+                  img {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                  }
+
+                  p {
+                    position: absolute;
+                    font-size: 1.2rem;
+                    line-height: 1.4rem;
+                    text-align: center;
+                    color: #fff;
+                    top: 1px;
+                    left: 0;
+                    right: 0;
+                    margin: 0 auto;
+                  }
+                }
+
+                .bus-congestion {
+                  position: absolute;
+                  width: 40px;
+                  top: 20px;
                   text-align: center;
-                  color: #262626; /* 进度条颜色 */
-                  background: #ffffff;
+                  .congestion-info {
+                    position: relative;
+                    display: inline-block;
+                    width: 40px;
+                    height: 5px;
+                    border-radius: 5px;
+                    background: #d6d6d6;
+                    overflow: hidden;
+
+                    div {
+                      position: absolute;
+                      // width: 80%;
+                      height: 5px;
+                      border-radius: 5px;
+                      top: 0;
+                      left: 0;
+                      background: red;
+                    }
+                  }
+
+                  span {
+                    display: inline-block;
+                    font-size: 1.2rem;
+                  }
                 }
               }
 
@@ -3572,46 +3510,147 @@ section {
 
           .center-car {
             z-index: 99;
-            background: #bce9f0;
-            height: 100px;
-            width: 76%;
+            width: 85%;
+            height: 36px;
             position: absolute;
-            // border: 1px #3789fe dashed;
-            border-radius: 15px;
             box-sizing: border-box;
             padding: 5px 0;
-            overflow: hidden;
             left: 0;
             right: 0;
-            top: 0;
-            bottom: 0;
-            margin: auto;
-
-            > p {
+            top: 50%;
+            margin: 0 auto;
+            transform: translate(0, -50%);
+            display: flex;
+            justify-content: space-between;
+            .cen-left {
               display: flex;
-              width: 100%;
-              line-height: 30px;
-
-              > span {
-                font-size: 15px;
-                line-height: 30px;
-                text-align: center;
-                color: #444444;
-                flex: 1;
-              }
-            }
-            .route-name {
-              div {
-                width: 66px;
+              width: 50%;
+              box-sizing: border-box;
+              padding: 0 20px;
+              // margin: 33px 10px 0 10px;
+              .route-name {
+                display: block;
+                width: 67px;
                 height: 30px;
+                background: #1890ff;
+                border-radius: 5px 5px 5px 5px;
+                opacity: 1;
+                color: #fff;
                 font-size: 20px;
                 line-height: 30px;
-                color: #fff;
+                text-align: center;
+              }
+              .cen-info {
+                width: calc(100% - 67px);
+                height: 36px;
+                border-radius: 10px;
+                background: #c4e4ff;
+                box-sizing: border-box;
+                padding: 0 10px;
+                .line1,
+                .line2 {
+                  width: 100%;
+                  height: 18px;
+                  line-height: 18px;
+                  font-size: 14px;
+                  display: flex;
+                  justify-content: space-between;
+                  .line-left,
+                  .line-right {
+                    div {
+                      display: inline-block;
+                      margin-right: 10px;
+                      span {
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+              }
+              // span:nth-child(2) {
+              //   margin-top: 10px;
+              //   background: #1bb291;
+              // }
+            }
+            .cen-right {
+              display: flex;
+              width: 50%;
+              box-sizing: border-box;
+              padding: 0 20px;
+              // margin: 33px 10px 0 10px;
+              .route-name {
+                display: block;
+                width: 67px;
+                height: 30px;
                 background: #1bb291;
                 border-radius: 5px 5px 5px 5px;
-                margin: 0 auto;
+                opacity: 1;
+                color: #fff;
+                font-size: 20px;
+                line-height: 30px;
+                text-align: center;
               }
+              .cen-info {
+                width: calc(100% - 67px);
+                height: 36px;
+                border-radius: 10px;
+                background: #c8eff0;
+                box-sizing: border-box;
+                padding: 0 10px;
+                .line1,
+                .line2 {
+                  width: 100%;
+                  height: 18px;
+                  line-height: 18px;
+                  font-size: 14px;
+                  display: flex;
+                  justify-content: space-between;
+                  .line-left,
+                  .line-right {
+                    div {
+                      display: inline-block;
+                      margin-right: 10px;
+                      span {
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+              }
+              // span:nth-child(2) {
+              //   margin-top: 10px;
+              //   background: #1bb291;
+              // }
             }
+            // .cen-right {
+            //   width: calc(100% - 77px);
+            //   ul {
+            //     display: flex;
+            //     width: 100%;
+            //     box-sizing: border-box;
+            //     padding: 0 20px;
+            //     justify-content: space-between;
+            //     text-align: center;
+            //     margin-bottom: 10px;
+            //     li {
+            //       width: 12.5%;
+            //     }
+            //   }
+            //   .cen-car1,
+            //   .cen-car2 {
+            //     height: 34px;
+            //     line-height: 34px;
+            //     font-size: 18px;
+            //     border-radius: 17px;
+            //     // font-weight: 800;
+            //   }
+            //   .cen-car1 {
+            //     background: #c4e4ff;
+            //   }
+            //   .cen-car2 {
+            //     background: #c8eff0;
+            //   }
+            // }
           }
 
           .top-st {
@@ -3644,8 +3683,6 @@ section {
             position: absolute;
             font-weight: 600;
             transform: translate(0, -50%);
-            -webkit-box-orient: vertical;
-            writing-mode: vertical-rl;
           }
           .bottom-st:after {
             content: '';
@@ -3660,49 +3697,22 @@ section {
             transform: translate(0, -50%);
           }
         }
-        .type3 {
-          .top-st:after {
-            content: '';
-            width: 18px;
-            height: 18px;
-            background: #fff;
-            border: 2px solid #2fcba9;
-            border-radius: 10px;
-            position: absolute;
-            left: -21px;
-            top: 50%;
-            transform: translate(0, -50%);
-          }
-        }
-        .type4 {
-          .top-st:after {
-            content: '';
-            width: 18px;
-            height: 18px;
-            background: #fff;
-            border: 2px solid #2fcba9;
-            border-radius: 10px;
-            position: absolute;
-            left: -21px;
-            top: 50%;
-            transform: translate(0, -50%);
-          }
-        }
-        .type6 {
-          margin: 0px 60px 0 10px;
-        }
-        .type7 {
-          margin: 0px 60px 0 10px;
-        }
 
         .left-z-car {
           position: absolute;
-          left: 16px;
-          top: 50%;
-          transform: translate(0, -50%);
+          left: 50px;
+          top: 70%;
+          // transform: translate(0, -50%);
           width: 50px;
           // text-align: center;
-
+          .name {
+            font-size: 16px;
+            line-height: 28px;
+            width: 50px;
+            text-align: center;
+            margin: 0 0 0 10px;
+            color: #1bb291;
+          }
           .bus {
             display: block;
             position: relative;
@@ -3746,9 +3756,17 @@ section {
 
         .right-z-car {
           position: absolute;
-          right: 3px;
-          top: 50%;
-          transform: translate(0, -50%);
+          right: 50px;
+          top: 70%;
+          // transform: translate(0, -50%);
+          .name {
+            font-size: 16px;
+            line-height: 28px;
+            width: 50px;
+            text-align: center;
+            // margin: 0 0 0 10px;
+            color: #1bb291;
+          }
           .bus {
             display: block;
             position: relative;
@@ -3791,16 +3809,33 @@ section {
         }
       }
     }
-
-    .content::-webkit-scrollbar {
-      display: none;
+    .type0 {
+      .content {
+        .car-box {
+          margin: 0 calc(190px + 5%) 0 190px;
+        }
+      }
     }
-
-    .middleRun {
-      animation: stationToMiddle 1s;
+    .type1 {
+      .content {
+        .car-box {
+          margin: 0 190px 0 calc(190px + 5%);
+        }
+      }
     }
-    .stationRun {
-      animation: middleToStation 1s;
+    .type2 {
+      .content {
+        .car-box {
+          margin: 0 190px;
+        }
+      }
+    }
+    .type5 {
+      .content {
+        .car-box {
+          margin: 0 calc(190px + 5%);
+        }
+      }
     }
 
     .bus-info {
@@ -3980,6 +4015,17 @@ section {
       top: 30px;
       left: 0;
       transform: translate(-44%, 0);
+    }
+
+    .content::-webkit-scrollbar {
+      display: none;
+    }
+
+    .middleRun {
+      animation: stationToMiddle 1s;
+    }
+    .stationRun {
+      animation: middleToStation 1s;
     }
 
     @keyframes stationToMiddle {

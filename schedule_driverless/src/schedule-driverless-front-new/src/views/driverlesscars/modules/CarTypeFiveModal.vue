@@ -3083,6 +3083,7 @@ export default {
                 position: absolute;
                 top: -26px;
                 right: calc(0% - 14px);
+                z-index: 2;
 
                 .bus-container {
                   position: relative;
@@ -3123,6 +3124,7 @@ export default {
                 position: absolute;
                 top: -26px;
                 right: 40%;
+                z-index: 2;
 
                 .bus-info {
                   position: absolute;
@@ -3229,6 +3231,7 @@ export default {
                 position: absolute;
                 bottom: -20px;
                 left: calc(0% - 16px);
+                z-index: 2;
 
                 .bus-container {
                   position: relative;
@@ -3269,6 +3272,7 @@ export default {
                 position: absolute;
                 bottom: -10px;
                 left: -75%;
+                z-index: 2;
 
                 .bus-info {
                   position: absolute;
