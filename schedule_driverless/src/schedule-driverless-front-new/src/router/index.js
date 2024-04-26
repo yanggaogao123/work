@@ -346,6 +346,14 @@ const routes = [
     },
   },
   {
+    path: '/BigScreen',
+    name: 'BigScreen',
+    component: () => import('../views/driverlesscars/BigScreen.vue'),
+    meta: {
+      title: '公交混编自动驾驶高效调度平台',
+    },
+  },
+  {
     path: '/about',
     name: 'about',
     // route level code-splitting
