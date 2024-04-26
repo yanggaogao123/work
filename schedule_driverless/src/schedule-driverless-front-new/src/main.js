@@ -27,20 +27,12 @@ Vue.prototype.$axios = axios;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
-function mainStr() {
-  setTimeout(() => {
-    if (window.signSuccess) {
-      new Vue({
-        router,
-        render: (h) => h(App),
-      }).$mount('#app');
+new Vue({
+  router,
+  render: (h) => h(App),
+}).$mount('#app');
 
-      Vue.use(Vant);
-    } else {
-      mainStr();
-    }
-  }, 10);
-}
+Vue.use(Vant);
 
 if (process.env.NODE_ENV === 'development') {
   //   new VConsole()
