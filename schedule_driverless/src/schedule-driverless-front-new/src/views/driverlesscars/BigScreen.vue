@@ -36,8 +36,13 @@
                     v-show="searchListBool"
                   />
                   <ul class="ipt-list" v-show="searchListBool">
-                    <li @click="clickList(item)" v-for="(item, i) in allRouteList">{{ item.routeName }}-{{
-                    item.supportRouteName }}</li>
+                    <li
+                      @click="clickList(item)"
+                      :key="i"
+                      v-for="(item, i) in allRouteList"
+                    >
+                      {{ item.routeName }}-{{ item.supportRouteName }}
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -49,8 +54,11 @@
 
               <div class="header-right-con">
                 <ul class="bus-list" id="movingDiv">
-                  <li v-for="(item, i) in supList">{{ item.status == 1 ? '无人车' : '支援车' }} {{ item.busName }} {{
-                    moment(item.planTime).format('HH:mm') }}</li>
+                  <li v-for="(item, i) in supList" :key="i">
+                    {{ item.status == 1 ? "无人车" : "支援车" }}
+                    {{ item.busName }}
+                    {{ moment(item.planTime).format("HH:mm") }}
+                  </li>
                   <!-- <li>支援车 D102 7:10</li>
                   <li>支援车 D102 7:10</li>
                   <li>支援车 D102 7:10</li> -->
