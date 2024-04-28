@@ -55,7 +55,7 @@
             <!-- 简图 -->
             <div class="car-box">
               <!-- <big-screen-car-one-modal></big-screen-car-one-modal> -->
-              <big-screen-car-two-modal :sendData="baseData"></big-screen-car-two-modal>
+              <big-screen-car-two-modal :sendData="sendData"></big-screen-car-two-modal>
             </div>
             <!-- 图表 -->
             <div class="chart-box">
@@ -69,6 +69,7 @@
             </div>
           </div>
         </section>
+        <big-screen-map :sendData="sendData"></big-screen-map>
       </div>
     </div>
   </div>
@@ -83,6 +84,7 @@ import BigScreenChartOneModal from './modules/BigScreenChartOneModal.vue';
 import BigScreenChartTwoModal from './modules/BigScreenChartTwoModal.vue';
 import BigScreenCarOneModal from './modules/BigScreenCarOneModal.vue';
 import BigScreenCarTwoModal from './modules/BigScreenCarTwoModal.vue';
+import BigScreenMap from './modules/BigScreenMap.vue';
 
 // 获取容器元素
 // var container = document.querySelector('.container');
@@ -113,6 +115,7 @@ export default {
     BigScreenChartTwoModal,
     BigScreenCarOneModal,
     BigScreenCarTwoModal,
+    BigScreenMap,
   },
   data() {
     return {
