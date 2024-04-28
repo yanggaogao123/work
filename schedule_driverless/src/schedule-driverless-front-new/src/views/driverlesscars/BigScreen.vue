@@ -51,7 +51,7 @@
             <!-- 简图 -->
             <div class="car-box">
               <!-- <big-screen-car-one-modal></big-screen-car-one-modal> -->
-              <big-screen-car-two-modal :sendData="baseData"></big-screen-car-two-modal>
+              <big-screen-car-two-modal :sendData="sendData"></big-screen-car-two-modal>
             </div>
             <!-- 图表 -->
             <div class="chart-box">
@@ -197,47 +197,24 @@ export default {
         }
         this.allRouteList = res.data.data;
       });
-
-      // axios
-      //   .post(
-      //     `${this.url.getMonitorInfo}`,
-      //     {
-      //       routeId: this.routeId,
-      //       runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
-      //     },
-      //     { params }
-      //   )
-      //   .then((res) => {
-      //     console.log(res);
-      //   });
-
-      // axios
-      //   .post(
-      //     `${this.url.getMonitorInfo}`,
-      //     {
-      //       routeId: this.supRouteId,
-      //       runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
-      //     },
-      //     { params }
-      //   )
-      //   .then((res) => {
-      //     console.log(res);
-      //   });
     },
 
     // 搜索栏
     showSearchList() {
       this.searchListBool = !this.searchListBool;
     },
-    clickList(item) {
+    async clickList(item) {
       this.searchObj = item;
       this.searchName = `${item.routeName}-${item.supportRouteName}`;
       this.routeId = item.routeId;
+      this.routeName = item.routeName;
       this.supRouteId = item.supportRouteId;
+      this.supRouteName = item.supportRouteName;
+      this.carType = item.type;
       this.searchListBool = false;
 
       let params = this.mes;
-      axios.post(`${this.url.getOneHourSupportPlan}`, { routeId: this.routeId, supportRouteId: this.supRouteId }, { params }).then((res) => {
+      await axios.post(`${this.url.getOneHourSupportPlan}`, { routeId: this.routeId, supportRouteId: this.supRouteId }, { params }).then((res) => {
         console.log(res);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
@@ -270,6 +247,8 @@ export default {
         // 定时触发向上移动函数
         this.movingTimer = setInterval(moveUp, 2000); // 每秒触发一次向上移动函数
       });
+
+      await this.getRuningScheduleConfig();
     },
     searchIpt() {
       axios.post(`${this.url.getByRouteNameKey}`, { routeNameKey: this.searchName }).then((res) => {
@@ -464,6 +443,7 @@ export default {
           supRouteId: this.supRouteId,
           runDate: this.runDate,
           centerData: this.centerData,
+          carType: this.carType,
         };
         if ([0, 1, 2, 5].includes(this.carType)) {
           this.carBool = 'b';
