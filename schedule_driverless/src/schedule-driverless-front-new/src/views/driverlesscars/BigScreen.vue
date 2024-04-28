@@ -15,7 +15,7 @@
                   <a-icon type="up" @click="showSearchList" v-show="!searchListBool" />
                   <a-icon type="down" @click="showSearchList" v-show="searchListBool" />
                   <ul class="ipt-list" v-show="searchListBool">
-                    <li @click="clickList(item)" v-for="(item, i) in allRouteList">{{ item.routeName }}-{{ item.supportRouteName }}</li>
+                    <li @click="clickList(item)" :key="i" v-for="(item, i) in allRouteList">{{ item.routeName }}-{{ item.supportRouteName }}</li>
                   </ul>
                 </div>
               </div>
@@ -27,7 +27,11 @@
 
               <div class="header-right-con">
                 <ul class="bus-list" id="movingDiv">
-                  <li v-for="(item, i) in supList">{{ item.status == 1 ? '无人车' : '支援车' }} {{ item.busName }} {{ moment(item.planTime).format('HH:mm') }}</li>
+                  <li v-for="(item, i) in supList" :key="i">
+                    {{ item.status == 1 ? '无人车' : '支援车' }}
+                    {{ item.busName }}
+                    {{ moment(item.planTime).format('HH:mm') }}
+                  </li>
                   <!-- <li>支援车 D102 7:10</li>
                   <li>支援车 D102 7:10</li>
                   <li>支援车 D102 7:10</li> -->
@@ -42,25 +46,25 @@
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal :chartData="chartData"></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal title="101路日均各时段班次客运量" :chartData="chartData"></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal :chartData="chartData"></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal title="101路日均各时段班次客运量" :chartData="chartData"></big-screen-chart-two-modal>
               </div>
             </div>
             <!-- 简图 -->
             <div class="car-box">
               <!-- <big-screen-car-one-modal></big-screen-car-one-modal> -->
-              <big-screen-car-two-modal :sendData="sendData"></big-screen-car-two-modal>
+              <big-screen-car-two-modal :sendData="baseData"></big-screen-car-two-modal>
             </div>
             <!-- 图表 -->
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal :chartData="chartData"></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal title="106路日均各时段班次客运量" :chartData="chartData"></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal :chartData="chartData"></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal title="106路日均各时段班次客运量" :chartData="chartData"></big-screen-chart-two-modal>
               </div>
             </div>
           </div>
@@ -104,7 +108,12 @@ function updateScale() {
 
 export default {
   name: 'BigScreen',
-  components: { BigScreenChartOneModal, BigScreenChartTwoModal, BigScreenCarOneModal, BigScreenCarTwoModal },
+  components: {
+    BigScreenChartOneModal,
+    BigScreenChartTwoModal,
+    BigScreenCarOneModal,
+    BigScreenCarTwoModal,
+  },
   data() {
     return {
       url: {
@@ -251,15 +260,19 @@ export default {
       await this.getRuningScheduleConfig();
     },
     searchIpt() {
-      axios.post(`${this.url.getByRouteNameKey}`, { routeNameKey: this.searchName }).then((res) => {
-        console.log(res);
-        if (res.data.retCode != 0) {
-          this.$message.error(res.data.retMsg);
-          return;
-        }
-        this.searchListBool = true;
-        this.allRouteList = res.data.data;
-      });
+      axios
+        .post(`${this.url.getByRouteNameKey}`, {
+          routeNameKey: this.searchName,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data.retCode != 0) {
+            this.$message.error(res.data.retMsg);
+            return;
+          }
+          this.searchListBool = true;
+          this.allRouteList = res.data.data;
+        });
     },
 
     /****************************/
@@ -462,29 +475,39 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden; /* 防止页面滚动 */
+  overflow: hidden;
+  /* 防止页面滚动 */
   position: relative;
   background: #000;
 }
+
 #page {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden; /* 防止页面滚动 */
+  overflow: hidden;
+  /* 防止页面滚动 */
   position: relative;
   background: #000;
 }
 
 .container {
   position: absolute;
-  width: 1920px; /* 固定宽度为1920px */
-  height: 1080px; /* 固定高度为1080px */
+  width: 1920px;
+  /* 固定宽度为1920px */
+  height: 1080px;
+  /* 固定高度为1080px */
   display: flex;
-  align-items: center; /* 垂直居中 */
-  justify-content: center; /* 水平居中 */
-  transform-origin: top left; /* 缩放原点为左上角 */
-  transform: scale(1); /* 初始缩放为1 */
-  transition: transform 0.3s ease; /* 添加过渡效果 */
+  align-items: center;
+  /* 垂直居中 */
+  justify-content: center;
+  /* 水平居中 */
+  transform-origin: top left;
+  /* 缩放原点为左上角 */
+  transform: scale(1);
+  /* 初始缩放为1 */
+  transition: transform 0.3s ease;
+  /* 添加过渡效果 */
 }
 
 .content {
@@ -492,20 +515,24 @@ html {
   height: 100%;
   background: #091a4f;
   position: relative;
+
   .header {
     // position: absolute;
     width: 100%;
     height: 120px;
     position: relative;
     display: flex;
+
     .flash-left,
     .flash-right {
       width: 50%;
       height: 100%;
     }
+
     .flash-right {
       transform: scaleX(-1);
     }
+
     .header-con {
       position: absolute;
       width: 100%;
@@ -514,19 +541,23 @@ html {
       left: 0;
       display: flex;
       justify-content: space-between;
+
       .header-left {
         .search-box {
           position: relative;
           display: inline-block;
           margin: 0 0 0 50px;
+
           img {
             width: 360px;
             height: 90px;
           }
+
           .search-con {
             position: absolute;
             top: 30px;
             left: 100px;
+
             .ipt {
               width: 180px;
               height: 36px;
@@ -536,10 +567,12 @@ html {
               line-height: 36px;
               font-size: 24px;
             }
+
             i {
               font-size: 20px;
               color: #fff;
             }
+
             .ipt-list {
               position: absolute;
               top: 42px;
@@ -549,6 +582,7 @@ html {
               font-size: 20px;
               height: 160px;
               overflow: auto;
+
               li {
                 width: 249px;
                 height: 48px;
@@ -558,16 +592,20 @@ html {
                 cursor: pointer;
                 line-height: 48px;
                 margin-bottom: 4px;
+
                 &:hover {
                   background: #005873;
                 }
               }
+
               &::-webkit-scrollbar {
-                display: none; /* Chrome Safari */
+                display: none;
+                /* Chrome Safari */
               }
             }
           }
         }
+
         .weather {
           display: inline-block;
           font-size: 18px;
@@ -579,6 +617,7 @@ html {
           margin-left: 20px;
         }
       }
+
       .header-middle {
         width: 520px;
         position: absolute;
@@ -592,13 +631,16 @@ html {
         top: 0;
         margin: 0 auto;
       }
+
       .header-right {
         position: relative;
         margin-right: 50px;
+
         img {
           width: 300px;
           height: 90px;
         }
+
         .header-right-con {
           position: absolute;
           top: 24px;
@@ -606,10 +648,13 @@ html {
           width: 200px;
           height: 50px;
           overflow: scroll;
+
           &::-webkit-scrollbar {
-            display: none; /* Chrome Safari */
+            display: none;
+            /* Chrome Safari */
           }
         }
+
         .bus-list {
           position: absolute;
           color: #fff;
@@ -620,34 +665,42 @@ html {
           // transition: top 0.5s ease-in-out;
         }
       }
+
       // background: red;
     }
   }
+
   .section {
     position: absolute;
     width: 100%;
     height: calc(100% - 100px);
     top: 92px;
+
     .section-con {
       padding: 0 15px;
+
       .chart-box {
         width: 100%;
         height: 240px;
         // background: blue;
         display: flex;
         justify-content: space-between;
+
         .chart-left,
         .chart-right {
           width: 50%;
           // background: green;
         }
+
         .chart-left {
           margin-right: 10px;
         }
+
         .chart-right {
           margin-left: 10px;
         }
       }
+
       .car-box {
         width: 100%;
         height: 500px;
