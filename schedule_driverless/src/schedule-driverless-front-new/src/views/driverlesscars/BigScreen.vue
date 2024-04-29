@@ -108,7 +108,7 @@
               <div class="chart-right">
                 <big-screen-chart-two-modal
                   :routeId="sendData.supRouteId"
-                  :title="`${sendData.supRouteName || ''}路日均各时段班次客运量`"
+                  :title="`${sendData.supRouteName || ''}日均各时段班次客运量`"
                 ></big-screen-chart-two-modal>
               </div>
             </div>
