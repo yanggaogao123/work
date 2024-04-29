@@ -19,7 +19,7 @@
     <result column="NEXT_FIRST_ROUTE_STA_ID" jdbcType="DECIMAL" property="nextFirstRouteStaId" />
     <result column="NEXT_FIRST_ROUTE_STA_NAME" jdbcType="VARCHAR" property="nextFirstRouteStaName" />
     <result column="FIRST_STATION_ID" jdbcType="DECIMAL" property="firstStationId" />
-    <result column="FIRST_STATION_ID" jdbcType="DECIMAL" property="lastStationId" />
+    <result column="LAST_STATION_ID" jdbcType="DECIMAL" property="lastStationId" />
   </resultMap>
 
   <select id="getByTemplateId" resultMap="BaseResultMap" parameterType="map">
