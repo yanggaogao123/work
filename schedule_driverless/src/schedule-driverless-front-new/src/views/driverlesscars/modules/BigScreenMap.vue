@@ -1,5 +1,5 @@
 <template>
-  <div class="map-modules" v-show="visibility">
+  <div class="map-modules" v-if="visibility">
     <div class="close" @click="closeModule"><img src="../../../assets/driverlesscars/map-btn-close.png" alt=""></div>
     <div class="bg"><img src="../../../assets/driverlesscars/big.png" alt=""></div>
     <div class="left-aside">
