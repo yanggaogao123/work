@@ -226,54 +226,28 @@ export default {
         getGisRoadInfo: `${process.env.VUE_APP_BUS_API}/schedule/getGisRoadInfo`,
         getSchedulePlanDetail: `${process.env.VUE_APP_BUS_API}/schedule/getSchedulePlanDetail`,
       },
-      sendData1: {
-        "scheduleId": 549767,
-        "routeId": 4950,
-        "routeCode": "09460",
-        "supportRouteId": 5870,
-        "planDate": "2024-04-27T16:00:00.000+0000",
-        "planTime": "2024-04-28 17:23:00",
-        "timeStamp": 1714296180000,
-        "startDirection": "0",
-        "startOrderNumber": 5,
-        "tripEndTime": "2024-04-28 18:17:00",
-        "serviceType": "1",
-        "serviceName": "全程",
-        "direction": "0",
-        "busCode": "0946000005",
-        "busId": 3010461,
-        "busName": "39663",
-        "firstRouteStaId": 1116098,
-        "lastRouteStaId": 4243663,
-        "firstRouteStaName": "广汕路（科景路口）总站(总站)",
-        "lastRouteStaName": "南岗总站",
-        "runMileage": 22.94,
-        "peakType": null,
-        "firstRoundPlanTime": null,
-        "firstRoundTaskId": null,
-        "syncPlan": 0,
-        "classes": 10,
-        "supportClasses": 4,
-        "interval": 10,
-        "stopTime": 13,
-        "passengerData": "2024-04-16T16:00:00.000+0000",
-        "passengerNum": 75,
-        "singleBus": null,
-        "status": 2,
-        "fullTime": 3240,
-        "planType": 1,
-        "planTimeInt": 1723
-      }
     };
   },
   watch: {
     visibility(nv, ov) {
       if (nv) {
-        this.map.resize()
-        this.getMonitorInfo()
-        this.setTimer()
-        this.getGisRoadInfo()
-        this.getSchedulePlanDetail()
+        if (this.map) {
+          this.map.resize()
+          this.getMonitorInfo()
+          this.setTimer()
+          this.getGisRoadInfo()
+          this.getSchedulePlanDetail()
+        } else {
+          this.$nextTick(() => {
+            this.initAMap();
+          })
+        }
+      } else {
+        if (this.timer) {
+          clearInterval(this.timer)
+        }
+        this.map.destroy()
+        this.map = null
       }
     }
   },
@@ -282,11 +256,13 @@ export default {
   created() {
   },
   mounted() {
-    this.initAMap();
+    // this.$nextTick(() => {
+    //   this.initAMap();
+    // })
   },
   methods: {
     initAMap() {
-      console.log(this.$props.sendData1)
+      console.log('sendData', this.$props.sendData)
       let that = this
       AMapLoader.load({
         key: "aa76ad84f92f661980f710cbe966b7f6", // 申请好的Web端开发者Key，首次调用 load 时必填
@@ -492,11 +468,12 @@ export default {
       }
       this.timer = setInterval(() => {
         this.getMonitorInfo()
+        this.getSchedulePlanDetail()
       }, 10 * 1000)
     },
     getMonitorInfo() {
       let params = {
-        routeId: this.sendData1.routeId,
+        routeId: this.$props.sendData.routeId,
         runDate: `${moment(new Date()).format('YYYY-MM-DD')} 00:00:00`,
       }
       axios.post(this.url.getMonitorInfo, params).then((res) => {
@@ -505,15 +482,15 @@ export default {
           this.$message.error(res.data.retMsg);
           return;
         }
-        this.busPositionInf = res.data.runBus.filter(l => l.busId == this.sendData1.busId)
+        this.busPositionInf = res.data.runBus.filter(l => l.busId == this.$props.sendData.busId)
 
         this.loadBusMarker(this.busPositionInf)
       });
     },
     getGisRoadInfo() {
       let params = {
-        routeId: this.sendData1.routeId,
-        direction: this.sendData1.direction
+        routeId: this.$props.sendData.routeId,
+        direction: this.$props.sendData.direction
       }
       axios.post(this.url.getGisRoadInfo, params).then((res) => {
         console.log(res);
@@ -548,9 +525,9 @@ export default {
     },
     getSchedulePlanDetail() {
       let params = {
-        routeId: this.sendData1.routeId,
-        supportRouteId: this.sendData1.supportRouteId,
-        scheduleId: this.sendData1.scheduleId,
+        routeId: this.$props.sendData.routeId,
+        supportRouteId: this.$props.sendData.supportRouteId,
+        scheduleId: this.$props.sendData.scheduleId,
       }
       axios.post(this.url.getSchedulePlanDetail, params).then((res) => {
         console.log(res);

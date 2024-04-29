@@ -49,13 +49,13 @@
               <div class="weather">{{ moment().format("YYYY-MM-DD") }}</div>
             </div>
             <div class="header-middle">公交混编自动驾驶高效调度平台</div>
-            <div class="header-right" @click="showMap">
+            <div class="header-right">
               <img src="@/assets/driverlesscars/bs-top-right.png" alt="" />
 
               <div class="header-right-con">
                 <ul class="bus-list" id="movingDiv">
-                  <li v-for="(item, i) in supList" :key="i">
-                    {{ item.status == 1 ? "无人车" : "支援车" }}
+                  <li v-for="(item, i) in supList" :key="i" @click="showMap(item)">
+                    {{ item.status == 1 ? '无人车' : '支援车' }}
                     {{ item.busName }}
                     {{ moment(item.planTime).format("HH:mm") }}
                   </li>
@@ -540,46 +540,9 @@ export default {
         }
       });
     },
-    showMap() {
-      this.showMapModule = true;
-      this.sendData = {
-        scheduleId: 549767,
-        routeId: 4950,
-        routeCode: "09460",
-        supportRouteId: 5870,
-        planDate: "2024-04-27T16:00:00.000+0000",
-        planTime: "2024-04-28 17:23:00",
-        timeStamp: 1714296180000,
-        startDirection: "0",
-        startOrderNumber: 5,
-        tripEndTime: "2024-04-28 18:17:00",
-        serviceType: "1",
-        serviceName: "全程",
-        direction: "0",
-        busCode: "0946000005",
-        busId: 3010461,
-        busName: "39663",
-        firstRouteStaId: 1116098,
-        lastRouteStaId: 4243663,
-        firstRouteStaName: "广汕路（科景路口）总站(总站)",
-        lastRouteStaName: "南岗总站",
-        runMileage: 22.94,
-        peakType: null,
-        firstRoundPlanTime: null,
-        firstRoundTaskId: null,
-        syncPlan: 0,
-        classes: 10,
-        supportClasses: 4,
-        interval: 10,
-        stopTime: 13,
-        passengerData: "2024-04-16T16:00:00.000+0000",
-        passengerNum: 75,
-        singleBus: null,
-        status: 2,
-        fullTime: 3240,
-        planType: 1,
-        planTimeInt: 1723,
-      };
+    showMap(selectData) {
+      this.showMapModule = true
+      this.sendData.busId = selectData.busId ? selectData.selectData : 3010461
     },
     hideMap() {
       this.showMapModule = false;
@@ -783,6 +746,7 @@ html {
           line-height: 50px;
           font-size: 20px;
           // transition: top 0.5s ease-in-out;
+          cursor: pointer;
         }
       }
 
