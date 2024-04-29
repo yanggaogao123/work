@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.GisRoadnodeMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.scheduleD.GisRoadnode">
+    <id column="ROADNODE_ID" jdbcType="DECIMAL" property="roadnodeId" />
+    <result column="ROADSEG_ID" jdbcType="DECIMAL" property="roadsegId" />
+    <result column="LONGITUDE" jdbcType="DECIMAL" property="longitude" />
+    <result column="LATITUDE" jdbcType="DECIMAL" property="latitude" />
+    <result column="DISTANCE" jdbcType="DECIMAL" property="distance" />
+    <result column="ORDER_NUM" jdbcType="DECIMAL" property="orderNum" />
+    <result column="DATE_CREATED" jdbcType="TIMESTAMP" property="dateCreated" />
+    <result column="LAST_UPDATED" jdbcType="TIMESTAMP" property="lastUpdated" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="VERSION" jdbcType="DECIMAL" property="version" />
+    <result column="IS_STATION" jdbcType="DECIMAL" property="isStation" />
+    <result column="ROAD_ID" jdbcType="DECIMAL" property="roadId" />
+    <result column="ANGLE_DEGREE" jdbcType="DECIMAL" property="angleDegree" />
+    <result column="GPSKEY" jdbcType="VARCHAR" property="gpskey" />
+  </resultMap>
+  <resultMap id="GisInfoMap" type="com.gci.schedule.driverless.bean.scheduleD.GisRoadInfo">
+    <result column="ROUTE_STA_ID" jdbcType="DECIMAL" property="routeStaId" />
+    <result column="STATION_ID" jdbcType="DECIMAL" property="stationId" />
+    <result column="ROADSEG_ID" jdbcType="DECIMAL" property="roadsegId" />
+    <result column="STATION_MARK" jdbcType="VARCHAR" property="stationMark" />
+    <result column="ROUTE_STATION_NAME" jdbcType="VARCHAR" property="routeStationName" />
+    <result column="ORDER_NUMBER" jdbcType="DECIMAL" property="orderNumber" />
+    <result column="LONGITUDE" jdbcType="DECIMAL" property="longitude" />
+    <result column="LATITUDE" jdbcType="DECIMAL" property="latitude" />
+    <result column="ORDER_NUM" jdbcType="DECIMAL" property="orderNum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ROADNODE_ID, ROADSEG_ID, LONGITUDE, LATITUDE, DISTANCE, ORDER_NUM, DATE_CREATED, 
+    LAST_UPDATED, CREATE_USER, UPDATE_USER, REMARK, VERSION, IS_STATION, ROAD_ID, ANGLE_DEGREE, 
+    GPSKEY
+  </sql>
+  <select id="selectByRouteIdAndDir" resultMap="GisInfoMap">
+    SELECT
+	s.ROUTE_STA_ID,
+	s.STATION_ID,
+	s.ROADSEG_ID,
+	s.STATION_MARK,
+	s.ROUTE_STATION_NAME,
+	s.ORDER_NUMBER,
+	g.ORDER_NUM,
+	g.LONGITUDE,
+	g.LATITUDE
+FROM
+	apts.bs_route_sta s
+	LEFT JOIN apts.GIS_ROADNODE g ON s.ROADSEG_ID = g.ROADSEG_ID
+WHERE
+	s.route_id = #{routeId,jdbcType=DECIMAL}
+    <choose>
+      <when test="direction !=null and direction == 0 ">
+        AND s.STATION_MARK IN ( '0', '1', '2' )
+      </when>
+      <otherwise>
+        AND s.STATION_MARK IN ( '3', '4', '5' )
+      </otherwise>
+    </choose>
+ORDER BY
+	s.ORDER_NUMBER,
+	g.ORDER_NUM
+  </select>
+
+  <select id="selectStationByRouteIdAndDir" resultType="map">
+    SELECT
+    s.ROUTE_STA_ID routeStaId,
+    s.STATION_ID stationId,
+    s.ROADSEG_ID roadsegId,
+    s.STATION_MARK stationMark,
+    s.ROUTE_STATION_NAME routeStationName,
+    s.ORDER_NUMBER orderNumber,
+    t.LONGITUDED longituded,
+    t.LATITUDED latituded
+    FROM
+    bs_station t
+    LEFT JOIN bs_route_sta s ON s.STATION_ID = t.STATION_ID
+    WHERE
+    s.route_id = #{routeId,jdbcType=DECIMAL}
+    <choose>
+      <when test="direction !=null and direction == 0 ">
+        AND s.STATION_MARK IN ( '0', '1', '2' )
+      </when>
+      <otherwise>
+        AND s.STATION_MARK IN ( '3', '4', '5' )
+      </otherwise>
+    </choose>
+    ORDER BY
+    s.ORDER_NUMBER
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from GIS_ROADNODE
+    where ROADNODE_ID = #{roadnodeId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from GIS_ROADNODE
+    where ROADNODE_ID = #{roadnodeId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.scheduleD.GisRoadnode">
+    insert into GIS_ROADNODE (ROADNODE_ID, ROADSEG_ID, LONGITUDE, 
+      LATITUDE, DISTANCE, ORDER_NUM, 
+      DATE_CREATED, LAST_UPDATED, CREATE_USER, 
+      UPDATE_USER, REMARK, VERSION, 
+      IS_STATION, ROAD_ID, ANGLE_DEGREE, 
+      GPSKEY)
+    values (#{roadnodeId,jdbcType=DECIMAL}, #{roadsegId,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL}, 
+      #{latitude,jdbcType=DECIMAL}, #{distance,jdbcType=DECIMAL}, #{orderNum,jdbcType=DECIMAL}, 
+      #{dateCreated,jdbcType=TIMESTAMP}, #{lastUpdated,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateUser,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{version,jdbcType=DECIMAL}, 
+      #{isStation,jdbcType=DECIMAL}, #{roadId,jdbcType=DECIMAL}, #{angleDegree,jdbcType=DECIMAL}, 
+      #{gpskey,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.GisRoadnode">
+    insert into GIS_ROADNODE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roadnodeId != null">
+        ROADNODE_ID,
+      </if>
+      <if test="roadsegId != null">
+        ROADSEG_ID,
+      </if>
+      <if test="longitude != null">
+        LONGITUDE,
+      </if>
+      <if test="latitude != null">
+        LATITUDE,
+      </if>
+      <if test="distance != null">
+        DISTANCE,
+      </if>
+      <if test="orderNum != null">
+        ORDER_NUM,
+      </if>
+      <if test="dateCreated != null">
+        DATE_CREATED,
+      </if>
+      <if test="lastUpdated != null">
+        LAST_UPDATED,
+      </if>
+      <if test="createUser != null">
+        CREATE_USER,
+      </if>
+      <if test="updateUser != null">
+        UPDATE_USER,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="version != null">
+        VERSION,
+      </if>
+      <if test="isStation != null">
+        IS_STATION,
+      </if>
+      <if test="roadId != null">
+        ROAD_ID,
+      </if>
+      <if test="angleDegree != null">
+        ANGLE_DEGREE,
+      </if>
+      <if test="gpskey != null">
+        GPSKEY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="roadnodeId != null">
+        #{roadnodeId,jdbcType=DECIMAL},
+      </if>
+      <if test="roadsegId != null">
+        #{roadsegId,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null">
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="distance != null">
+        #{distance,jdbcType=DECIMAL},
+      </if>
+      <if test="orderNum != null">
+        #{orderNum,jdbcType=DECIMAL},
+      </if>
+      <if test="dateCreated != null">
+        #{dateCreated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdated != null">
+        #{lastUpdated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=DECIMAL},
+      </if>
+      <if test="isStation != null">
+        #{isStation,jdbcType=DECIMAL},
+      </if>
+      <if test="roadId != null">
+        #{roadId,jdbcType=DECIMAL},
+      </if>
+      <if test="angleDegree != null">
+        #{angleDegree,jdbcType=DECIMAL},
+      </if>
+      <if test="gpskey != null">
+        #{gpskey,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.scheduleD.GisRoadnode">
+    update GIS_ROADNODE
+    <set>
+      <if test="roadsegId != null">
+        ROADSEG_ID = #{roadsegId,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null">
+        LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        LATITUDE = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="distance != null">
+        DISTANCE = #{distance,jdbcType=DECIMAL},
+      </if>
+      <if test="orderNum != null">
+        ORDER_NUM = #{orderNum,jdbcType=DECIMAL},
+      </if>
+      <if test="dateCreated != null">
+        DATE_CREATED = #{dateCreated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdated != null">
+        LAST_UPDATED = #{lastUpdated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        VERSION = #{version,jdbcType=DECIMAL},
+      </if>
+      <if test="isStation != null">
+        IS_STATION = #{isStation,jdbcType=DECIMAL},
+      </if>
+      <if test="roadId != null">
+        ROAD_ID = #{roadId,jdbcType=DECIMAL},
+      </if>
+      <if test="angleDegree != null">
+        ANGLE_DEGREE = #{angleDegree,jdbcType=DECIMAL},
+      </if>
+      <if test="gpskey != null">
+        GPSKEY = #{gpskey,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ROADNODE_ID = #{roadnodeId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.scheduleD.GisRoadnode">
+    update GIS_ROADNODE
+    set ROADSEG_ID = #{roadsegId,jdbcType=DECIMAL},
+      LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      LATITUDE = #{latitude,jdbcType=DECIMAL},
+      DISTANCE = #{distance,jdbcType=DECIMAL},
+      ORDER_NUM = #{orderNum,jdbcType=DECIMAL},
+      DATE_CREATED = #{dateCreated,jdbcType=TIMESTAMP},
+      LAST_UPDATED = #{lastUpdated,jdbcType=TIMESTAMP},
+      CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      VERSION = #{version,jdbcType=DECIMAL},
+      IS_STATION = #{isStation,jdbcType=DECIMAL},
+      ROAD_ID = #{roadId,jdbcType=DECIMAL},
+      ANGLE_DEGREE = #{angleDegree,jdbcType=DECIMAL},
+      GPSKEY = #{gpskey,jdbcType=VARCHAR}
+    where ROADNODE_ID = #{roadnodeId,jdbcType=DECIMAL}
+  </update>
+</mapper>
