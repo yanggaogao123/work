@@ -15,14 +15,15 @@
                   <a-icon type="up" @click="showSearchList" v-show="!searchListBool" />
                   <a-icon type="down" @click="showSearchList" v-show="searchListBool" />
                   <ul class="ipt-list" v-show="searchListBool">
-                    <li @click="clickList(item)" :key="i" v-for="(item, i) in allRouteList">{{ item.routeName }}-{{ item.supportRouteName }}</li>
+                    <li @click="clickList(item)" :key="i" v-for="(item, i) in allRouteList">{{ item.routeName }}-{{
+                    item.supportRouteName }}</li>
                   </ul>
                 </div>
               </div>
               <div class="weather">{{ moment().format('YYYY-MM-DD') }}</div>
             </div>
             <div class="header-middle">公交混编自动驾驶高效调度平台</div>
-            <div class="header-right">
+            <div class="header-right" @click="showMap">
               <img src="@/assets/driverlesscars/bs-top-right.png" alt="" />
 
               <div class="header-right-con">
@@ -69,7 +70,7 @@
             </div>
           </div>
         </section>
-        <big-screen-map :sendData="sendData"></big-screen-map>
+        <big-screen-map :sendData="sendData" :visibility="showMapModule" @hideMapModule="hideMap"></big-screen-map>
       </div>
     </div>
   </div>
@@ -176,6 +177,9 @@ export default {
       // 滚动框数据
       supList: [],
       movingTimer: '',
+
+      // 是否展示map
+      showMapModule: false,
     };
   },
   created() {
@@ -467,6 +471,51 @@ export default {
           this.carBool = 'c';
         }
       });
+    },
+    showMap() {
+      this.showMapModule = true
+      this.sendData = {
+        "scheduleId": 549767,
+        "routeId": 4950,
+        "routeCode": "09460",
+        "supportRouteId": 5870,
+        "planDate": "2024-04-27T16:00:00.000+0000",
+        "planTime": "2024-04-28 17:23:00",
+        "timeStamp": 1714296180000,
+        "startDirection": "0",
+        "startOrderNumber": 5,
+        "tripEndTime": "2024-04-28 18:17:00",
+        "serviceType": "1",
+        "serviceName": "全程",
+        "direction": "0",
+        "busCode": "0946000005",
+        "busId": 3010461,
+        "busName": "39663",
+        "firstRouteStaId": 1116098,
+        "lastRouteStaId": 4243663,
+        "firstRouteStaName": "广汕路（科景路口）总站(总站)",
+        "lastRouteStaName": "南岗总站",
+        "runMileage": 22.94,
+        "peakType": null,
+        "firstRoundPlanTime": null,
+        "firstRoundTaskId": null,
+        "syncPlan": 0,
+        "classes": 10,
+        "supportClasses": 4,
+        "interval": 10,
+        "stopTime": 13,
+        "passengerData": "2024-04-16T16:00:00.000+0000",
+        "passengerNum": 75,
+        "singleBus": null,
+        "status": 2,
+        "fullTime": 3240,
+        "planType": 1,
+        "planTimeInt": 1723
+      }
+    },
+    hideMap() {
+      this.showMapModule = false
+      console.log(this.showMapModule)
     },
   },
 };

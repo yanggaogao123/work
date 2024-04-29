@@ -81,6 +81,8 @@ public class RouteStationPassenger implements Cloneable{
 
     private int subNumber = 0;
 
+    private int subNumberAll = 0;
+
     public Short getCompeteCurrentNumber() {
         return competeCurrentNumber;
     }
@@ -306,11 +308,28 @@ public class RouteStationPassenger implements Cloneable{
     }
 
     public Short getCurrentNumber() {
-        return currentNumber;
+        if (currentNumber == null) {
+            return 0;
+        }
+        int newcurrentNumber = currentNumber - subNumber;
+        if (newcurrentNumber < 0) {
+            return 0;
+        }
+        return (short) newcurrentNumber;
     }
 
     public void setCurrentNumber(Short currentNumber) {
         this.currentNumber = currentNumber;
+    }
+
+    public void subCurrentNumber(Integer currentNumber) {
+        if (currentNumber != null) {
+            int temp = this.currentNumber - currentNumber;
+            if (temp < 0) {
+                temp = 0;
+            }
+            this.currentNumber = (short) temp;
+        }
     }
 
     public String getDirection() {
@@ -373,9 +392,27 @@ public class RouteStationPassenger implements Cloneable{
         return subNumber;
     }
 
+    public void setSubNumber(int subNumber) {
+        this.subNumber = subNumber;
+    }
+
     public void addSubNumber(Integer subNumber) {
         if (subNumber != null) {
             this.subNumber += subNumber;
+        }
+    }
+
+    public int getSubNumberAll() {
+        return subNumberAll;
+    }
+
+    public void setSubNumberAll(int subNumberAll) {
+        this.subNumberAll = subNumberAll;
+    }
+
+    public void addSubNumberAll(Integer subNumberAll) {
+        if (subNumberAll != null) {
+            this.subNumberAll += subNumberAll;
         }
     }
 
@@ -383,7 +420,11 @@ public class RouteStationPassenger implements Cloneable{
         if (currentNumber == null) {
             return 0;
         }
-        return currentNumber - subNumber;
+        int newcurrentNumber = currentNumber - subNumberAll;
+        if (newcurrentNumber < 0) {
+            return 0;
+        }
+        return (short) newcurrentNumber;
     }
 
     @Override
