@@ -1,5 +1,5 @@
 <template>
-  <div class="map-modules">
+  <div class="map-modules" v-if="false">
     <div class="close">X</div>
     <div class="bg"><img src="../../../assets/driverlesscars/big.png" alt=""></div>
     <div class="left-aside">

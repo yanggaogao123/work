@@ -46,10 +46,10 @@
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal title="101路日均各时段班次客运量" :chartData="chartData"></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal title="101路日均各时段班次客运量"></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal title="101路日均各时段班次客运量" :chartData="chartData"></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal title="101路日均各时段班次客运量"></big-screen-chart-two-modal>
               </div>
             </div>
             <!-- 简图 -->
@@ -61,10 +61,10 @@
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal title="106路日均各时段班次客运量" :chartData="chartData"></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal routeId="106" title="106路日均各时段班次客运量"></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal title="106路日均各时段班次客运量" :chartData="chartData"></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal routeId="106" title="106路日均各时段班次客运量"></big-screen-chart-two-modal>
               </div>
             </div>
           </div>

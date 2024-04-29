@@ -28,6 +28,8 @@ import { CanvasRenderer } from "echarts/renderers";
 import "@/assets/less/base.css";
 import ChartSection from "../components/ChartSection.vue";
 
+import { dayFlowResponse } from "./mock";
+
 echarts.use([
   ToolboxComponent,
   TooltipComponent,
@@ -39,7 +41,7 @@ echarts.use([
 
 export default {
   name: "BigScreenChartOneModal",
-  props: ["chartData", "title"],
+  props: ["chartData", "title", "routeId"],
   components: {
     ChartSection,
   },
@@ -47,6 +49,8 @@ export default {
   data() {
     return {
       myChart1: null,
+      chartData1: [[], [], []],
+      chartData2: [[], [], []],
     };
   },
 
@@ -57,147 +61,7 @@ export default {
     const chartDom2 = this.$refs.chartRef2;
     this.myChart1 = echarts.init(chartDom1);
     this.myChart2 = echarts.init(chartDom2);
-    this.myChart1.setOption(
-      this.getOptions([
-        [
-          {
-            label: "海印桥",
-            value: 36,
-          },
-          {
-            label: "星之光大道",
-            value: 50,
-          },
-          {
-            label: "白云路东",
-            value: 62,
-          },
-          {
-            label: "越秀南路",
-            value: 32,
-          },
-          {
-            label: "中山图书馆",
-            value: 40,
-          },
-        ],
-        [
-          {
-            label: "海印桥",
-            value: 4,
-          },
-          {
-            label: "星之光大道",
-            value: 7,
-          },
-          {
-            label: "白云路东",
-            value: 12,
-          },
-          {
-            label: "越秀南路",
-            value: 7,
-          },
-          {
-            label: "中山图书馆",
-            value: 9,
-          },
-        ],
-        [
-          {
-            label: "海印桥",
-            value: 54,
-          },
-          {
-            label: "星之光大道",
-            value: 35,
-          },
-          {
-            label: "白云路东",
-            value: 24,
-          },
-          {
-            label: "越秀南路",
-            value: 55,
-          },
-          {
-            label: "中山图书馆",
-            value: 67,
-          },
-        ],
-      ])
-    );
-
-    this.myChart2.setOption(
-      this.getOptions([
-        [
-          {
-            label: "海印桥",
-            value: 36,
-          },
-          {
-            label: "星之光大道",
-            value: 50,
-          },
-          {
-            label: "白云路东",
-            value: 62,
-          },
-          {
-            label: "越秀南路",
-            value: 32,
-          },
-          {
-            label: "中山图书馆",
-            value: 40,
-          },
-        ],
-        [
-          {
-            label: "海印桥",
-            value: 4,
-          },
-          {
-            label: "星之光大道",
-            value: 7,
-          },
-          {
-            label: "白云路东",
-            value: 12,
-          },
-          {
-            label: "越秀南路",
-            value: 7,
-          },
-          {
-            label: "中山图书馆",
-            value: 9,
-          },
-        ],
-        [
-          {
-            label: "海印桥",
-            value: 54,
-          },
-          {
-            label: "星之光大道",
-            value: 35,
-          },
-          {
-            label: "白云路东",
-            value: 24,
-          },
-          {
-            label: "越秀南路",
-            value: 55,
-          },
-          {
-            label: "中山图书馆",
-            value: 67,
-          },
-        ],
-      ])
-    );
+    this.getChartDatas();
   },
   methods: {
     getOptions(datas = [[], [], []]) {
@@ -318,7 +182,7 @@ export default {
           data: seriesName || [],
           icon: "rect",
           itemWidth: 8,
-          top: '12px',
+          top: "12px",
           itemHeight: 8,
           textStyle: {
             color: "#fff",
@@ -355,6 +219,8 @@ export default {
             },
             axisLabel: {
               color: "#c6d9e7",
+              interval: 0,
+              overflow: "truncate",
             },
             data: datas[1].map((item) => item.label),
           },
@@ -381,9 +247,9 @@ export default {
             type: "bar",
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#2885ff" },
-                { offset: 0.5, color: "#2065ce" },
-                { offset: 1, color: "#164a9f" },
+                { offset: 0, color: "#334DF6" },
+                // { offset: 0.5, color: "#2065ce" },
+                { offset: 1, color: "rgba(51,77,246,0.2)" },
               ]),
               borderRadius: [20, 20, 0, 0],
             },
@@ -392,7 +258,7 @@ export default {
               focus: "series",
             },
             data: datas[0] || [],
-            barWidth: "8px",
+            barWidth: "5px",
           },
           {
             name: seriesName[1],
@@ -404,14 +270,14 @@ export default {
             },
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#08d8dd" },
-                { offset: 0.5, color: "#089db3" },
-                { offset: 1, color: "#097396" },
+                { offset: 0, color: "#4DF6C4" },
+                // { offset: 0.5, color: "#089db3" },
+                { offset: 1, color: "rgba(77,246,196,0.2)" },
               ]),
               borderRadius: [20, 20, 0, 0],
             },
             data: datas[1] || [],
-            barWidth: "8px",
+            barWidth: "5px",
           },
           {
             name: seriesName[2],
@@ -422,19 +288,104 @@ export default {
             },
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#bfe209" },
-                { offset: 0.5, color: "#8b9724" },
-                { offset: 1, color: "#5e5b3f" },
+                { offset: 0, color: "#53F633" },
+                // { offset: 0.5, color: "#8b9724" },
+                { offset: 1, color: "rgba(83,246,51,0.2)" },
               ]),
               borderRadius: [20, 20, 0, 0],
             },
             data: datas[2] || [],
-            barWidth: "8px",
+            barWidth: "5px",
           },
         ],
       };
 
       return option;
+    },
+    async getChartDatas() {
+      try {
+        const response = await axios.post(
+          "http://172.31.200.171:8016/bigdata-api/dataservices/bus/od/v3",
+          {
+            appName: "",
+            businessID: "001101",
+            page: "1",
+            pageSize: "1000",
+            data: {
+              routeId: this.routeId || "101",
+            },
+          }
+        );
+
+        const upChartData = response.data.retData.list
+          .filter((item) => item.direction === "0")
+          .sort((a, b) => a.station_order - b.station_order);
+        const downChartData = response.data.retData.list
+          .filter((item) => item.direction === "1")
+          .sort((a, b) => a.station_order - b.station_order);
+        // const upChartData = dayFlowResponse.retData.list
+        //   .filter((item) => item.direction === "0")
+        //   .sort((a, b) => a.station_order - b.station_order);
+        // const downChartData = dayFlowResponse.retData.list
+        //   .filter((item) => item.direction === "1")
+        //   .sort((a, b) => a.station_order - b.station_order);
+
+        const getNumberValue = (value, negative = false) => {
+          let target = 0;
+          if (typeof value === "string") {
+            target = isNaN(Number(value)) ? 0 : Number(value);
+          }
+
+          return negative ? -target : target;
+        };
+
+        this.chartData1 = [
+          upChartData.map((item) => {
+            return {
+              label: item.station_name,
+              value: getNumberValue(item.mor_load_factor),
+            };
+          }),
+          upChartData.map((item) => {
+            return {
+              label: item.station_name,
+              value: getNumberValue(item.flat_load_factor),
+            };
+          }),
+          upChartData.map((item) => {
+            return {
+              label: item.station_name,
+              value: getNumberValue(item.night_load_factor),
+            };
+          }),
+        ];
+        this.chartData2 = [
+          downChartData.map((item) => {
+            return {
+              label: item.station_name,
+              value: getNumberValue(item.mor_load_factor),
+            };
+          }),
+          downChartData.map((item) => {
+            return {
+              label: item.station_name,
+              value: getNumberValue(item.flat_load_factor),
+            };
+          }),
+          downChartData.map((item) => {
+            return {
+              label: item.station_name,
+              value: getNumberValue(item.night_load_factor),
+            };
+          }),
+        ];
+        this.myChart1.setOption(this.getOptions(this.chartData1));
+        this.myChart2.setOption(this.getOptions(this.chartData2));
+      } catch (error) {
+        console.error(error);
+        this.myChart1.setOption(this.getOptions([[], [], []]));
+        this.myChart2.setOption(this.getOptions([[], [], []]));
+      }
     },
   },
 };
