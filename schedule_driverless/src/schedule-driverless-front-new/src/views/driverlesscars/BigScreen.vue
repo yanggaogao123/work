@@ -54,8 +54,12 @@
 
               <div class="header-right-con">
                 <ul class="bus-list" id="movingDiv">
-                  <li v-for="(item, i) in supList" :key="i" @click="showMap(item)">
-                    {{ item.status == 1 ? '无人车' : '支援车' }}
+                  <li
+                    v-for="(item, i) in supList"
+                    :key="i"
+                    @click="showMap(item)"
+                  >
+                    {{ item.status == 1 ? "无人车" : "支援车" }}
                     {{ item.busName }}
                     {{ moment(item.planTime).format("HH:mm") }}
                   </li>
@@ -75,17 +79,13 @@
                 <!-- BigScreenChartOneModal -->
                 <big-screen-chart-one-modal
                   :routeId="sendData.routeId"
-                  :title="
-                    `${sendData.routeName ? sendData.routeName + '路' : ''}路日均各时段班次客运量`
-                  "
+                  :title="`${sendData.routeName || ''}日均各时段班次客运量`"
                 ></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
                 <big-screen-chart-two-modal
                   :routeId="sendData.routeId"
-                  :title="
-                    `${sendData.routeName ? sendData.routeName + '路' : ''}路日均各时段班次客运量`
-                  "
+                  :title="`${sendData.routeName || ''}日均各时段班次客运量`"
                 ></big-screen-chart-two-modal>
               </div>
             </div>
@@ -102,19 +102,13 @@
                 <!-- BigScreenChartOneModal -->
                 <big-screen-chart-one-modal
                   :routeId="sendData.supRouteId"
-                  :title="
-                    `${sendData.supRouteName ? sendData.supRouteName + '路' : ''}日均各时段班次客运量`
-                  "
+                  :title="`${sendData.supRouteName || ''}日均各时段班次客运量`"
                 ></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
                 <big-screen-chart-two-modal
                   :routeId="sendData.supRouteId"
-                  :title="
-                    `${
-                      sendData.supRouteName ? sendData.supRouteName + '路' : ''
-                    }路日均各时段班次客运量`
-                  "
+                  :title="`${sendData.supRouteName || ''}路日均各时段班次客运量`"
                 ></big-screen-chart-two-modal>
               </div>
             </div>
@@ -541,14 +535,14 @@ export default {
       });
     },
     showMap(selectData) {
-      this.showMapModule = true
-      this.sendData.busId = selectData.busId ? selectData.selectData : 3010461
+      this.showMapModule = true;
+      this.sendData.busId = selectData.busId ? selectData.selectData : 3010461;
     },
     hideMap() {
       this.showMapModule = false;
       console.log(this.showMapModule);
     },
-  }
+  },
 };
 </script>
 
