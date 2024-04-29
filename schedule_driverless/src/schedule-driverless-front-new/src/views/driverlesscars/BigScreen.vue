@@ -4,23 +4,49 @@
       <div class="content">
         <!-- 头部 -->
         <header class="header">
-          <img class="flash-left" src="@/assets/driverlesscars/falsh.gif" alt="" />
-          <img class="flash-right" src="@/assets/driverlesscars/falsh.gif" alt="" />
+          <img
+            class="flash-left"
+            src="@/assets/driverlesscars/falsh.gif"
+            alt=""
+          />
+          <img
+            class="flash-right"
+            src="@/assets/driverlesscars/falsh.gif"
+            alt=""
+          />
           <div class="header-con">
             <div class="header-left">
               <div class="search-box">
                 <img src="@/assets/driverlesscars/bs-top-left.png" alt="" />
                 <div class="search-con">
-                  <input type="text" class="ipt" @keyup="searchIpt" v-model="searchName" />
-                  <a-icon type="up" @click="showSearchList" v-show="!searchListBool" />
-                  <a-icon type="down" @click="showSearchList" v-show="searchListBool" />
+                  <input
+                    type="text"
+                    class="ipt"
+                    @keyup="searchIpt"
+                    v-model="searchName"
+                  />
+                  <a-icon
+                    type="up"
+                    @click="showSearchList"
+                    v-show="!searchListBool"
+                  />
+                  <a-icon
+                    type="down"
+                    @click="showSearchList"
+                    v-show="searchListBool"
+                  />
                   <ul class="ipt-list" v-show="searchListBool">
-                    <li @click="clickList(item)" :key="i" v-for="(item, i) in allRouteList">{{ item.routeName }}-{{
-                    item.supportRouteName }}</li>
+                    <li
+                      @click="clickList(item)"
+                      :key="i"
+                      v-for="(item, i) in allRouteList"
+                    >
+                      {{ item.routeName }}-{{ item.supportRouteName }}
+                    </li>
                   </ul>
                 </div>
               </div>
-              <div class="weather">{{ moment().format('YYYY-MM-DD') }}</div>
+              <div class="weather">{{ moment().format("YYYY-MM-DD") }}</div>
             </div>
             <div class="header-middle">公交混编自动驾驶高效调度平台</div>
             <div class="header-right" @click="showMap">
@@ -29,9 +55,9 @@
               <div class="header-right-con">
                 <ul class="bus-list" id="movingDiv">
                   <li v-for="(item, i) in supList" :key="i">
-                    {{ item.status == 1 ? '无人车' : '支援车' }}
+                    {{ item.status == 1 ? "无人车" : "支援车" }}
                     {{ item.busName }}
-                    {{ moment(item.planTime).format('HH:mm') }}
+                    {{ moment(item.planTime).format("HH:mm") }}
                   </li>
                   <!-- <li>支援车 D102 7:10</li>
                   <li>支援车 D102 7:10</li>
@@ -47,45 +73,73 @@
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal title="101路日均各时段班次客运量"></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal
+                  :routeId="sendData.routeId"
+                  :title="
+                    `${sendData.routeName ? sendData.routeName + '路' : ''}路日均各时段班次客运量`
+                  "
+                ></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal title="101路日均各时段班次客运量"></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal
+                  :routeId="sendData.routeId"
+                  :title="
+                    `${sendData.routeName ? sendData.routeName + '路' : ''}路日均各时段班次客运量`
+                  "
+                ></big-screen-chart-two-modal>
               </div>
             </div>
             <!-- 简图 -->
             <div class="car-box">
               <!-- <big-screen-car-one-modal></big-screen-car-one-modal> -->
-              <big-screen-car-two-modal :sendData="sendData"></big-screen-car-two-modal>
+              <big-screen-car-two-modal
+                :sendData="sendData"
+              ></big-screen-car-two-modal>
             </div>
             <!-- 图表 -->
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal routeId="106" title="106路日均各时段班次客运量"></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal
+                  :routeId="sendData.supRouteId"
+                  :title="
+                    `${sendData.supRouteName ? sendData.supRouteName + '路' : ''}日均各时段班次客运量`
+                  "
+                ></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal routeId="106" title="106路日均各时段班次客运量"></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal
+                  :routeId="sendData.supRouteId"
+                  :title="
+                    `${
+                      sendData.supRouteName ? sendData.supRouteName + '路' : ''
+                    }路日均各时段班次客运量`
+                  "
+                ></big-screen-chart-two-modal>
               </div>
             </div>
           </div>
         </section>
-        <big-screen-map :sendData="sendData" :visibility="showMapModule" @hideMapModule="hideMap"></big-screen-map>
+        <big-screen-map
+          :sendData="sendData"
+          :visibility="showMapModule"
+          @hideMapModule="hideMap"
+        ></big-screen-map>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import axios from 'axios';
-import '@/assets/less/base.css';
-import moment from 'moment';
-import BigScreenChartOneModal from './modules/BigScreenChartOneModal.vue';
-import BigScreenChartTwoModal from './modules/BigScreenChartTwoModal.vue';
-import BigScreenCarOneModal from './modules/BigScreenCarOneModal.vue';
-import BigScreenCarTwoModal from './modules/BigScreenCarTwoModal.vue';
-import BigScreenMap from './modules/BigScreenMap.vue';
+import Vue from "vue";
+import axios from "axios";
+import "@/assets/less/base.css";
+import moment from "moment";
+import BigScreenChartOneModal from "./modules/BigScreenChartOneModal.vue";
+import BigScreenChartTwoModal from "./modules/BigScreenChartTwoModal.vue";
+import BigScreenCarOneModal from "./modules/BigScreenCarOneModal.vue";
+import BigScreenCarTwoModal from "./modules/BigScreenCarTwoModal.vue";
+import BigScreenMap from "./modules/BigScreenMap.vue";
 
 // 获取容器元素
 // var container = document.querySelector('.container');
@@ -97,12 +151,12 @@ function updateScale() {
   var scaleX = windowWidth / 1920; // 计算宽度比例
   var scaleY = windowHeight / 1080; // 计算高度比例
   var scale = Math.min(scaleX, scaleY); // 取较小的比例
-  container.style.transform = 'scale(' + scale + ')'; // 应用缩放
+  container.style.transform = "scale(" + scale + ")"; // 应用缩放
 
   // 调整内容居中显示
-  container.style.transformOrigin = 'top left'; // 设置变换原点
-  container.style.left = (windowWidth - 1920 * scale) / 2 + 'px'; // 水平居中
-  container.style.top = (windowHeight - 1080 * scale) / 2 + 'px'; // 垂直居中
+  container.style.transformOrigin = "top left"; // 设置变换原点
+  container.style.left = (windowWidth - 1920 * scale) / 2 + "px"; // 水平居中
+  container.style.top = (windowHeight - 1080 * scale) / 2 + "px"; // 垂直居中
 }
 
 // 页面加载时和窗口大小变化时更新缩放比例
@@ -110,7 +164,7 @@ function updateScale() {
 // window.addEventListener('resize', updateScale);
 
 export default {
-  name: 'BigScreen',
+  name: "BigScreen",
   components: {
     BigScreenChartOneModal,
     BigScreenChartTwoModal,
@@ -138,45 +192,45 @@ export default {
         // 未来一小时支援车
         getOneHourSupportPlan: `${process.env.VUE_APP_BUS_API}/schedule/getOneHourSupportPlan`,
       },
-      pageValue: 'a',
-      mes: '',
+      pageValue: "a",
+      mes: "",
       // routeId: '194',
       // supRouteId: '420',
       // routeName: '36路',
       // supRouteName: '76A路',
       // runDate: '2024-02-05',
-      routeId: '',
-      supRouteId: '',
-      routeName: '',
-      supRouteName: '',
+      routeId: "",
+      supRouteId: "",
+      routeName: "",
+      supRouteName: "",
       runDate: moment(),
       allRouteList: [],
       routeList: [],
       supRouteList: [],
       tableData: { firstRouteStaList: [], scheduleBusList: [] },
-      planType: '1',
+      planType: "1",
       tableBool: false,
       centerData: { mainMap: {}, subMap: {}, titleMap: {} },
       sendData: {},
-      centerData: '',
-      chartData: '',
+      centerData: "",
+      chartData: "",
       baseData: {},
       chartBool: false,
-      carBool: 'a',
+      carBool: "a",
 
       planType: 2,
-      pageValue: '',
-      time: '',
+      pageValue: "",
+      time: "",
       playBool: true,
 
       // 搜索框数据
-      searchName: '',
+      searchName: "",
       searchObj: {},
       searchListBool: false,
 
       // 滚动框数据
       supList: [],
-      movingTimer: '',
+      movingTimer: "",
 
       // 是否展示map
       showMapModule: false,
@@ -187,10 +241,10 @@ export default {
   },
   mounted() {
     // 获取容器元素
-    var container = document.querySelector('.container');
+    var container = document.querySelector(".container");
     // 页面加载时和窗口大小变化时更新缩放比例
-    window.addEventListener('load', updateScale);
-    window.addEventListener('resize', updateScale);
+    window.addEventListener("load", updateScale);
+    window.addEventListener("resize", updateScale);
   },
   methods: {
     moment,
@@ -200,19 +254,21 @@ export default {
     getData() {
       const queryString = window.location.search;
       const searchParams = new URLSearchParams(queryString);
-      const paramString = searchParams.get('paramString');
+      const paramString = searchParams.get("paramString");
       const params = new URLSearchParams();
-      params.append('paramString', paramString);
+      params.append("paramString", paramString);
       this.mes = params;
       console.log(params.toString());
-      axios.post(`${this.url.getByRouteNameKey}`, {}, { params }).then((res) => {
-        console.log(res);
-        if (res.data.retCode != 0) {
-          this.$message.error(res.data.retMsg);
-          return;
-        }
-        this.allRouteList = res.data.data;
-      });
+      axios
+        .post(`${this.url.getByRouteNameKey}`, {}, { params })
+        .then((res) => {
+          console.log(res);
+          if (res.data.retCode != 0) {
+            this.$message.error(res.data.retMsg);
+            return;
+          }
+          this.allRouteList = res.data.data;
+        });
     },
 
     // 搜索栏
@@ -230,39 +286,45 @@ export default {
       this.searchListBool = false;
 
       let params = this.mes;
-      await axios.post(`${this.url.getOneHourSupportPlan}`, { routeId: this.routeId, supportRouteId: this.supRouteId }, { params }).then((res) => {
-        console.log(res);
-        if (res.data.retCode != 0) {
-          this.$message.error(res.data.retMsg);
-          return;
-        }
-        this.supList = res.data.data;
-
-        clearInterval(this.movingTimer);
-
-        // 获取需要移动的div元素
-        const movingDiv = document.getElementById('movingDiv');
-
-        // 定义初始位置和每次移动的距离
-        let currentPosition = 0;
-        const moveDistance = 50;
-
-        // 定义向上移动的函数
-        function moveUp() {
-          // 向上移动指定距离
-          currentPosition -= moveDistance;
-          movingDiv.style.top = currentPosition + 'px';
-
-          // 当到达底部时，自动返回到最顶部
-          if (currentPosition <= -movingDiv.offsetHeight) {
-            currentPosition = 0;
-            movingDiv.style.top = currentPosition + 'px';
+      await axios
+        .post(
+          `${this.url.getOneHourSupportPlan}`,
+          { routeId: this.routeId, supportRouteId: this.supRouteId },
+          { params }
+        )
+        .then((res) => {
+          console.log(res);
+          if (res.data.retCode != 0) {
+            this.$message.error(res.data.retMsg);
+            return;
           }
-        }
+          this.supList = res.data.data;
 
-        // 定时触发向上移动函数
-        this.movingTimer = setInterval(moveUp, 2000); // 每秒触发一次向上移动函数
-      });
+          clearInterval(this.movingTimer);
+
+          // 获取需要移动的div元素
+          const movingDiv = document.getElementById("movingDiv");
+
+          // 定义初始位置和每次移动的距离
+          let currentPosition = 0;
+          const moveDistance = 50;
+
+          // 定义向上移动的函数
+          function moveUp() {
+            // 向上移动指定距离
+            currentPosition -= moveDistance;
+            movingDiv.style.top = currentPosition + "px";
+
+            // 当到达底部时，自动返回到最顶部
+            if (currentPosition <= -movingDiv.offsetHeight) {
+              currentPosition = 0;
+              movingDiv.style.top = currentPosition + "px";
+            }
+          }
+
+          // 定时触发向上移动函数
+          this.movingTimer = setInterval(moveUp, 2000); // 每秒触发一次向上移动函数
+        });
 
       await this.getRuningScheduleConfig();
     },
@@ -286,12 +348,14 @@ export default {
 
     handleSearch(value) {
       console.log(value);
-      if (value == '') {
+      if (value == "") {
         this.routeList = [];
         return;
       }
       this.routeList = [];
-      this.routeList = this.allRouteList.filter((route) => route.routeName.includes(value));
+      this.routeList = this.allRouteList.filter((route) =>
+        route.routeName.includes(value)
+      );
       console.log(this.routeList);
     },
     handleChange(value, option) {
@@ -302,19 +366,23 @@ export default {
       this.routeId = value;
       this.routeName = arr[0].routeName;
       this.getMinPlanTime();
-      axios.post(this.url.getUnionRouteInfo, { routeId: value }, { params }).then((res) => {
-        console.log('关联线路信息', res);
-        if (res.data.retCode != 0) {
-          this.$message.error(res.data.retMsg);
-          return;
-        }
-        this.supRouteList = res.data.data;
-      });
+      axios
+        .post(this.url.getUnionRouteInfo, { routeId: value }, { params })
+        .then((res) => {
+          console.log("关联线路信息", res);
+          if (res.data.retCode != 0) {
+            this.$message.error(res.data.retMsg);
+            return;
+          }
+          this.supRouteList = res.data.data;
+        });
     },
     seleChange(value) {
       // console.log(value);
       // console.log(this.supRouteList);
-      let arr = this.supRouteList.filter((route) => route.supportRouteId == value);
+      let arr = this.supRouteList.filter(
+        (route) => route.supportRouteId == value
+      );
       this.supRouteId = value;
       this.supRouteName = arr[0].supportRouteName;
       this.carType = arr[0].type;
@@ -326,7 +394,7 @@ export default {
     },
     async searchIt() {
       if (!this.routeId || !this.supRouteId || !this.runDate) {
-        this.$message.error('请选择相关选项再查询');
+        this.$message.error("请选择相关选项再查询");
         return;
       }
       this.tableBool = true;
@@ -349,9 +417,9 @@ export default {
     getAdrealInfo() {
       let send = {
         routeId: this.routeId,
-        runDate: `${moment(this.runDate).format('YYYY-MM-DD')} ${this.time}`,
+        runDate: `${moment(this.runDate).format("YYYY-MM-DD")} ${this.time}`,
         supportRouteId: this.supRouteId,
-        planType: '1',
+        planType: "1",
       };
       let params = this.mes;
       axios.post(this.url.adrealInfo, send, params).then((res) => {
@@ -372,22 +440,22 @@ export default {
           centerData: this.centerData,
         };
         if ([0, 1, 2, 5].includes(res.data.data.simulationType)) {
-          this.carBool = 'b';
+          this.carBool = "b";
         } else if ([3, 4, 6, 7].includes(res.data.data.simulationType)) {
-          this.carBool = 'c';
+          this.carBool = "c";
         }
-        console.log('carBool', this.carBool);
+        console.log("carBool", this.carBool);
       });
     },
     // 最早发班时间
     getMinPlanTime() {
       let send = {
         routeId: this.routeId,
-        planDate: moment(this.runDate).format('YYYY-MM-DD'),
+        planDate: moment(this.runDate).format("YYYY-MM-DD"),
       };
       let params = this.mes;
       axios.post(this.url.getMinPlanTime, send, params).then((res) => {
-        console.log('最早发班时间', res.data);
+        console.log("最早发班时间", res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
           return;
@@ -400,7 +468,7 @@ export default {
       let send = { routeId: this.routeId, supportRouteId: this.supRouteId };
       let params = this.mes;
       axios.post(this.url.busConfigure, send, params).then((res) => {
-        console.log('查询线路配车', res.data);
+        console.log("查询线路配车", res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
           return;
@@ -413,12 +481,12 @@ export default {
         routeId: this.routeId,
         supportRouteId: this.supRouteId,
         // runDate: "2024-01-09 00:00:00",
-        runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
+        runDate: `${moment(this.runDate).format("YYYY-MM-DD")} 00:00:00`,
         planType: 2,
       };
       let params = this.mes;
       axios.post(this.url.getScheduleCountResult, send, params).then((res) => {
-        console.log('统计报表', res.data);
+        console.log("统计报表", res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
           return;
@@ -439,11 +507,11 @@ export default {
         routeId: this.routeId,
         supportRouteId: this.supRouteId,
         // runDate: "2024-01-10",
-        runDate: moment(this.runDate).format('YYYY-MM-DD'),
+        runDate: moment(this.runDate).format("YYYY-MM-DD"),
       };
       let params = this.mes;
       axios.post(this.url.getRuningScheduleConfig, send, params).then((res) => {
-        console.log('车辆配置信息', res.data);
+        console.log("车辆配置信息", res.data);
         if (res.data.retCode != 0) {
           this.$message.error(res.data.retMsg);
           this.centerData = {
@@ -466,58 +534,58 @@ export default {
           carType: this.carType,
         };
         if ([0, 1, 2, 5].includes(this.carType)) {
-          this.carBool = 'b';
+          this.carBool = "b";
         } else if ([3, 4, 6, 7].includes(this.carType)) {
-          this.carBool = 'c';
+          this.carBool = "c";
         }
       });
     },
     showMap() {
-      this.showMapModule = true
+      this.showMapModule = true;
       this.sendData = {
-        "scheduleId": 549767,
-        "routeId": 4950,
-        "routeCode": "09460",
-        "supportRouteId": 5870,
-        "planDate": "2024-04-27T16:00:00.000+0000",
-        "planTime": "2024-04-28 17:23:00",
-        "timeStamp": 1714296180000,
-        "startDirection": "0",
-        "startOrderNumber": 5,
-        "tripEndTime": "2024-04-28 18:17:00",
-        "serviceType": "1",
-        "serviceName": "全程",
-        "direction": "0",
-        "busCode": "0946000005",
-        "busId": 3010461,
-        "busName": "39663",
-        "firstRouteStaId": 1116098,
-        "lastRouteStaId": 4243663,
-        "firstRouteStaName": "广汕路（科景路口）总站(总站)",
-        "lastRouteStaName": "南岗总站",
-        "runMileage": 22.94,
-        "peakType": null,
-        "firstRoundPlanTime": null,
-        "firstRoundTaskId": null,
-        "syncPlan": 0,
-        "classes": 10,
-        "supportClasses": 4,
-        "interval": 10,
-        "stopTime": 13,
-        "passengerData": "2024-04-16T16:00:00.000+0000",
-        "passengerNum": 75,
-        "singleBus": null,
-        "status": 2,
-        "fullTime": 3240,
-        "planType": 1,
-        "planTimeInt": 1723
-      }
+        scheduleId: 549767,
+        routeId: 4950,
+        routeCode: "09460",
+        supportRouteId: 5870,
+        planDate: "2024-04-27T16:00:00.000+0000",
+        planTime: "2024-04-28 17:23:00",
+        timeStamp: 1714296180000,
+        startDirection: "0",
+        startOrderNumber: 5,
+        tripEndTime: "2024-04-28 18:17:00",
+        serviceType: "1",
+        serviceName: "全程",
+        direction: "0",
+        busCode: "0946000005",
+        busId: 3010461,
+        busName: "39663",
+        firstRouteStaId: 1116098,
+        lastRouteStaId: 4243663,
+        firstRouteStaName: "广汕路（科景路口）总站(总站)",
+        lastRouteStaName: "南岗总站",
+        runMileage: 22.94,
+        peakType: null,
+        firstRoundPlanTime: null,
+        firstRoundTaskId: null,
+        syncPlan: 0,
+        classes: 10,
+        supportClasses: 4,
+        interval: 10,
+        stopTime: 13,
+        passengerData: "2024-04-16T16:00:00.000+0000",
+        passengerNum: 75,
+        singleBus: null,
+        status: 2,
+        fullTime: 3240,
+        planType: 1,
+        planTimeInt: 1723,
+      };
     },
     hideMap() {
-      this.showMapModule = false
-      console.log(this.showMapModule)
+      this.showMapModule = false;
+      console.log(this.showMapModule);
     },
-  },
+  }
 };
 </script>
 

@@ -41,7 +41,7 @@ echarts.use([
 
 export default {
   name: "BigScreenChartOneModal",
-  props: ["chartData", "title", "routeId"],
+  props: ["title", "routeId"],
   components: {
     ChartSection,
   },
@@ -55,13 +55,15 @@ export default {
   },
 
   created() {},
-  mounted() {
+  async mounted() {
     if (!this.$refs.chartRef1 || !this.$refs.chartRef2) return;
     const chartDom1 = this.$refs.chartRef1;
     const chartDom2 = this.$refs.chartRef2;
     this.myChart1 = echarts.init(chartDom1);
     this.myChart2 = echarts.init(chartDom2);
-    this.getChartDatas();
+    if (this.routeId) {
+      await this.getChartDatas();
+    }
   },
   methods: {
     getOptions(datas = [[], [], []]) {
@@ -385,6 +387,13 @@ export default {
         console.error(error);
         this.myChart1.setOption(this.getOptions([[], [], []]));
         this.myChart2.setOption(this.getOptions([[], [], []]));
+      }
+    },
+  },
+  watch: {
+    routeId(newValue) {
+      if (newValue) {
+        this.getChartDatas();
       }
     },
   },

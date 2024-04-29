@@ -32,7 +32,7 @@ echarts.use([
 
 export default {
   name: "BigScreenChartOneModal",
-  props: ["chartData", "title", "routeId"],
+  props: ["title", "routeId"],
   components: {
     ChartSection,
   },
@@ -48,7 +48,9 @@ export default {
     if (!this.$refs.chartRef) return;
     const chartDom = this.$refs.chartRef;
     this.myChart = echarts.init(chartDom);
-    await this.getChartData();
+    if (this.routeId) {
+      await this.getChartData();
+    }
     // this.myChart.setOption(this.getOptions());
   },
   methods: {
@@ -382,13 +384,22 @@ export default {
         ];
 
         // this.labelData = mockResponse.retData.list.map((item) => item.fragment);
-        this.labelData = response.data.retData.list.map((item) => item.fragment);
+        this.labelData = response.data.retData.list.map(
+          (item) => item.fragment
+        );
         this.myChart.setOption(this.getOptions());
       } catch (error) {
         console.error(error);
         this.labelData = [];
         this.chartDatas = [[], [], [], [], [], []];
         this.myChart.setOption(this.getOptions());
+      }
+    },
+  },
+  watch: {
+    routeId(newValue) {
+      if (newValue) {
+        this.getChartData();
       }
     },
   },
