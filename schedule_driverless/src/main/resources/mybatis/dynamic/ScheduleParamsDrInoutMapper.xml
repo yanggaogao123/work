@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.ScheduleParamsDrInoutMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.dynamic.bean.ScheduleParamsDrInout">
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="TEMPLATE_ID" jdbcType="DECIMAL" property="templateId" />
+    <result column="UPDATE_USER" jdbcType="DECIMAL" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="ROUTE_SUB_ID_IN" jdbcType="DECIMAL" property="routeSubIdIn" />
+    <result column="ROUTE_SUB_ID_OUT" jdbcType="DECIMAL" property="routeSubIdOut" />
+    <result column="ROUTE_SUB_NAME_IN" jdbcType="VARCHAR" property="routeSubNameIn" />
+    <result column="ROUTE_SUB_NAME_OUT" jdbcType="VARCHAR" property="routeSubNameOut" />
+    <result column="DURATION_MIN_IN" jdbcType="DECIMAL" property="durationMinIn" />
+    <result column="DURATION_MIN_OUT" jdbcType="DECIMAL" property="durationMinOut" />
+    <result column="STATION_ID_IN_FIRST" jdbcType="DECIMAL" property="stationIdInFirst" />
+    <result column="STATION_ID_IN_LAST" jdbcType="DECIMAL" property="stationIdInLast" />
+    <result column="STATION_ID_OUT_FIRST" jdbcType="DECIMAL" property="stationIdOutFirst" />
+    <result column="STATION_ID_OUT_LAST" jdbcType="DECIMAL" property="stationIdOutLast" />
+    <result column="STATION_NAME_IN_FIRST" jdbcType="VARCHAR" property="stationNameInFirst" />
+    <result column="STATION_NAME_IN_LAST" jdbcType="VARCHAR" property="stationNameInLast" />
+    <result column="STATION_NAME_OUT_FIRST" jdbcType="VARCHAR" property="stationNameOutFirst" />
+    <result column="STATION_NAME_OUT_LAST" jdbcType="VARCHAR" property="stationNameOutLast" />
+  </resultMap>
+
+  <select id="getByTemplateId" resultMap="BaseResultMap" parameterType="map">
+    select * from BS_SCHEDULE_PARAMS_DR_INOUT
+    where template_id = #{templateId, jdbcType=VARCHAR}
+  </select>
+</mapper>

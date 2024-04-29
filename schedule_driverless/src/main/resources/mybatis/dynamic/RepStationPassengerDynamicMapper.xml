@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.RepStationPassengerDynamicMapper">
+    <resultMap id="RouteStationPassengerMap" type="com.gci.schedule.driverless.dynamic.bean.RouteStationPassenger">
+        <result column="RUN_DAY_NUM" jdbcType="VARCHAR" property="runDayNum"/>
+        <result column="RUN_TIME_NUM" jdbcType="DECIMAL" property="runTimeNum"/>
+        <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId"/>
+        <result column="ROUTE_STA_ID" jdbcType="DECIMAL" property="routeStaId"/>
+        <result column="UP_NUMBER" jdbcType="DECIMAL" property="upNumber"/>
+        <result column="DOWN_NUMBER" jdbcType="DECIMAL" property="downNumber"/>
+        <result column="CURRENT_NUMBER" jdbcType="DECIMAL" property="currentNumber"/>
+        <result column="DIRECTION" jdbcType="VARCHAR" property="direction"/>
+    </resultMap>
+
+    <!--获取线路，星期几，方向或许线路的站台车上乘客信息-->
+    <select id="getRouteStationPassanger" resultMap="RouteStationPassengerMap"  >
+        select * from REP_STATION_PASSENGER where
+         route_id = #{routeId}
+         and  RUN_DAY_NUM = #{runDayNum}
+         and  DIRECTION = #{direction}
+         order by  DIRECTION ASC
+
+    </select>
+
+    <select id="getRouteStationIdsByRouteId" resultType="java.lang.Long">
+        select ROUTE_STA_ID from apts.bs_route_sta where ROUTE_ID=#{ROUTE_ID}
+    </select>
+
+</mapper>

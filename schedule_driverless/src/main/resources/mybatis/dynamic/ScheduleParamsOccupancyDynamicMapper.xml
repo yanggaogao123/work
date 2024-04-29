@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.ScheduleParamsOccupancyDynamicMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.dynamic.bean.ScheduleParamsOccupancy">
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="DIRECTION" jdbcType="VARCHAR" property="direction" />
+    <result column="BEGIN_TIME" jdbcType="VARCHAR" property="beginTime" />
+    <result column="END_TIME" jdbcType="VARCHAR" property="endTime" />
+    <result column="FROM_ROUTE_STA_ID" jdbcType="DECIMAL" property="fromRouteStaId" />
+    <result column="TO_ROUTE_STA_ID" jdbcType="DECIMAL" property="toRouteStaId" />
+    <result column="BUS_OCCUPANCY" jdbcType="DECIMAL" property="busOccupancy" />
+  </resultMap>
+  
+  <select id="getByTemplateId" resultMap="BaseResultMap"  parameterType="map">
+    select * from BS_SCHEDULE_PARAMS_OCCUPANCY where template_id = #{templateId, jdbcType=VARCHAR} order by direction ,begin_time
+  </select>
+
+</mapper>

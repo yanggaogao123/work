@@ -44,15 +44,16 @@
 
             <a-form-item>
               <a-button type="primary" @click="searchIt" icon="search">查询</a-button>
+              <div class="btn-show-chart" @click="chartShow">123</div>
             </a-form-item>
 
-            <a-form-item style="float: right">
+            <!-- <a-form-item style="float: right">
               <a-radio-group v-model="pageValue" @change="onChange">
                 <a-radio-button value="a">计划表</a-radio-button>
                 <a-radio-button value="b">车位图</a-radio-button>
                 <a-radio-button value="c">排班仿真</a-radio-button>
               </a-radio-group>
-            </a-form-item>
+            </a-form-item> -->
           </a-form>
         </header>
 
@@ -296,7 +297,7 @@ export default {
           routeName: this.routeName,
           supRouteName: this.supRouteName,
         };
-        this.chartBool = true;
+        // this.chartBool = true;
       });
     },
     // 获取中间区域数据与顶栏数据
@@ -317,6 +318,9 @@ export default {
         }
         this.centerData = res.data.data;
       });
+    },
+    chartShow() {
+      this.chartBool = !this.chartBool;
     },
   },
 };
@@ -346,6 +350,14 @@ header {
   background: #bfd9f3;
   .ant-form {
     padding: 12px;
+  }
+  .btn-show-chart {
+    display: inline-block;
+    width: 50px;
+    height: 40px;
+    background: red;
+    margin-left: 5px;
+    opacity: 0;
   }
 }
 </style>

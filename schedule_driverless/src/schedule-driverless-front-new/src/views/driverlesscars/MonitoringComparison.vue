@@ -20,7 +20,7 @@
 
           <a-form-item style="float: right">
             <div class="right-button">
-              <a-button>参数设置</a-button>
+              <a-button @click="settingClick">参数设置</a-button>
               <a-button>首轮</a-button>
               <a-button icon="redo">刷新</a-button>
               <!-- <a-button icon="play-circle">播放</a-button>
@@ -54,6 +54,8 @@
         <car-type-five-modal v-show="item.carBool == 'b'" :sendData="item.sendData"></car-type-five-modal>
         <car-type-six-modal v-show="item.carBool == 'c'" :sendData="item.sendData"></car-type-six-modal>
       </template>
+
+      <parameter-setting-modal ref="ParameterSettingModal"></parameter-setting-modal>
     </div>
   </a-card>
 </template>
@@ -66,12 +68,14 @@ import moment from 'moment';
 import CarTypeFiveModal from './modules/CarTypeFiveModal.vue';
 import CarTypeSixModal from './modules/CarTypeSixModal.vue';
 import lineSelectListModal from './modules/lineSelectListModal.vue';
+import ParameterSettingModal from './modules/ParameterSettingModal.vue';
 export default {
   name: 'MonitoringComparison',
   components: {
     CarTypeFiveModal,
     CarTypeSixModal,
     lineSelectListModal,
+    ParameterSettingModal,
   },
   data() {
     return {
@@ -412,6 +416,9 @@ export default {
     },
     showMsgTwo(msg) {
       this.showTwo = msg;
+    },
+    settingClick() {
+      this.$refs.ParameterSettingModal.edit(this.busList);
     },
   },
 };

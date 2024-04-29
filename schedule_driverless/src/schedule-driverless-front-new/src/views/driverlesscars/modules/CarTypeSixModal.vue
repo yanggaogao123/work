@@ -1,6 +1,62 @@
 <template>
   <section id="section">
     <div class="car-content">
+      <!-- 重排 -->
+      <div class="reset-box reset-top-left">
+        <div class="button" @click="resetClick(routeId, 0, routeName)">
+          <a-icon type="caret-up" />
+          <a-button type="primary"> 重排-上 </a-button>
+        </div>
+        <ul class="list">
+          <li v-if="resetList && resetList.forecastPlanResult.length > 0" v-for="item in resetList.forecastPlanResult[0].forecastPlans">
+            <div>{{ item.busName }}</div>
+            <div>{{ moment(item.planTime).format('HH:mm') }}</div>
+            <div>{{ moment(item.arrivalTime).format('HH:mm') }}</div>
+          </li>
+        </ul>
+      </div>
+      <div class="reset-box reset-bottom-left">
+        <div class="button" @click="resetClick(routeId, 1, routeName)">
+          <a-icon type="caret-up" />
+          <a-button type="primary"> 重排-下 </a-button>
+        </div>
+        <ul class="list">
+          <li v-if="resetList && resetList.forecastPlanResult.length > 0" v-for="item in resetList.forecastPlanResult[1].forecastPlans">
+            <div>{{ item.busName }}</div>
+            <div>{{ moment(item.planTime).format('HH:mm') }}</div>
+            <div>{{ moment(item.arrivalTime).format('HH:mm') }}</div>
+          </li>
+        </ul>
+      </div>
+      <div class="reset-box reset-top-right">
+        <ul class="list">
+          <li v-if="resetList && resetList.forecastPlanResult.length > 0" v-for="item in resetList.forecastPlanResult[2].forecastPlans">
+            <div>{{ item.busName }}</div>
+            <div>{{ moment(item.planTime).format('HH:mm') }}</div>
+            <div>{{ moment(item.arrivalTime).format('HH:mm') }}</div>
+          </li>
+        </ul>
+        <div class="button" @click="resetClick(supRouteId, 0, supRouteName)">
+          <a-icon type="caret-up" />
+          <a-button type="primary" style="background: #1a9e90"> 重排-上 </a-button>
+        </div>
+      </div>
+      <div class="reset-box reset-bottom-right">
+        <ul class="list">
+          <li v-if="resetList && resetList.forecastPlanResult.length > 0" v-for="item in resetList.forecastPlanResult[3].forecastPlans">
+            <div>{{ item.busName }}</div>
+            <div>{{ moment(item.planTime).format('HH:mm') }}</div>
+            <div>{{ moment(item.arrivalTime).format('HH:mm') }}</div>
+          </li>
+        </ul>
+        <div class="button" @click="resetClick(supRouteId, 1, supRouteName)">
+          <a-icon type="caret-up" />
+          <a-button type="primary" style="background: #1a9e90"> 重排-下 </a-button>
+        </div>
+      </div>
+
+      <reset-modal ref="ResetModal"></reset-modal>
+      <!-- ****************** -->
       <div class="left-car">
         <div class="content">
           <!-- 左侧总站公交 -->
@@ -1487,9 +1543,13 @@ import moment from 'moment';
 import busData from './busData.json';
 // import stationOne from './stationOne.json';
 // import stationTwo from './stationTwo.json';
+import ResetModal from './ResetModal.vue';
 export default {
   name: 'CarTypeSixModal',
   props: ['sendData'],
+  components: {
+    ResetModal,
+  },
   data() {
     return {
       url: {
@@ -1497,6 +1557,14 @@ export default {
         getListByRouteId: `${process.env.VUE_APP_BUS_API}/routeStation/getListByRouteId`,
         getRuningScheduleConfig: `${process.env.VUE_APP_BUS_API}/schedule/getRuningScheduleConfig`,
         getMonitorInfo: `${process.env.VUE_APP_BUS_API}/schedule/getMonitorInfo`,
+
+        runbusRelatedData: `${process.env.VUE_APP_BUS_API}/monitor/runbusRelatedData`,
+        dispatchMonitorRefreshTime: `${process.env.VUE_APP_BUS_API}/monitor/getRefreshTime/dispatchMonitorRefreshTime`,
+        redispatchByRouteAndDirection: `${process.env.VUE_APP_BUS_API}/monitor/redispatchByRouteAndDirection`,
+        redispatchList: `${process.env.VUE_APP_BUS_API}/monitor/redispatchList`,
+        dispatchTaskFromMainStation: `${process.env.VUE_APP_BUS_API}/monitor/dispatchTaskFromMainStation`,
+        routeReDispatch: `${process.env.VUE_APP_BUS_API}/monitor/routeReDispatch`,
+        redispatch: `${process.env.VUE_APP_BUS_API}/monitor/redispatch`,
       },
       mes: '',
       planType: '',
@@ -1574,11 +1642,17 @@ export default {
       runBusInfoTwo: [],
       MonitorInfoTwo: [],
       supportInfoTwo: [],
+
+      // 重排数据
+      resetList: [],
+      resetBool: true,
+      resetData: '',
     };
   },
   watch: {
     sendData() {
       console.log('sendData', this.sendData);
+      clearInterval(this.busTimer);
       this.centerData = this.sendData.centerData;
       this.runDate = this.sendData.runDate;
       this.routeId = this.sendData.routeId;
@@ -1591,7 +1665,8 @@ export default {
       this.getListByRouteId2();
       this.getMonitorInfo();
       this.getMonitorInfo2();
-      setInterval(() => {
+      this.getRunbusRelatedData();
+      this.busTimer = setInterval(() => {
         this.getMonitorInfo();
         this.getMonitorInfo2();
       }, 10000);
@@ -1607,6 +1682,7 @@ export default {
     console.log(this.mes.toString());
   },
   methods: {
+    moment,
     /****************************/
     //查询线路站点
     getListByRouteId() {
@@ -1909,13 +1985,43 @@ export default {
     arrUpHideInfo2(i) {
       Vue.set(this.arrUpTwo[i], 'infoShow', false);
     },
+
+    // 重排方法
+    getRunbusRelatedData() {
+      axios.get(`${this.url.runbusRelatedData}?routeIdStr=${this.routeId},${this.supRouteId}`).then((res) => {
+        // axios.get(`${this.url.runbusRelatedData}?routeIdStr=194,420`).then((res) => {
+        console.log('runbusRelatedData', res.data.data);
+        if (res.data.retCode != 0) {
+          this.$message.error(res.data.retMsg);
+          return;
+        }
+        this.resetList = res.data.data;
+        console.log(this.resetList);
+      });
+    },
+    resetClick(id, direction, name) {
+      console.log('id,direction', id, direction);
+      axios.get(`${this.url.redispatchByRouteAndDirection}/${id}/${direction}/0`).then((res) => {
+        console.log('redispatchByRouteAndDirection', res.data.data);
+        if (res.data.retCode != 0) {
+          this.$message.error(res.data.retMsg);
+          return;
+        }
+        this.$refs.ResetModal.edit({
+          routeId: id,
+          direction: direction,
+          routeName: name,
+        });
+      });
+    },
   },
 };
 </script>
 
 <style lang="less" scoped>
-section {
+#section {
   background: #dbefff;
+  position: relative;
   .con-head {
     // margin: 12px 0 0 0;
     padding: 12px;
@@ -2013,6 +2119,57 @@ section {
     display: flex;
     flex-wrap: nowrap;
     border-bottom: 1px solid #99bbe8;
+
+    .reset-box {
+      position: absolute;
+      z-index: 100;
+      .button {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 10px;
+        i {
+          display: block;
+        }
+      }
+      .list {
+        display: inline-block;
+        vertical-align: top;
+        li {
+          display: inline-block;
+          margin-right: 5px;
+          width: 55px;
+          height: 60px;
+          box-sizing: border-box;
+          background: #e8f3fd;
+          border-radius: 4px 4px 4px 4px;
+          border: 1px solid #1890ff;
+          text-align: center;
+          div {
+            font-size: 12px;
+            &:nth-child(1) {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+    .reset-top-left {
+      top: 0;
+      left: 0;
+    }
+    .reset-top-right {
+      top: 0;
+      right: 0;
+    }
+    .reset-bottom-left {
+      bottom: 0;
+      left: 0;
+    }
+    .reset-bottom-right {
+      bottom: 0;
+      right: 0;
+    }
+
     .left-car {
       width: 50%;
       height: 320px;
@@ -2146,6 +2303,7 @@ section {
                 position: absolute;
                 top: -26px;
                 right: calc(0% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2186,6 +2344,7 @@ section {
                 position: absolute;
                 top: -26px;
                 right: calc(50% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2270,6 +2429,7 @@ section {
                 position: absolute;
                 bottom: -20px;
                 left: calc(0% - 16px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2310,6 +2470,7 @@ section {
                 position: absolute;
                 bottom: -20px;
                 right: calc(50% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2496,6 +2657,7 @@ section {
             position: relative;
             height: 20px;
             margin: 0 0 10px 0;
+            z-index: 100;
 
             .bus-container {
               position: relative;
@@ -2542,6 +2704,7 @@ section {
             position: relative;
             height: 20px;
             margin: 0 0 10px 0;
+            z-index: 100;
 
             .bus-container {
               position: relative;
@@ -2711,6 +2874,7 @@ section {
                 position: absolute;
                 top: -26px;
                 right: calc(0% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2751,6 +2915,7 @@ section {
                 position: absolute;
                 top: -26px;
                 right: calc(50% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2834,6 +2999,7 @@ section {
                 position: absolute;
                 bottom: -20px;
                 left: calc(0% - 16px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -2874,6 +3040,7 @@ section {
                 position: absolute;
                 bottom: -20px;
                 right: calc(50% - 14px);
+                z-index: 100;
 
                 .bus-container {
                   position: relative;
@@ -3085,6 +3252,7 @@ section {
             position: relative;
             height: 20px;
             margin: 0 0 10px 0;
+            z-index: 100;
 
             .bus-container {
               position: relative;
@@ -3131,6 +3299,7 @@ section {
             position: relative;
             height: 20px;
             margin: 0 0 10px 0;
+            z-index: 100;
 
             .bus-container {
               position: relative;

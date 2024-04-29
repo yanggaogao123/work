@@ -53,13 +53,13 @@
             <a-button type="primary" @click="searchIt" icon="search">查询</a-button>
           </a-form-item>
 
-          <a-form-item style="float: right">
+          <!-- <a-form-item style="float: right">
             <a-radio-group v-model="pageValue" @change="onChange">
               <a-radio-button value="a">计划表</a-radio-button>
               <a-radio-button value="b">车位图</a-radio-button>
               <a-radio-button value="c">排班仿真</a-radio-button>
             </a-radio-group>
-          </a-form-item>
+          </a-form-item> -->
         </a-form>
       </header>
       <car-type-two-modal v-show="carBool == 'b'" :sendData="sendData"></car-type-two-modal>
@@ -78,6 +78,7 @@ import moment from 'moment';
 import CarTypeTwoModal from './modules/CarTypeTwoModal.vue';
 import CarTypeThreeModal from './modules/CarTypeThreeModal.vue';
 import MonitoringTableModal from './modules/MonitoringTableModal.vue';
+
 export default {
   name: 'MonitoringDispatching',
   components: {
@@ -269,10 +270,11 @@ export default {
           supRouteId: this.supRouteId,
           busRunData: res.data,
           centerData: this.centerData,
+          carType: this.carType,
         };
-        if ([0, 1, 2].includes(res.data.data.simulationType)) {
+        if ([0, 1, 2, 5].includes(res.data.data.simulationType)) {
           this.carBool = 'b';
-        } else if ([3, 4, 4].includes(res.data.data.simulationType)) {
+        } else if ([3, 4, 6, 7].includes(res.data.data.simulationType)) {
           this.carBool = 'c';
         }
         console.log('carBool', this.carBool);
@@ -361,7 +363,9 @@ export default {
           supRouteName: this.supRouteName,
           supRouteId: this.supRouteId,
           runDate: this.runDate,
+          supRouteId: this.supRouteId,
           centerData: this.centerData,
+          carType: this.carType,
         };
         if ([0, 1, 2, 5].includes(this.carType)) {
           this.carBool = 'b';
