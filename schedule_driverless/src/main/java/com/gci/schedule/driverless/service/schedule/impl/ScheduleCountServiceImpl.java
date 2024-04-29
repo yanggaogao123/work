@@ -8,6 +8,7 @@ import com.gci.schedule.driverless.bean.vo.ScheduleCountParam;
 import com.gci.schedule.driverless.bean.vo.ScheduleCountParam02;
 import com.gci.schedule.driverless.mapper.DySchedulePlanDriverlessMapper;
 import com.gci.schedule.driverless.service.schedule.BigDataService;
+import com.gci.schedule.driverless.service.schedule.GenerateScheduleService;
 import com.gci.schedule.driverless.service.schedule.ScheduleCountService;
 import com.gci.schedule.driverless.service.schedule.ScheduleParamsAnchorService;
 import com.gci.schedule.driverless.util.DateUtil;
@@ -29,18 +30,25 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
     private BigDataService bigDataService;
     @Autowired
     private DySchedulePlanDriverlessMapper dySchedulePlanDriverlessMapper;
+    @Autowired
+    private GenerateScheduleService generateScheduleService;
 
     @Override
     public R getScheduleCountResult(ScheduleCountParam param) {
         List<Integer> timeList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23);
         Collections.sort(timeList);
+        DyDriverlessConfig config = generateScheduleService.getDyDriverlessConfig(param.getRouteId(),param.getSupportRouteId(),Objects.isNull(param.getSupportRouteId())?1:null);
+        if(Objects.isNull(config)){
+            log.info("【仿真统计】-排班线路配置信息不存在，routeId:{}",param.getRouteId());
+            return R.error("排班线路配置信息不存在");
+        }
         ScheduleCountParam02 mainAnchorParams = getAnchorParams(param.getRouteId(),param.getRunDate());
         if(Objects.isNull(mainAnchorParams)){
             log.info("【仿真统计】-排班线路参数不存在，routeId:{}",param.getRouteId());
             return R.error("排班线路参数不存在");
         }
         ScheduleCountParam02 subAnchorParams = null;
-        if(Objects.nonNull(param.getSupportRouteId())){
+        if(Objects.nonNull(param.getSupportRouteId())&&config.getIsDriverless().equals(0)){
             subAnchorParams = getAnchorParams(param.getSupportRouteId(),param.getRunDate());
             if(Objects.isNull(subAnchorParams)){
                 log.info("【仿真统计】-排班支援线路参数不存在，routeId:{},supportRouteId:{}",param.getRouteId(),param.getSupportRouteId());
@@ -53,7 +61,7 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
         mainRecord.setPlanDate(param.getRunDate());
         mainRecord.setPlanType(param.getPlanType());
         subRecord.setPlanDate(param.getRunDate());
-        if(Objects.nonNull(param.getSupportRouteId())){
+        if(Objects.nonNull(param.getSupportRouteId())&&config.getIsDriverless().equals(0)){
             mainRecord.setStatus(ScheduleStatus.SUPPORTED_SCHEDULE.getValue());
             subRecord.setRouteId(param.getSupportRouteId());
             subRecord.setStatus(ScheduleStatus.SUPPORT_SCHEDULE.getValue());
@@ -137,6 +145,16 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
         Map<String,Object> subDownWordMap = new HashMap<>();
 
         for(Integer timeNum : timeList){
+            //线路时段发车班次
+            Long mainUpClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).count();
+            Long mainDownClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).count();
+            mainUpClassesMap.put(timeNum.toString(),mainUpClasses);
+            mainDownClassesMap.put(timeNum.toString(),mainDownClasses);
+            //支援线路时段发车班次
+            Long subUpClasses = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).count();
+            Long subDownClasses = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).count();
+            subUpClassesMap.put(timeNum.toString(),subUpClasses);
+            subDownClassesMap.put(timeNum.toString(),subDownClasses);
             //线路时段班次核载人数
             List<ScheduleParamsAnchor> mainAnchorList = mainAnchorParams.getAnchorList();
             ScheduleParamsRoute mainScheduleParamsRoute = mainAnchorParams.getScheduleParamsRoute();
@@ -154,16 +172,16 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
                 ScheduleParamsAnchor mainDownAnchor = finalMainDownAnchorList.get(0);
                 mainDownloadPeopleNum = BigDecimal.valueOf(mainDownAnchor.getBusOccupancy()*mainScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
             }
-            mainUploadPeopleNumMap.put(timeNum.toString(),mainUploadPeopleNum);
-            mainDownloadPeopleNumMap.put(timeNum.toString(),mainDownloadPeopleNum);
+            mainUploadPeopleNumMap.put(timeNum.toString(),mainUploadPeopleNum*mainUpClasses);
+            mainDownloadPeopleNumMap.put(timeNum.toString(),mainDownloadPeopleNum*mainDownClasses);
             //支援线路时段班次核载人数
             Integer subUploadPeopleNum = 0;
             Integer subDownloadPeopleNum = 0;
             if(Objects.isNull(subAnchorParams)){
                 subUploadPeopleNum = mainUploadPeopleNum;
                 subDownloadPeopleNum = mainDownloadPeopleNum;
-                subUploadPeopleNumMap.put(timeNum.toString(),mainUploadPeopleNum);
-                subDownloadPeopleNumMap.put(timeNum.toString(),mainDownloadPeopleNum);
+                subUploadPeopleNumMap.put(timeNum.toString(),mainUploadPeopleNum*subUpClasses);
+                subDownloadPeopleNumMap.put(timeNum.toString(),mainDownloadPeopleNum*subDownClasses);
             }else {
                 List<ScheduleParamsAnchor> subAnchorList = subAnchorParams.getAnchorList();
                 ScheduleParamsRoute subScheduleParamsRoute = subAnchorParams.getScheduleParamsRoute();
@@ -181,8 +199,8 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
                     ScheduleParamsAnchor subDownAnchor = finalSubDownAnchorList.get(0);
                     subDownloadPeopleNum = BigDecimal.valueOf(subDownAnchor.getBusOccupancy()*subScheduleParamsRoute.getVehicleContent()).divide(BigDecimal.valueOf(100),BigDecimal.ROUND_HALF_UP).intValue();
                 }
-                subUploadPeopleNumMap.put(timeNum.toString(),subUploadPeopleNum);
-                subDownloadPeopleNumMap.put(timeNum.toString(),subDownloadPeopleNum);
+                subUploadPeopleNumMap.put(timeNum.toString(),subUploadPeopleNum*subUpClasses);
+                subDownloadPeopleNumMap.put(timeNum.toString(),subDownloadPeopleNum*subDownClasses);
             }
 
             //线路时段客流人数,时段最高车内人数
@@ -224,19 +242,6 @@ public class ScheduleCountServiceImpl implements ScheduleCountService {
             subUpMaxPeopleMap.put(timeNum.toString(),upSubMax);
             subDownPassengerMap.put(timeNum.toString(),subDownPassenger);
             subDownMaxPeopleMap.put(timeNum.toString(),downSubMax);
-
-
-
-            //线路时段发车班次
-            Long mainUpClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).count();
-            Long mainDownClasses = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).count();
-            mainUpClassesMap.put(timeNum.toString(),mainUpClasses);
-            mainDownClassesMap.put(timeNum.toString(),mainDownClasses);
-            //支援线路时段发车班次
-            Long subUpClasses = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).count();
-            Long subDownClasses = subScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("1")).count();
-            subUpClassesMap.put(timeNum.toString(),subUpClasses);
-            subDownClassesMap.put(timeNum.toString(),subDownClasses);
 
             //线路时段平均间隔
             Double mainUpInterval = mainScheduleList.stream().filter(e -> e.getPlanTimeInt()>=timeNum*100 && e.getPlanTimeInt()<=(timeNum+1)*100 && e.getDirection().equals("0")).mapToDouble(DySchedulePlanDriverless::getInterval).average().orElse(0D);

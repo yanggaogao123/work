@@ -26,5 +26,8 @@ public class FirstRouteStaInfo {
 
     private Integer fullPercent;
 
+    //趟次数
+    private Integer busClasses;
+
 
 }

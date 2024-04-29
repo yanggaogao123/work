@@ -138,4 +138,9 @@
     select * from DY_DRIVERLESS_PLAN_TIME
     where route_id = #{routeId,jdbcType=DECIMAL} and run_date = #{runDate,jdbcType=TIMESTAMP}
   </select>
+
+  <select id="getDriverlessPlanPreList" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessPlanTime" resultMap="BaseResultMap">
+    select * from DY_DRIVERLESS_PLAN_TIME_PRE
+    where route_id = #{routeId,jdbcType=DECIMAL} and run_date = #{runDate,jdbcType=TIMESTAMP}
+  </select>
 </mapper>

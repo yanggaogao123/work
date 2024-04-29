@@ -1,5 +1,6 @@
 package com.gci.schedule.driverless.controller;
 
+import cn.hutool.core.convert.Convert;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -83,21 +84,24 @@ public class QueryMonitorInfoController {
     }
 
     //前端按钮-获取重排数据状态，返回成功则直接读取redis数据。
-    @RequestMapping(value = "/redispatchByRouteAndDirection/{routeId}/{direction}")
+    @RequestMapping(value = "/redispatchByRouteAndDirection/{routeId}/{direction}/{operationType}")
     @ResponseBody
-    public String redispatchList(@PathVariable String routeId, @PathVariable String direction,
+    public String redispatchList(@PathVariable String routeId,
+                                 @PathVariable String direction,
+                                 @PathVariable String operationType,
                                  HttpServletRequest request) {
-        String userId = (String) request.getSession().getAttribute("userId");
-        String url = redispatch_url.replaceAll("ROUTEID", routeId).replaceAll("DIRECTION", direction).replaceAll("USERID", userId);
+        String userId = Convert.toStr(request.getSession().getAttribute("userId"));
+        String url = redispatch_url.replaceAll("ROUTEID", routeId).replaceAll("DIRECTION", direction).replaceAll(
+                "USERID", userId).replaceAll("OPERATIONTYPE", operationType);
         log.info("[重排数据状态]" + " 原始数据 routeId = " + routeId + " direction =  " + direction + " url = " + url);
         JSONObject result = new JSONObject();
         try {
-            result = HttpClientUtils.httpPost(url, new JSONObject());
+            result = HttpClientUtils.httpPost2(url, new JSONObject());
         } catch (Exception e) {
             log.error("网络异常，请稍后重试！");
             result.put("retMsg", "网络异常，请稍后重试！");
         } finally {
-            log.info("[重排数据状态]" + " 原始数据 routeId = " + routeId + " direction =  " + direction + "結果 result = " + result.toString());
+            log.info("[重排数据状态]" + " 原始数据 routeId = " + routeId + " direction =  " + direction + "結果 result = " + JSONObject.toJSONString(result));
         }
         return result.toString();
     }
@@ -262,5 +266,7 @@ public class QueryMonitorInfoController {
         setUser(param, req);
         return queryMonitorInfoService.saveTripParam(param);
     }
+
+
 
 }

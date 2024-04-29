@@ -361,8 +361,25 @@
     <if test="planType != null">
       and plan_type = #{planType,jdbcType=DECIMAL}
     </if>
+    <if test="supportRouteId != null">
+      and support_route_id = #{supportRouteId,jdbcType=DECIMAL}
+    </if>
     order by plan_time desc
   </select>
+    <!-- 调休阶段查所有，上线后改查未来一个小时内的数据 -->
+    <!--<select id="getOneHourSupportPlan" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless" resultMap="BaseResultMap">
+        select * from DY_SCHEDULE_PLAN_DRIVERLESS
+        where route_id = #{routeId,jdbcType=DECIMAL}
+        and plan_time <![CDATA[ <= ]]> #{planTime,jdbcType=TIMESTAMP}
+        and plan_time <![CDATA[ >= ]]> SYSDATE
+        order by plan_time desc
+    </select>-->
+    <select id="getOneHourSupportPlan" parameterType="com.gci.schedule.driverless.bean.scheduleD.DySchedulePlanDriverless" resultMap="BaseResultMap">
+        select * from DY_SCHEDULE_PLAN_DRIVERLESS
+        where route_id = #{routeId,jdbcType=DECIMAL}
+        and plan_time <![CDATA[ >= ]]> SYSDATE
+        order by plan_time desc
+    </select>
 
   <select id="selectSchedulePlan" resultMap="BaseResultMap" parameterType="map">
         select schedule_id
@@ -460,6 +477,8 @@
 
               from (select *
                     from (select t.schedule_id
+                               , t.plan_date
+                               , t.route_id
                                , t.plan_time
                                , t.bus_id
                                , t.bus_name

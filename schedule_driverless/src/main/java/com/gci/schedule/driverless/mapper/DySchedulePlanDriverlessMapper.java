@@ -25,6 +25,8 @@ public interface DySchedulePlanDriverlessMapper {
 
     List<DySchedulePlanDriverless> getScheduleList02(DySchedulePlanDriverless record);
 
+    List<DySchedulePlanDriverless> getOneHourSupportPlan(DySchedulePlanDriverless record);
+
     List<DySchedulePlanDriverless> selectSchedulePlan (Map<String, Object> map);
 
     Date getMinPlanTimeByRouteIdAndPlanDate(@Param("routeId") String routeId, @Param("date")  Date date);

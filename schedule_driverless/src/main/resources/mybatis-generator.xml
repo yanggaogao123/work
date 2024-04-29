@@ -71,7 +71,9 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
         <!--<table tableName="DY_DRIVERLESS_BUS_CONFIG" domainObjectName="DyDriverlessBusConfig_01" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-        <table tableName="DY_DRIVERLESS_ROUTE_STA" domainObjectName="DyDriverlessRouteSta" enableCountByExample="false" enableUpdateByExample="false"
+        <!--<table tableName="DY_DRIVERLESS_ROUTE_STA" domainObjectName="DyDriverlessRouteSta" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <table tableName="GIS_ROADNODE" domainObjectName="GisRoadnode" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
     </context>
 </generatorConfiguration>

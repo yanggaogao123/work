@@ -20,6 +20,8 @@ public interface DyDriverlessConfigMapper {
 
     List<DyDriverlessConfig> selectByRouteId(@Param("routeId")Long routeId);
 
+    List<DyDriverlessConfig> selectByRouteNameKey(@Param("routeNameKey")String routeNameKey);
+
     List<DyDriverlessConfig> selectByRouteIdAndSupportId(DyDriverlessConfig record);
 
     List<DyDriverlessConfig> getDriverlessRoute();

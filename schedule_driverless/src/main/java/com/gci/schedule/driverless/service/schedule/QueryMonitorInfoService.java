@@ -18,4 +18,5 @@ public interface QueryMonitorInfoService {
     String saveFrPlanList(Map<String, Object> param);
     String getDistance(String lon, String lat, String stationId);
 
+
 }

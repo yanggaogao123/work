@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gci.schedule.driverless.service.schedule.QueryMonitorInfoService;
 import com.gci.schedule.driverless.util.HttpClientUtils;
 import com.gci.schedule.driverless.util.HttpUtil;
+import com.gci.schedule.driverless.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,7 @@ public class QueryMonitorInfoServiceImpl implements QueryMonitorInfoService {
     private String getDistance;
 
 
+
     @Override
     public JSONArray getForecastPlan(String routeIdStr, String userId) {
         String result = HttpUtil.getString(DISPATCH_URL + getForecastPlans + "/" + routeIdStr+"/"+userId);
@@ -57,7 +59,9 @@ public class QueryMonitorInfoServiceImpl implements QueryMonitorInfoService {
 
     @Override
     public JSONObject redispatchList(String routeId, String userId, String userType) {
-        String result = HttpUtil.getString(DISPATCH_URL + redispatchList + "/" + routeId+"/"+userId+"/"+userType);
+        String uri = DISPATCH_URL + redispatchList + "/" + routeId+"/"+userId+"/"+userType;
+        String result = HttpUtil.getString(uri);
+        log.info("重排数据返回结果:{},请求地址:{},routeId:{}",result,uri,routeId);
         JSONObject dataObj = JSONObject.parseObject(result).getJSONObject("data");
         return dataObj;
     }
@@ -111,4 +115,6 @@ public class QueryMonitorInfoServiceImpl implements QueryMonitorInfoService {
     public String saveTripParam(Map<String, Object> param) {
         return HttpUtil.submit(DISPATCH_URL+saveTripParam,JSON.toJSONString(param));
     }
+
+
 }

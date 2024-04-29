@@ -8,6 +8,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.gci.schedule.driverless.bean.AdrealInfo;
 import com.gci.schedule.driverless.bean.IntersiteTimeParams;
 import com.gci.schedule.driverless.bean.RouteStationResult;
+import com.gci.schedule.driverless.bean.common.BsData;
 import com.gci.schedule.driverless.bean.scheduleD.*;
 import com.gci.schedule.driverless.common.MyException;
 import com.gci.schedule.driverless.mapper.AdrealSimulateMapper;
@@ -135,10 +136,14 @@ public class SimulationServiceImpl implements SimulationService {
         //进出站匹配开始 zyj
         List<AdrealSimulate> adrealSimulateList = new ArrayList<>();
         Map<String, Double> adrealWasteTimeUpMap = this.getIntersiteTimeResult(routeId.toString(), "0", String.valueOf(cal.get(Calendar.DAY_OF_WEEK) - 1)); //上行进出站的耗时
-        Map<String, Double> adrealWasteTimeDownMap = this.getIntersiteTimeResult(routeId.toString(), "1", String.valueOf(cal.get(Calendar.DAY_OF_WEEK) - 1)); //下行进出站的耗时
         //查询线路对应方向站点列表
         List<RouteStationResult> routeStationResultUpList = this.getRouteStationResult(routeId.toString(), "0");//上行
-        List<RouteStationResult> routeStationResultDownList = this.getRouteStationResult(routeId.toString(), "1");//下行
+        Map<String, Double> adrealWasteTimeDownMap = null;
+        List<RouteStationResult> routeStationResultDownList = null;
+        if(!BsData.isLoopRoute(routeId)){
+            adrealWasteTimeDownMap = this.getIntersiteTimeResult(routeId.toString(), "1", String.valueOf(cal.get(Calendar.DAY_OF_WEEK) - 1)); //下行进出站的耗时
+            routeStationResultDownList = this.getRouteStationResult(routeId.toString(), "1");//下行
+        }
 
         List<NotLongStationBusSum> notLongStationBusSums = adrealSimulateMapper.getNotLongStationBusSum(map);//获取非全程在某个站点开始的车辆和
         Map<String, NotLongStationBusSum> notLongStationBusSumMap = new HashMap<String, NotLongStationBusSum>(); //非全程在某个站点开始的车辆和Map组装
