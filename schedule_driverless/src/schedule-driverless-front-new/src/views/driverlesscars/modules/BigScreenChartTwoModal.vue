@@ -28,7 +28,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import "@/assets/less/base.css";
 import ChartSection from "../components/ChartSection.vue";
 
-import { dayFlowResponse } from "./mock";
+// import { dayFlowResponse } from "./mock";
 
 echarts.use([
   ToolboxComponent,
@@ -51,6 +51,8 @@ export default {
       myChart1: null,
       chartData1: [[], [], []],
       chartData2: [[], [], []],
+      mockMode: false,
+      url: `${process.env.VUE_APP_BUS_API}/schedule-driverless/dataService/list`,
     };
   },
 
@@ -61,7 +63,7 @@ export default {
     const chartDom2 = this.$refs.chartRef2;
     this.myChart1 = echarts.init(chartDom1);
     this.myChart2 = echarts.init(chartDom2);
-    if (this.routeId) {
+    if (this.routeId || this.mockMode) {
       await this.getChartDatas();
     }
   },
@@ -105,7 +107,7 @@ export default {
           },
         },
         position: {
-          options: posList.reduce(function(map, pos) {
+          options: posList.reduce(function (map, pos) {
             map[pos] = pos;
             return map;
           }, {}),
@@ -121,7 +123,7 @@ export default {
         verticalAlign: "middle",
         position: "insideBottom",
         distance: 15,
-        onChange: function() {
+        onChange: function () {
           const labelOption = {
             rotate: app.config.rotate,
             align: app.config.align,
@@ -174,6 +176,7 @@ export default {
               backgroundColor: "rgba(6, 26, 60, 0.9)",
             },
           },
+          borderWidth: 0,
           backgroundColor: "rgba(6, 26, 60, 0.9)",
           textStyle: {
             color: "#fff",
@@ -306,23 +309,20 @@ export default {
     },
     async getChartDatas() {
       try {
-        const response = await axios.post(
-          "http://172.31.200.171:8016/bigdata-api/dataservices/bus/od/v3",
-          {
-            appName: "",
-            businessID: "001101",
-            page: "1",
-            pageSize: "1000",
-            data: {
-              routeId: this.routeId || "101",
-            },
-          }
-        );
+        const dayFlowResponse = await axios.post(this.url, {
+          appName: "",
+          businessID: "001101",
+          page: "1",
+          pageSize: "1000",
+          data: {
+            routeId: this.routeId || "101",
+          },
+        });
 
-        const upChartData = response.data.retData.list
+        const upChartData = dayFlowResponse.retData.list
           .filter((item) => item.direction === "0")
           .sort((a, b) => a.station_order - b.station_order);
-        const downChartData = response.data.retData.list
+        const downChartData = dayFlowResponse.retData.list
           .filter((item) => item.direction === "1")
           .sort((a, b) => a.station_order - b.station_order);
         // const upChartData = dayFlowResponse.retData.list
@@ -338,7 +338,7 @@ export default {
             target = isNaN(Number(value)) ? 0 : Number(value);
           }
 
-          return negative ? -target : target;
+          return ((negative ? -target : target) * 100).toFixed(2);
         };
 
         this.chartData1 = [
