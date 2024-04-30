@@ -2308,13 +2308,53 @@ public class ScheduleParam {
 		return highSectionPassenger;
 	}
 
-	public void subSectionPassengerRealTime(int direction, Date runTime, Long routeStaId, Integer subPassenger) {
+	public void subSectionPassengerAll(int direction, Date runTime, Long firstRouteStaId, Long lastRouteStaId, Integer subPassenger) {
 		List<RouteStationPassenger> routeStationPassengerList = getRouteStationPassenger(runTime, direction);
 		if (routeStationPassengerList != null) {
 			for (RouteStationPassenger passenger : routeStationPassengerList) {
-				passenger.addSubNumber(subPassenger);
-				if (routeStaId != null && routeStaId.equals(passenger.getRouteStaId())) {
+				if (firstRouteStaId != null && !firstRouteStaId.equals(passenger.getRouteStaId())) {
+					continue;
+				}
+				firstRouteStaId = null;
+				passenger.addSubNumberAll(subPassenger);
+				if (lastRouteStaId != null && lastRouteStaId.equals(passenger.getRouteStaId())) {
 					break;
+				}
+			}
+		}
+	}
+
+	public void subSectionPassengerRealTime(int direction, Date runTime, Long firstRouteStaId, Long lastRouteStaId, Integer subPassenger) {
+		List<RouteStationPassenger> routeStationPassengerList = getRouteStationPassenger(runTime, direction);
+		if (routeStationPassengerList != null) {
+			for (RouteStationPassenger passenger : routeStationPassengerList) {
+				if (firstRouteStaId != null && !firstRouteStaId.equals(passenger.getRouteStaId())) {
+					continue;
+				}
+				firstRouteStaId = null;
+				passenger.addSubNumber(subPassenger);
+				if (lastRouteStaId != null && lastRouteStaId.equals(passenger.getRouteStaId())) {
+					break;
+				}
+			}
+		}
+	}
+
+	public void restSubSectionPassengerAll() {
+		for (RouteStationPassengerInfo info : passengerInfoMap.values()) {
+			for (List<RouteStationPassenger> passengerList : info.getRouteStationPassenger2DList()) {
+				for (RouteStationPassenger pass : passengerList) {
+					pass.setSubNumberAll(0);
+				}
+			}
+		}
+	}
+
+	public void restSubSectionPassengerRealTime() {
+		for (RouteStationPassengerInfo info : passengerInfoMap.values()) {
+			for (List<RouteStationPassenger> passengerList : info.getRouteStationPassenger2DList()) {
+				for (RouteStationPassenger pass : passengerList) {
+					pass.setSubNumber(0);
 				}
 			}
 		}

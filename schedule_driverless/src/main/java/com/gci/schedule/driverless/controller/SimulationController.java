@@ -50,22 +50,20 @@ public class SimulationController {
 		AdrealInfoVo vo = new AdrealInfoVo();
 		List<AdrealInfo> mainList;
 		List<AdrealInfo> subList;
-		DyDriverlessConfig dyDriverlessConfig;
-		if(Objects.nonNull(supportRouteId)){
+		DyDriverlessConfig dyDriverlessConfig = generateScheduleService.getDyDriverlessConfig(routeId,supportRouteId,Objects.isNull(supportRouteId)?1:null);
+		if(Objects.isNull(dyDriverlessConfig)){
+			return R.error("排班线路配置信息不存在");
+		}
+		if(Objects.nonNull(supportRouteId)&&dyDriverlessConfig.getIsDriverless().equals(0)){
 			//常规线进出站信息
 			mainList = simulationService.adrealInfo(routeId,runDateStr, ScheduleStatus.SUPPORTED_SCHEDULE.getValue(),planType);
 			subList = simulationService.adrealInfo(supportRouteId,runDateStr, ScheduleStatus.SUPPORT_SCHEDULE.getValue(),planType);
-			dyDriverlessConfig = generateScheduleService.getDyDriverlessConfig(routeId,supportRouteId,0);
 		}else {
 			//无人车进出站信息
 			mainList = simulationService.adrealInfo(routeId,runDateStr, ScheduleStatus.DRIVERLESS_SCHEDULE.getValue(),planType);
 			subList = simulationService.adrealInfo(routeId,runDateStr,ScheduleStatus.COMMON_SCHEDULE.getValue(),planType);
-			dyDriverlessConfig = generateScheduleService.getDyDriverlessConfig(routeId,supportRouteId,1);
 		}
 
-		if(Objects.isNull(dyDriverlessConfig)){
-			return R.error("排班线路配置信息不存在");
-		}
 		vo.setSimulationType(dyDriverlessConfig.getType());
 		vo.setMainList(mainList);
 		vo.setSubList(subList);

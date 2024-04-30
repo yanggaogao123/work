@@ -45,4 +45,12 @@ public interface GenerateScheduleService {
     R getMonitorInfo(Map<String, Object> params) throws CloneNotSupportedException;
 
     R getRuningScheduleConfig(Map<String, Object> params);
+    String getByRouteIdAndRouteNameKey(String routeId, String routeNameKey, String page);
+
+    R getByRouteNameKey(Map<String, Object> json);
+
+    R getOneHourSupportPlan(Map<String, Object> params);
+
+    R getSchedulePlanDetail(Map<String, Object> params);
+    R getGisRoadInfo(Map<String, Object> params);
 }

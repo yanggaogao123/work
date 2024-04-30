@@ -139,6 +139,16 @@
      </if>
   </select>
 
+  <select id="selectByRouteNameKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from DY_DRIVERLESS_CONFIG
+    where 1=1
+    <if test="routeNameKey != null and routeNameKey != ''">
+      and (ROUTE_NAME like concat('%',concat(#{routeNameKey},'%')) or SUPPORT_ROUTE_NAME like concat('%',concat(#{routeNameKey},'%')))
+    </if>
+  </select>
+
   <select id="selectByRouteIdAndSupportId" parameterType="com.gci.schedule.driverless.bean.scheduleD.DyDriverlessConfig" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -147,7 +157,9 @@
     <if test="supportRouteId != null">
       and SUPPORT_ROUTE_ID = #{supportRouteId,jdbcType=DECIMAL}
     </if>
-    and IS_DRIVERLESS = #{isDriverless,jdbcType=DECIMAL}
+    <if test="isDriverless != null">
+      and IS_DRIVERLESS = #{isDriverless,jdbcType=DECIMAL}
+    </if>
   </select>
 
   <select id="getDriverlessRoute" resultMap="BaseResultMap">

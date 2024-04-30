@@ -101,5 +101,9 @@ public class RouteController {
 		return generateScheduleService.getDriverlessRoute();
 	}
 
-
+	@RequestMapping(value="/getByRouteNameKey",method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
+	@ResponseBody
+	public R getByRouteNameKey(HttpServletRequest request,@RequestBody Map<String, Object> json) {
+		return generateScheduleService.getByRouteNameKey(json);
+	}
 }

@@ -48,7 +48,7 @@ public class GenerateScheduleController {
      */
     @PostMapping("/generateSupportSchedule")
     public R generateSupportSchedule(@RequestBody GenerateScheduleParams2 params) {
-        log.info("常规线支援生成排班计划 - routeId:{} 入参:{}", params.getRouteId(), JSONObject.toJSONString(params));
+        log.info("支援生成排班计划 - routeId:{} 入参:{}", params.getRouteId(), JSONObject.toJSONString(params));
         if (params.getRouteId() == null) {
             return R.error("线路id不能为空");
         }
@@ -239,6 +239,52 @@ public class GenerateScheduleController {
             return R.error("线路id不能为空");
         }
         return generateScheduleService.getRuningScheduleConfig(params);
+    }
+
+
+    @RequestMapping(value = "/bus/getByRouteIdAndRouteNameKey", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    //@SysLog
+    public String getByRouteIdAndRouteNameKey(@RequestParam String routeId, @RequestParam String routeNameKey,
+                                              @RequestParam String page,
+                                              HttpServletRequest request) {
+        return generateScheduleService.getByRouteIdAndRouteNameKey(routeId, routeNameKey, page);
+    }
+
+    /**
+     * 获取未来一小时内的支援计划
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "/getOneHourSupportPlan", method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    //@SysLog
+    public R getOneHourSupportPlan(@RequestBody Map<String, Object> params) {
+        return generateScheduleService.getOneHourSupportPlan(params);
+    }
+
+    /**
+     * 大屏支援计划详情
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "/getSchedulePlanDetail", method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    //@SysLog
+    public R getSchedulePlanDetail(@RequestBody Map<String, Object> params) {
+        return generateScheduleService.getSchedulePlanDetail(params);
+    }
+
+    /**
+     * 大屏线路轨迹
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "/getGisRoadInfo", method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    //@SysLog
+    public R getGisRoadInfo(@RequestBody Map<String, Object> params) {
+        return generateScheduleService.getGisRoadInfo(params);
     }
 
 

@@ -220,12 +220,23 @@
         select
         <include refid="Base_Column_List"/>
         from apts.dy_triplog
-        where ROUTE_ID_RUN=#{routeId} and run_date=#{runDate}
-        and service_type = #{serviceType}
+        where ROUTE_ID_RUN=#{routeId}
+        and direction=#{direction}
+        and service_type >0
         and triplog_begin_time <![CDATA[ >= ]]> #{startTime}
         and triplog_begin_time <![CDATA[ <= ]]> #{endTime}
         and from_station_id = #{fromStationId}
         and to_station_id = #{toStationId}
+        order by triplog_begin_time
+    </select>
+
+    <select id="selectByCurrentDay" resultMap="simpleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apts.dy_triplog
+        where ROUTE_ID_RUN=#{routeId}
+        and service_type >0
+        and run_date =#{runDate}
         order by triplog_begin_time
     </select>
 

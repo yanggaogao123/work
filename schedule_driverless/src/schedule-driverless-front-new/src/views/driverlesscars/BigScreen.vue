@@ -4,43 +4,18 @@
       <div class="content">
         <!-- 头部 -->
         <header class="header">
-          <img
-            class="flash-left"
-            src="@/assets/driverlesscars/falsh.gif"
-            alt=""
-          />
-          <img
-            class="flash-right"
-            src="@/assets/driverlesscars/falsh.gif"
-            alt=""
-          />
+          <img class="flash-left" src="@/assets/driverlesscars/falsh.gif" alt="" />
+          <img class="flash-right" src="@/assets/driverlesscars/falsh.gif" alt="" />
           <div class="header-con">
             <div class="header-left">
               <div class="search-box">
                 <img src="@/assets/driverlesscars/bs-top-left.png" alt="" />
                 <div class="search-con">
-                  <input
-                    type="text"
-                    class="ipt"
-                    @keyup="searchIpt"
-                    v-model="searchName"
-                  />
-                  <a-icon
-                    type="up"
-                    @click="showSearchList"
-                    v-show="!searchListBool"
-                  />
-                  <a-icon
-                    type="down"
-                    @click="showSearchList"
-                    v-show="searchListBool"
-                  />
+                  <input type="text" class="ipt" @keyup="searchIpt" v-model="searchName" />
+                  <a-icon type="up" @click="showSearchList" v-show="!searchListBool" />
+                  <a-icon type="down" @click="showSearchList" v-show="searchListBool" />
                   <ul class="ipt-list" v-show="searchListBool">
-                    <li
-                      @click="clickList(item)"
-                      :key="i"
-                      v-for="(item, i) in allRouteList"
-                    >
+                    <li @click="clickList(item)" :key="i" v-for="(item, i) in allRouteList">
                       {{ item.routeName }}-{{ item.supportRouteName }}
                     </li>
                   </ul>
@@ -54,7 +29,7 @@
 
               <div class="header-right-con">
                 <ul class="bus-list" id="movingDiv">
-                  <li v-for="(item, i) in supList" :key="i">
+                  <li v-for="(item, i) in supList" :key="i" @click="showMap(item)">
                     {{ item.status == 1 ? "无人车" : "支援车" }}
                     {{ item.busName }}
                     {{ moment(item.planTime).format("HH:mm") }}
@@ -73,43 +48,34 @@
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal
-                  title="101路日均各时段班次客运量"
-                  :chartData="chartData"
-                ></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal :routeId="sendData.routeId"
+                  :title="`${sendData.routeName || ''}日均各时段班次客运量`"></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal
-                  title="101路日均各时段班次客运量"
-                  :chartData="chartData"
-                ></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal :routeId="sendData.routeId"
+                  :title="`${sendData.routeName || ''}日均各时段班次客运量`"></big-screen-chart-two-modal>
               </div>
             </div>
             <!-- 简图 -->
             <div class="car-box">
               <!-- <big-screen-car-one-modal></big-screen-car-one-modal> -->
-              <big-screen-car-two-modal
-                :sendData="baseData"
-              ></big-screen-car-two-modal>
+              <big-screen-car-two-modal :sendData="sendData"></big-screen-car-two-modal>
             </div>
             <!-- 图表 -->
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal
-                  title="106路日均各时段班次客运量"
-                  :chartData="chartData"
-                ></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal :routeId="sendData.supRouteId"
+                  :title="`${sendData.supRouteName || ''}日均各时段班次客运量`"></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal
-                  title="106路日均各时段班次客运量"
-                  :chartData="chartData"
-                ></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal :routeId="sendData.supRouteId"
+                  :title="`${sendData.supRouteName || ''}日均各时段班次客运量`"></big-screen-chart-two-modal>
               </div>
             </div>
           </div>
         </section>
+        <big-screen-map :sendData="selectData" :visibility="showMapModule" @hideMapModule="hideMap"></big-screen-map>
       </div>
     </div>
   </div>
@@ -124,6 +90,7 @@ import BigScreenChartOneModal from "./modules/BigScreenChartOneModal.vue";
 import BigScreenChartTwoModal from "./modules/BigScreenChartTwoModal.vue";
 import BigScreenCarOneModal from "./modules/BigScreenCarOneModal.vue";
 import BigScreenCarTwoModal from "./modules/BigScreenCarTwoModal.vue";
+import BigScreenMap from "./modules/BigScreenMap.vue";
 
 // 获取容器元素
 // var container = document.querySelector('.container');
@@ -154,6 +121,7 @@ export default {
     BigScreenChartTwoModal,
     BigScreenCarOneModal,
     BigScreenCarTwoModal,
+    BigScreenMap,
   },
   data() {
     return {
@@ -214,6 +182,10 @@ export default {
       // 滚动框数据
       supList: [],
       movingTimer: "",
+
+      // 是否展示map
+      showMapModule: false,
+      selectData: {},
     };
   },
   created() {
@@ -249,47 +221,24 @@ export default {
           }
           this.allRouteList = res.data.data;
         });
-
-      // axios
-      //   .post(
-      //     `${this.url.getMonitorInfo}`,
-      //     {
-      //       routeId: this.routeId,
-      //       runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
-      //     },
-      //     { params }
-      //   )
-      //   .then((res) => {
-      //     console.log(res);
-      //   });
-
-      // axios
-      //   .post(
-      //     `${this.url.getMonitorInfo}`,
-      //     {
-      //       routeId: this.supRouteId,
-      //       runDate: `${moment(this.runDate).format('YYYY-MM-DD')} 00:00:00`,
-      //     },
-      //     { params }
-      //   )
-      //   .then((res) => {
-      //     console.log(res);
-      //   });
     },
 
     // 搜索栏
     showSearchList() {
       this.searchListBool = !this.searchListBool;
     },
-    clickList(item) {
+    async clickList(item) {
       this.searchObj = item;
       this.searchName = `${item.routeName}-${item.supportRouteName}`;
       this.routeId = item.routeId;
+      this.routeName = item.routeName;
       this.supRouteId = item.supportRouteId;
+      this.supRouteName = item.supportRouteName;
+      this.carType = item.type;
       this.searchListBool = false;
 
       let params = this.mes;
-      axios
+      await axios
         .post(
           `${this.url.getOneHourSupportPlan}`,
           { routeId: this.routeId, supportRouteId: this.supRouteId },
@@ -328,6 +277,8 @@ export default {
           // 定时触发向上移动函数
           this.movingTimer = setInterval(moveUp, 2000); // 每秒触发一次向上移动函数
         });
+
+      await this.getRuningScheduleConfig();
     },
     searchIpt() {
       axios
@@ -532,6 +483,7 @@ export default {
           supRouteId: this.supRouteId,
           runDate: this.runDate,
           centerData: this.centerData,
+          carType: this.carType,
         };
         if ([0, 1, 2, 5].includes(this.carType)) {
           this.carBool = "b";
@@ -539,6 +491,14 @@ export default {
           this.carBool = "c";
         }
       });
+    },
+    showMap(selectData) {
+      this.showMapModule = true;
+      this.selectData = selectData;
+    },
+    hideMap() {
+      this.showMapModule = false;
+      console.log(this.showMapModule);
     },
   },
 };
@@ -738,6 +698,7 @@ html {
           line-height: 50px;
           font-size: 20px;
           // transition: top 0.5s ease-in-out;
+          cursor: pointer;
         }
       }
 

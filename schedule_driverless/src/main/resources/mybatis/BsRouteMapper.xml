@@ -55,7 +55,7 @@
   <select id="getByRouteId" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
-    from BS_ROUTE
+    from apts.BS_ROUTE
     where ROUTE_ID = #{routeId,jdbcType=DECIMAL}
   </select>
   <select id="getByRouteCode" parameterType="java.lang.String" resultMap="BaseResultMap">

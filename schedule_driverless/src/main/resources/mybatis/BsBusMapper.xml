@@ -42,7 +42,7 @@
   <select id="getByBusId" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
-    from BS_BUS
+    from apts.BS_BUS
     where BUS_ID = #{busId,jdbcType=DECIMAL}
   </select>
 
