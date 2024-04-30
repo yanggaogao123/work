@@ -40,15 +40,17 @@ export default {
   data() {
     return {
       myChart: null,
+      mockMode: false,
       chartDatas: [[], [], [], [], [], []],
       labelData: [],
+      url: `${process.env.VUE_APP_BUS_API}/schedule-driverless/dataService/list`
     };
   },
   async mounted() {
     if (!this.$refs.chartRef) return;
     const chartDom = this.$refs.chartRef;
     this.myChart = echarts.init(chartDom);
-    if (this.routeId) {
+    if (this.routeId || this.mockMode) {
       await this.getChartData();
     }
     // this.myChart.setOption(this.getOptions());
@@ -72,6 +74,7 @@ export default {
               backgroundColor: "rgba(6, 26, 60, 0.9)",
             },
           },
+          borderWidth: 0,
           backgroundColor: "rgba(6, 26, 60, 0.9)",
           textStyle: {
             color: "#fff",
@@ -96,7 +99,7 @@ export default {
         grid: {
           left: "3%",
           right: "4%",
-          top: "32px",
+          top: "36px",
           bottom: "3%",
           containLabel: true,
         },
@@ -211,9 +214,9 @@ export default {
             },
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "rgba(77,246,196,0.2)" },
+                { offset: 0, color: "#11BB881A" },
                 // { offset: 0.5, color: "#00967b" },
-                { offset: 1, color: "#4DF6C4" },
+                { offset: 1, color: "#11BB88FF" },
               ]),
               borderRadius: [0, 0, 20, 20],
             },
@@ -235,9 +238,9 @@ export default {
             },
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#11BB881A" },
+                { offset: 0, color: "#3387F6FF" },
                 // { offset: 0.5, color: "#1b88be" },
-                { offset: 1, color: "#11BB88FF" },
+                { offset: 1, color: "#3387F61A" },
               ]),
               borderRadius: [20, 20, 0, 0],
             },
@@ -289,7 +292,7 @@ export default {
             },
             label: {
               show: true,
-              position: "top",
+              position: "bottom",
               color: "#fff",
             },
             showSymbol: true,
@@ -343,8 +346,9 @@ export default {
         return negative ? -target : target;
       };
       try {
-        const response = await axios.post(
-          "http://172.31.200.171:8016/bigdata-api/dataservices/bus/od/v3",
+
+        const mockResponse = await axios.post(
+          this.url,
           {
             appName: "",
             businessID: "001100",
@@ -356,7 +360,7 @@ export default {
           }
         );
 
-        const sortResponse = response.data.retData.list.sort((a, b) => {
+        const sortResponse = mockResponse.retData.list.sort((a, b) => {
           const aHour = a.fragment.split(":")[0] || 0;
           const bHour = b.fragment.split(":")[0] || 0;
           return aHour - bHour;
@@ -384,9 +388,7 @@ export default {
         ];
 
         // this.labelData = mockResponse.retData.list.map((item) => item.fragment);
-        this.labelData = response.data.retData.list.map(
-          (item) => item.fragment
-        );
+        this.labelData = mockResponse.retData.list.map((item) => item.fragment);
         this.myChart.setOption(this.getOptions());
       } catch (error) {
         console.error(error);
