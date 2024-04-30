@@ -235,9 +235,9 @@ export default {
             },
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#3387F6" },
+                { offset: 0, color: "#11BB881A" },
                 // { offset: 0.5, color: "#1b88be" },
-                { offset: 1, color: "rgba(51,135,246,0.2)" },
+                { offset: 1, color: "#11BB88FF" },
               ]),
               borderRadius: [20, 20, 0, 0],
             },
@@ -265,9 +265,9 @@ export default {
             },
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "rgba(51,246,149,0.2)" },
+                { offset: 0, color: "#47F6331A" },
                 // { offset: 0.5, color: "#1b88be" },
-                { offset: 1, color: "#33F695" },
+                { offset: 1, color: "#47F633FF" },
               ]),
               borderRadius: [0, 0, 20, 20],
             },
