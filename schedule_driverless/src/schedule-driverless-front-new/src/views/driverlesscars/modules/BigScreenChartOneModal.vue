@@ -360,7 +360,7 @@ export default {
           }
         );
 
-        const sortResponse = mockResponse.retData.list.sort((a, b) => {
+        const sortResponse = mockResponse.data.data.list.sort((a, b) => {
           const aHour = a.fragment.split(":")[0] || 0;
           const bHour = b.fragment.split(":")[0] || 0;
           return aHour - bHour;
@@ -387,8 +387,7 @@ export default {
           }),
         ];
 
-        // this.labelData = mockResponse.retData.list.map((item) => item.fragment);
-        this.labelData = mockResponse.retData.list.map((item) => item.fragment);
+        this.labelData = sortResponse.map((item) => item.fragment);
         this.myChart.setOption(this.getOptions());
       } catch (error) {
         console.error(error);
