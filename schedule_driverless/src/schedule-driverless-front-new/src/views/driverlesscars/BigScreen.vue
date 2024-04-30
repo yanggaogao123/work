@@ -4,43 +4,18 @@
       <div class="content">
         <!-- 头部 -->
         <header class="header">
-          <img
-            class="flash-left"
-            src="@/assets/driverlesscars/falsh.gif"
-            alt=""
-          />
-          <img
-            class="flash-right"
-            src="@/assets/driverlesscars/falsh.gif"
-            alt=""
-          />
+          <img class="flash-left" src="@/assets/driverlesscars/falsh.gif" alt="" />
+          <img class="flash-right" src="@/assets/driverlesscars/falsh.gif" alt="" />
           <div class="header-con">
             <div class="header-left">
               <div class="search-box">
                 <img src="@/assets/driverlesscars/bs-top-left.png" alt="" />
                 <div class="search-con">
-                  <input
-                    type="text"
-                    class="ipt"
-                    @keyup="searchIpt"
-                    v-model="searchName"
-                  />
-                  <a-icon
-                    type="up"
-                    @click="showSearchList"
-                    v-show="!searchListBool"
-                  />
-                  <a-icon
-                    type="down"
-                    @click="showSearchList"
-                    v-show="searchListBool"
-                  />
+                  <input type="text" class="ipt" @keyup="searchIpt" v-model="searchName" />
+                  <a-icon type="up" @click="showSearchList" v-show="!searchListBool" />
+                  <a-icon type="down" @click="showSearchList" v-show="searchListBool" />
                   <ul class="ipt-list" v-show="searchListBool">
-                    <li
-                      @click="clickList(item)"
-                      :key="i"
-                      v-for="(item, i) in allRouteList"
-                    >
+                    <li @click="clickList(item)" :key="i" v-for="(item, i) in allRouteList">
                       {{ item.routeName }}-{{ item.supportRouteName }}
                     </li>
                   </ul>
@@ -54,11 +29,7 @@
 
               <div class="header-right-con">
                 <ul class="bus-list" id="movingDiv">
-                  <li
-                    v-for="(item, i) in supList"
-                    :key="i"
-                    @click="showMap(item)"
-                  >
+                  <li v-for="(item, i) in supList" :key="i" @click="showMap(item)">
                     {{ item.status == 1 ? "无人车" : "支援车" }}
                     {{ item.busName }}
                     {{ moment(item.planTime).format("HH:mm") }}
@@ -77,48 +48,34 @@
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal
-                  :routeId="sendData.routeId"
-                  :title="`${sendData.routeName || ''}日均各时段班次客运量`"
-                ></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal :routeId="sendData.routeId"
+                  :title="`${sendData.routeName || ''}日均各时段班次客运量`"></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal
-                  :routeId="sendData.routeId"
-                  :title="`${sendData.routeName || ''}日均各时段班次客运量`"
-                ></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal :routeId="sendData.routeId"
+                  :title="`${sendData.routeName || ''}日均各时段班次客运量`"></big-screen-chart-two-modal>
               </div>
             </div>
             <!-- 简图 -->
             <div class="car-box">
               <!-- <big-screen-car-one-modal></big-screen-car-one-modal> -->
-              <big-screen-car-two-modal
-                :sendData="sendData"
-              ></big-screen-car-two-modal>
+              <big-screen-car-two-modal :sendData="sendData"></big-screen-car-two-modal>
             </div>
             <!-- 图表 -->
             <div class="chart-box">
               <div class="chart-left">
                 <!-- BigScreenChartOneModal -->
-                <big-screen-chart-one-modal
-                  :routeId="sendData.supRouteId"
-                  :title="`${sendData.supRouteName || ''}日均各时段班次客运量`"
-                ></big-screen-chart-one-modal>
+                <big-screen-chart-one-modal :routeId="sendData.supRouteId"
+                  :title="`${sendData.supRouteName || ''}日均各时段班次客运量`"></big-screen-chart-one-modal>
               </div>
               <div class="chart-right">
-                <big-screen-chart-two-modal
-                  :routeId="sendData.supRouteId"
-                  :title="`${sendData.supRouteName || ''}日均各时段班次客运量`"
-                ></big-screen-chart-two-modal>
+                <big-screen-chart-two-modal :routeId="sendData.supRouteId"
+                  :title="`${sendData.supRouteName || ''}日均各时段班次客运量`"></big-screen-chart-two-modal>
               </div>
             </div>
           </div>
         </section>
-        <big-screen-map
-          :sendData="sendData"
-          :visibility="showMapModule"
-          @hideMapModule="hideMap"
-        ></big-screen-map>
+        <big-screen-map :sendData="selectData" :visibility="showMapModule" @hideMapModule="hideMap"></big-screen-map>
       </div>
     </div>
   </div>
@@ -228,6 +185,7 @@ export default {
 
       // 是否展示map
       showMapModule: false,
+      selectData: {},
     };
   },
   created() {
@@ -536,7 +494,7 @@ export default {
     },
     showMap(selectData) {
       this.showMapModule = true;
-      this.sendData.busId = selectData.busId ? selectData.selectData : 3010461;
+      this.selectData = selectData;
     },
     hideMap() {
       this.showMapModule = false;

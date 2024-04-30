@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -87,6 +88,41 @@ public class HttpClientUtils
         }
         finally
         {
+            httpPost.releaseConnection();
+        }
+        return jsonResult;
+    }
+
+    public static JSONObject httpPost2(String url, JSONObject jsonParam) {
+        // post请求返回结果
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        JSONObject jsonResult = new JSONObject();
+        HttpPost httpPost = new HttpPost(url);
+        // 设置请求和传输超时时间
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(5000).setConnectTimeout(5000).build();
+        httpPost.setConfig(requestConfig);
+        try {
+            if (null != jsonParam) {
+                // 解决中文乱码问题
+                StringEntity entity = new StringEntity(jsonParam.toString(), "utf-8");
+                entity.setContentEncoding("UTF-8");
+                entity.setContentType("application/json");
+                httpPost.setEntity(entity);
+            }
+            CloseableHttpResponse result = httpClient.execute(httpPost);
+            // 请求发送成功，并得到响应
+            if (Objects.nonNull(result) && result.getStatusLine().getStatusCode() == org.springframework.http.HttpStatus.OK.value()) {
+                // 读取服务器返回过来的json字符串数据
+                String str = EntityUtils.toString(result.getEntity(), "utf-8");
+                // 把json字符串转换成json对象
+                jsonResult = JSONObject.parseObject(str);
+            } else {
+                jsonResult.put("retMsg", org.springframework.http.HttpStatus.valueOf(result.getStatusLine().getStatusCode()).getReasonPhrase());
+            }
+        } catch (IOException e) {
+            log.error("post请求提交失败:" + url, e);
+            jsonResult.put("retMsg", "网络异常，请稍后重试！");
+        } finally {
             httpPost.releaseConnection();
         }
         return jsonResult;

@@ -24,4 +24,6 @@ public interface DyDriverlessPlanTimeMapper {
     int updateByPrimaryKey(DyDriverlessPlanTime record);
 
     List<DyDriverlessPlanTime> getDriverlessPlanList(DyDriverlessPlanTime record);
+
+    List<DyDriverlessPlanTime> getDriverlessPlanPreList(DyDriverlessPlanTime record);
 }

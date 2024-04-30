@@ -33,7 +33,7 @@ public class BigDataServiceImpl implements BigDataService {
         jsonObject1.put("strDate", date);
         jsonObject.put("data", jsonObject1);
         String result = null;
-        System.out.println(JSONObject.toJSONString(jsonObject));
+        //System.out.println(JSONObject.toJSONString(jsonObject));
         try {
             result = HttpUtils.Post(GETDATAURL, JSONObject.toJSONString(jsonObject));
         } catch (Exception e) {
@@ -41,7 +41,7 @@ public class BigDataServiceImpl implements BigDataService {
             log.error("大数据客流请求异常", e);
             e.printStackTrace();
         }
-        log.info("大数据客流请求信息，param:{},大数据客流返回信息，resp:{}", JSONObject.toJSONString(jsonObject), result);
+        //log.info("大数据客流请求信息，param:{},大数据客流返回信息，resp:{}", JSONObject.toJSONString(jsonObject), result);
         if (Objects.isNull(result)) {
             return null;
         }

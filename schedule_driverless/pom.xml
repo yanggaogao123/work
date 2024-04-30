@@ -168,6 +168,16 @@
             <artifactId>smartbus-custom-manage-api</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <!--<dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>2.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.17</version>
+        </dependency>-->
     </dependencies>
 
     <build>

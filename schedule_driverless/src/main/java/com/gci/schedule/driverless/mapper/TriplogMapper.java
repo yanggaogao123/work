@@ -58,12 +58,13 @@ public interface TriplogMapper {
                               @Param("busId") Long busId);
 
     List<TriplogSimpleDto> selectByFromToStationId(@Param("routeId") Long routeId,
-                                                   @Param("runDate") Date runDate,
+                                                   @Param("direction") String direction,
                                                    @Param("startTime") Date startTime,
                                                    @Param("endTime") Date endTime,
-                                                   @Param("serviceType") String serviceType,
                                                    @Param("fromStationId") Long fromStationId,
                                                    @Param("toStationId") Long toStationId);
+
+    List<TriplogSimpleDto> selectByCurrentDay(@Param("routeId") Long routeId, @Param("runDate") Date runDate);
 
     List<TriplogSimpleDto> selectByDirection(@Param("routeId") Long routeId,
                                              @Param("startRunDate") Date startRunDate,

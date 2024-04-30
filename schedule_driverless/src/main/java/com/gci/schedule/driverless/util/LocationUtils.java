@@ -2,16 +2,29 @@ package com.gci.schedule.driverless.util;
 
 import com.gci.schedule.driverless.bean.bs.BsStation;
 import com.gci.schedule.driverless.bean.common.BsData;
+import lombok.extern.slf4j.Slf4j;
 import org.gavaghan.geodesy.Ellipsoid;
 import org.gavaghan.geodesy.GeodeticCalculator;
 import org.gavaghan.geodesy.GeodeticCurve;
 import org.gavaghan.geodesy.GlobalCoordinates;
-
+@Slf4j
 public class LocationUtils {
 
     public static Double getDistance(Long fromStationId, Long toStationId) {
-        BsStation fromStation = BsData.getStation(fromStationId);
-        BsStation toStation = BsData.getStation(toStationId);
+        BsStation fromStation=null;
+        BsStation toStation=null;
+        try{
+            //切换数据源apts
+            DataSourceUtil.setDB("db2");
+            fromStation = BsData.getStation(fromStationId);
+            toStation = BsData.getStation(toStationId);
+        } catch(Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }finally {
+            DataSourceUtil.clearDB();
+            DataSourceUtil.setDB("db1");
+        }
         if (fromStation == null || toStation == null) {
             return null;
         }

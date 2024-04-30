@@ -1,12 +1,17 @@
 package com.gci.schedule.driverless;
 
+import cn.hutool.core.convert.Convert;
 import com.alibaba.fastjson.JSONObject;
+import com.gci.schedule.driverless.bean.scheduleD.StationPassenger;
+import com.gci.schedule.driverless.service.schedule.BigDataService;
 import com.gci.schedule.driverless.service.schedule.RouteSubService;
+import com.gci.schedule.driverless.util.DateUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,12 +23,29 @@ import java.util.stream.Stream;
 public class RouteSubTests {
     @Autowired
     private RouteSubService routeSubService;
+    @Autowired
+    private BigDataService bigDataService;
 
     private final int N = 4;
 
     @Test
     public void testRouteSub(){
         System.out.println(JSONObject.toJSONString(routeSubService.getListByRouteId(194l)));
+    }
+
+    @Test
+    public void testSchedule(){
+        for(int i=1;i<=30;i++){
+            Date runDate = DateUtil.getDateAddDay(new Date(),-i);
+            List<StationPassenger> stationPassengerList = bigDataService.getStationPassengerList(DateUtil.date2Str(runDate,DateUtil.date_sdf),"7091");
+            if(!CollectionUtils.isEmpty(stationPassengerList)){
+                Integer maxPassengerNum = stationPassengerList.stream().sorted(Comparator.comparing(StationPassenger::getCurpeople).reversed())
+                        .collect(Collectors.toList()).get(0).getCurpeople();
+                System.out.println(DateUtil.date2Str(runDate,DateUtil.date_sdf)+" : "+maxPassengerNum);
+            }
+
+        }
+
     }
 
     public String convert(String str) {

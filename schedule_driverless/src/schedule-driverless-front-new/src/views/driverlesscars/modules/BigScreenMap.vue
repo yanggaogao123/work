@@ -14,9 +14,10 @@
               <div class="label">当前线路</div>
               <div class="val">{{ supportPlanData.routeName ? supportPlanData.routeName : '-' }}</div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-top: -6px;margin-bottom: 12px;">
               <div class="l">
-                <div class="val">{{ supportPlanData.routeName ? supportPlanData.routeName : '-' }}</div>
+                <div class="val" style="height: 30px;line-height: 46px">{{ supportPlanData.routeName ?
+    supportPlanData.routeName : '-' }}</div>
               </div>
               <div class="arrow">
                 支援
@@ -24,8 +25,9 @@
                 <div class="arrow-l"></div>
               </div>
               <div class="r">
-                <div class="val" style="cursor: pointer;" @click="showSupportBus">{{ supportPlanData.supportRouteName ?
-    supportPlanData.supportRouteName : '-' }}</div>
+                <div class="val" style="height: 30px;line-height: 46px;cursor: pointer;" @click="showSupportBus">{{
+    supportPlanData.supportRouteName ?
+      supportPlanData.supportRouteName : '-' }}</div>
               </div>
             </div>
             <div class="row">
