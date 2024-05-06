@@ -26,10 +26,10 @@ public class DataServiceComponent {
      * @param params
      * @return
      */
-    public String invoke(String params) {
+    public String invoke(JSONObject params) {
         try {
             log.info("大数据请求信息，请求参数:{}", params);
-            JSONObject jsonObject = HttpClientUtils.httpPost(DATA_SERVICE_URL, params);
+            JSONObject jsonObject = HttpClientUtils.httpPost2(DATA_SERVICE_URL, params);
             log.info("大数据请求信息，请求结果:{}", (Objects.isNull(jsonObject) ? null : jsonObject.toJSONString()));
             if (Objects.isNull(jsonObject)) {
                 return null;
