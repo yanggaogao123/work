@@ -345,6 +345,10 @@ export default {
 
         return negative ? -target : target;
       };
+      this.labelData = [];
+      this.chartDatas = [[], [], [], [], [], []];
+      this.myChart.setOption(this.getOptions());
+
       try {
         const mockResponse = await axios.post(
           this.url,
@@ -354,7 +358,10 @@ export default {
             page: "1",
             pageSize: "1000",
             data: {
-              routeId: this.routeId || "101",
+              routeId:
+                typeof this.routeId === "number"
+                  ? this.routeId.toString()
+                  : this.routeId || "101",
             },
           },
           {
@@ -365,7 +372,11 @@ export default {
         );
 
         const response = JSON.parse(mockResponse.data.data);
-        const listData = response && response.list ? response.list : [];
+        const listData =
+          response && response.retData && response.retData.list
+            ? response.retData.list
+            : [];
+
         const sortResponse = listData.sort((a, b) => {
           const aHour = a.fragment.split(":")[0] || 0;
           const bHour = b.fragment.split(":")[0] || 0;
@@ -397,9 +408,6 @@ export default {
         this.myChart.setOption(this.getOptions());
       } catch (error) {
         console.error(error);
-        this.labelData = [];
-        this.chartDatas = [[], [], [], [], [], []];
-        this.myChart.setOption(this.getOptions());
       }
     },
   },

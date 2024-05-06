@@ -308,6 +308,8 @@ export default {
       return option;
     },
     async getChartDatas() {
+      this.myChart1.setOption(this.getOptions([[], [], []]));
+      this.myChart2.setOption(this.getOptions([[], [], []]));
       try {
         const dayFlowResponse = await axios.post(
           this.url,
@@ -315,9 +317,12 @@ export default {
             appName: "",
             businessID: "001101",
             page: "1",
-            pageSize: "1000",
+            pageSize: "100",
             data: {
-              routeId: this.routeId || "101",
+              routeId:
+                typeof this.routeId === "number"
+                  ? this.routeId.toString()
+                  : this.routeId || "101",
             },
           },
           {
@@ -328,7 +333,10 @@ export default {
         );
 
         const response = JSON.parse(dayFlowResponse.data.data);
-        const listData = response && response.list ? response.list : [];
+        const listData =
+          response && response.retData && response.retData.list
+            ? response.retData.list
+            : [];
 
         const upChartData = listData
           .filter((item) => item.direction === "0")
@@ -390,8 +398,6 @@ export default {
         this.myChart2.setOption(this.getOptions(this.chartData2));
       } catch (error) {
         console.error(error);
-        this.myChart1.setOption(this.getOptions([[], [], []]));
-        this.myChart2.setOption(this.getOptions([[], [], []]));
       }
     },
   },
