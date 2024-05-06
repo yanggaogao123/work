@@ -52,7 +52,7 @@ export default {
       chartData1: [[], [], []],
       chartData2: [[], [], []],
       mockMode: false,
-      url: `${process.env.VUE_APP_BUS_API}/schedule-driverless/dataService/list`,
+      url: `${process.env.VUE_APP_BUS_API}/dataService/list`,
     };
   },
 
@@ -309,20 +309,31 @@ export default {
     },
     async getChartDatas() {
       try {
-        const dayFlowResponse = await axios.post(this.url, {
-          appName: "",
-          businessID: "001101",
-          page: "1",
-          pageSize: "1000",
-          data: {
-            routeId: this.routeId || "101",
+        const dayFlowResponse = await axios.post(
+          this.url,
+          {
+            appName: "",
+            businessID: "001101",
+            page: "1",
+            pageSize: "1000",
+            data: {
+              routeId: this.routeId || "101",
+            },
           },
-        });
+          {
+            headers: {
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+          }
+        );
 
-        const upChartData = dayFlowResponse.data.data.list
+        const response = JSON.parse(dayFlowResponse.data.data);
+        const listData = response && response.list ? response.list : [];
+
+        const upChartData = listData
           .filter((item) => item.direction === "0")
           .sort((a, b) => a.station_order - b.station_order);
-        const downChartData = dayFlowResponse.data.data.list
+        const downChartData = listData
           .filter((item) => item.direction === "1")
           .sort((a, b) => a.station_order - b.station_order);
 
