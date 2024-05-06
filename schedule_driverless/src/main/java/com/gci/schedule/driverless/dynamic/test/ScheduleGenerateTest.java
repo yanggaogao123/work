@@ -38,7 +38,9 @@ public class ScheduleGenerateTest {
 	
 	private boolean morningShiftProcessed=false;//早班车已加
 
-	private static final int CHECK_INTERVAL = 3;
+	private static final int CHECK_INTERVAL = 1;
+
+	private boolean checkFlag = true;
 
 	public ScheduleGenerateTest(ScheduleParam scheduleParam) {
 		super();
@@ -488,12 +490,16 @@ public class ScheduleGenerateTest {
 			}
 			Date lastTime = scheduleParam.getLatestTimeDriverless(direction);
 			if (lastTime != null && !lastTrip.getNextObuTimeMin().after(lastTime)) {
-				Trip trip = getTripByDriverless(lastTrip.getBus(), direction, lastTrip.getNextObuTimeMin(), lastTrip.getFirstRouteStaIdNext(), lastTrip.getBus().getScheduleParamsDrBus(), lastTrip, CHECK_INTERVAL);
+				Trip trip = getTripByDriverless(lastTrip.getBus(), direction, lastTrip.getNextObuTimeMin(), lastTrip.getFirstRouteStaIdNext(), lastTrip.getBus().getScheduleParamsDrBus(), lastTrip, CHECK_INTERVAL, null);
 				if (trip != null) {
-					scheduleParam.subSectionPassengerRealTime(direction, lastTrip.getNextObuTimeMin(), trip.getFirstRouteStaId(),
-							trip.getLastRouteStaId(), scheduleParam.getScheduleParamsDriverless().getVehicleContent());
-					routeSchedule.addTrip(trip);
-					lastTripList.add(trip);
+					lastTime = scheduleParam.getLatestTimeDriverless(trip.getDirection());
+					Trip similarTrip = getSimilarTrip(trip, 1);
+					if (similarTrip == null || !lastTime.equals(trip.getTripBeginTime())) {
+						scheduleParam.subSectionPassengerRealTime(direction, lastTrip.getNextObuTimeMin(), trip.getFirstRouteStaId(),
+								trip.getLastRouteStaId(), scheduleParam.getScheduleParamsDriverless().getVehicleContent());
+						routeSchedule.addTrip(trip);
+						lastTripList.add(trip);
+					}
 				}
 			}
 			lastTripList.remove(0);
@@ -501,6 +507,7 @@ public class ScheduleGenerateTest {
 	}
 
     private void generateFirstRound(int direction, int busNum, Date beginTime, Date endTime, List<Trip> lastTripList, List<Bus> busList) {
+		int changeCount = 0;
 		while (busNum > 0) {
 			ScheduleParamsDrBus drBus = null;
 			if (scheduleParam.getScheduleParamsDrBusList().size() > busList.size()) {
@@ -511,23 +518,29 @@ public class ScheduleGenerateTest {
 			bus.setSupperEaten(true);
 			busList.add(bus);
 			bus.setScheduleParamsDrBus(drBus);
-			Trip trip = getTripByDriverless(bus, direction, beginTime, null, drBus, null, CHECK_INTERVAL);
+			Trip trip = getTripByDriverless(bus, direction, beginTime, null, drBus, null, CHECK_INTERVAL, null);
 			if (trip != null) {
+				if (!beginTime.equals(trip.getTripBeginTime())) {
+					changeCount++;
+				}
 				scheduleParam.subSectionPassengerRealTime(trip.getDirection(), trip.getTripBeginTime(), trip.getFirstRouteStaId(),
 						trip.getLastRouteStaId(), scheduleParam.getScheduleParamsDriverless().getVehicleContent());
 				lastTripList.add(trip);
 				routeSchedule.addTrip(trip);
 			}
 			if (busNum == 1) {
-				return;
+				break;
 			}
 			int min = DateUtil.getMinuteInterval(beginTime, endTime);
 			beginTime = DateUtil.getDateAddMinute(beginTime, min / busNum);
 			busNum--;
 		}
+		if (changeCount > 10) {
+			checkFlag = false;
+		}
 	}
 
-	private Trip getTripByDriverless(Bus bus, Integer direction, Date tripBeginTime, Long firstRouteStaId, ScheduleParamsDrBus drBus, Trip lastTrip, int checkInterval) {
+	private Trip getTripByDriverless(Bus bus, Integer direction, Date tripBeginTime, Long firstRouteStaId, ScheduleParamsDrBus drBus, Trip lastTrip, int checkInterval, Date tripBeginTimeFix) {
 		Trip trip = getTripByPassenger(bus, direction, tripBeginTime, firstRouteStaId, null);
 		if (drBus != null && drBus.getInoutTimeList() != null) {
 			for (ScheduleParamsDrInoutTime inoutTime : drBus.getInoutTimeList()) {
@@ -573,22 +586,30 @@ public class ScheduleGenerateTest {
 				}
 			}
 		}
-		Date lastTime = scheduleParam.getLatestTimeDriverless(trip.getDirection());
-		if (trip.getTripBeginTime().after(lastTime)) {
-			trip = null;
-		} else {
-			Trip similarTrip = getSimilarTrip(trip, checkInterval);
-			if (similarTrip != null) {
-				for (int interval = checkInterval; interval > 0; interval--) {
-					tripBeginTime = DateUtil.getDateAddMinute(similarTrip.getTripBeginTime(), interval);
-					Trip tripNew = getTripByDriverless(bus, direction, tripBeginTime, firstRouteStaId, drBus, lastTrip, interval);
-					if (tripNew != null) {
-						if ((trip.getInoutTime() == null && tripNew.getInoutTime() == null)
-								|| trip.getInoutTime() != null && trip.getInoutTime() == tripNew.getInoutTime()) {
-							if ((trip.getLaterTrip() == null && tripNew.getLaterTrip() == null) ||
-									(trip.getLaterTrip() != null && tripNew.getLaterTrip() != null)) {
-								trip = tripNew;
-								break;
+		if (trip != null) {
+			Date lastTime = scheduleParam.getLatestTimeDriverless(trip.getDirection());
+			if (tripBeginTimeFix != null && trip.getTripBeginTime().after(tripBeginTimeFix)) {
+				trip = null;
+			} else if (trip.getTripBeginTime().after(lastTime)) {
+				trip = null;
+			} else if (checkFlag) {
+				Trip similarTrip = getSimilarTrip(trip, checkInterval);
+				if (similarTrip != null) {
+					if (lastTrip != null && tripBeginTimeFix == null) {
+						int sub = DateUtil.getMinuteInterval(lastTrip.getTripEndTime(), lastTrip.getNextObuTimeMin());
+						tripBeginTimeFix = DateUtil.getDateAddMinute(trip.getTripBeginTime(), sub);
+					}
+					for (int interval = checkInterval; interval > 0; interval--) {
+						tripBeginTime = DateUtil.getDateAddMinute(similarTrip.getTripBeginTime(), interval);
+						Trip tripNew = getTripByDriverless(bus, direction, tripBeginTime, firstRouteStaId, drBus, lastTrip, interval, tripBeginTimeFix);
+						if (tripNew != null) {
+							if ((trip.getInoutTime() == null && tripNew.getInoutTime() == null)
+									|| trip.getInoutTime() != null && trip.getInoutTime() == tripNew.getInoutTime()) {
+								if ((trip.getLaterTrip() == null && tripNew.getLaterTrip() == null) ||
+										(trip.getLaterTrip() != null && tripNew.getLaterTrip() != null)) {
+									trip = tripNew;
+									break;
+								}
 							}
 						}
 					}
@@ -605,7 +626,8 @@ public class ScheduleGenerateTest {
 			Date endTime = DateUtil.getDateAddMinute(trip.getTripBeginTime(), minute);
 			for (Trip tripExists : tripList) {
 				if (tripExists.getTripBeginTime().after(beginTime) && tripExists.getTripBeginTime().before(endTime)) {
-					if ((trip.getFirstRouteStaId() == null && tripExists.getFirstRouteStaId() == null)
+					if ((trip.getFirstRouteStaId() == null && tripExists.getFirstRouteStaId() == null
+							&& trip.getDirection() == tripExists.getDirection())
 							|| (trip.getFirstRouteStaId() != null && tripExists.getFirstRouteStaId() != null
 							&& trip.getFirstRouteStaId().equals(tripExists.getFirstRouteStaId()))) {
 						return tripExists;

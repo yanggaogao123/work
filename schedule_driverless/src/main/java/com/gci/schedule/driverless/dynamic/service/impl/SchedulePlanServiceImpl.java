@@ -75,6 +75,8 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 	private ScheduleParamsDrInoutMapper scheduleParamsDrInoutMapper;
 	@Autowired
 	private ScheduleParamsDrRouteSubMapper scheduleParamsDrRouteSubMapper;
+	@Autowired
+	private ScheduleDriverlessPlanTimePreMapper scheduleDriverlessPlanTimePreMapper;
 
 	long beginTimeMillis=System.currentTimeMillis();
 
@@ -388,50 +390,39 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 			scheduleParam.setScheduleParamsDrBusList(drBusList);
 
 			//todo 文远接口暂无数据，测试
-			ScheduleParamsDrBus bus1 = new ScheduleParamsDrBus();
-			drBusList.add(bus1);
-			bus1.setBusNameWY("bus1");
-			ScheduleParamsDrPlan bus1plan1 = new ScheduleParamsDrPlan();
-			bus1.getPlanList().add(bus1plan1);
-			bus1plan1.setBusNameWY("bus1");
-			bus1plan1.setDispatchDate("2024-04-02");
-			bus1plan1.setRouteIdWY("11");
-			bus1plan1.setBeginTime("10:00");
-			bus1plan1.setEndTime("11:00");
-			bus1plan1.setFirstStationId(102023l);
-			bus1plan1.setLastStationId(102022l);
-			ScheduleParamsDrPlan bus1plan2 = new ScheduleParamsDrPlan();
-			bus1.getPlanList().add(bus1plan2);
-			bus1plan2.setBusNameWY("bus1");
-			bus1plan2.setDispatchDate("2024-04-02");
-			bus1plan2.setRouteIdWY("11");
-			bus1plan2.setBeginTime("14:00");
-			bus1plan2.setEndTime("15:00");
-			bus1plan2.setFirstStationId(102023l);
-			bus1plan2.setLastStationId(102023l);
+			List<ScheduleDriverlessPlanTimePre> planTimePreList = scheduleDriverlessPlanTimePreMapper.getByRouteAndRunDate(scheduleParamPreset.getRouteIdDriverless(), scheduleParamPreset.getRunDate());
 
-			ScheduleParamsDrPlan bus1plan3 = new ScheduleParamsDrPlan();
-			bus1.getPlanList().add(bus1plan3);
-			bus1plan3.setBusNameWY("bus1");
-			bus1plan3.setDispatchDate("2024-04-02");
-			bus1plan3.setRouteIdWY("11");
-			bus1plan3.setBeginTime("17:00");
-			bus1plan3.setEndTime("18:00");
-			bus1plan3.setFirstStationId(102023l);
-			bus1plan3.setLastStationId(102023l);
-
-			ScheduleParamsDrBus bus2 = new ScheduleParamsDrBus();
-			drBusList.add(bus2);
-			bus2.setBusNameWY("bus2");
-			ScheduleParamsDrPlan bus2plan1 = new ScheduleParamsDrPlan();
-			bus2.getPlanList().add(bus2plan1);
-			bus2plan1.setBusNameWY("bus2");
-			bus2plan1.setDispatchDate("2024-04-02");
-			bus2plan1.setRouteIdWY("11");
-			bus2plan1.setBeginTime("17:00");
-			bus2plan1.setEndTime("22:00");
-			bus2plan1.setFirstStationId(201083l);
-			bus2plan1.setLastStationId(201083l);
+			Map<String, ScheduleParamsDrBus> drBusMap = new HashMap<>();
+			for (ScheduleDriverlessPlanTimePre scheduleDriverlessPlanTimePre : planTimePreList) {
+				String busIdString = "";
+				if (scheduleDriverlessPlanTimePre.getBusId() != null) {
+					busIdString += scheduleDriverlessPlanTimePre.getBusId();
+				}
+				ScheduleParamsDrBus drBus = drBusMap.get(busIdString);
+				if (drBus == null) {
+					drBus = new ScheduleParamsDrBus();
+					if (scheduleDriverlessPlanTimePre.getBusId() != null) {
+						drBus.setBusNameWY(busIdString);
+					}
+					drBusList.add(drBus);
+					drBusMap.put(busIdString, drBus);
+				}
+				ScheduleParamsDrPlan drPlan = new ScheduleParamsDrPlan();
+				drBus.getPlanList().add(drPlan);
+				drPlan.setBusNameWY(drBus.getBusNameWY());
+				if (scheduleDriverlessPlanTimePre.getRouteId() != null) {
+					drPlan.setRouteIdWY(scheduleDriverlessPlanTimePre.getRouteId() + "");
+				}
+				drPlan.setDispatchDate(DateFormatUtil.SIMPLE_DATE.getDateString(scheduleDriverlessPlanTimePre.getRunDate()));
+				if (scheduleDriverlessPlanTimePre.getTripBeginTime() != null) {
+					drPlan.setBeginTime(DateFormatUtil.HM2.getDateString(scheduleDriverlessPlanTimePre.getTripBeginTime()));
+				}
+				if (scheduleDriverlessPlanTimePre.getTripEndTime() != null) {
+					drPlan.setEndTime(DateFormatUtil.HM2.getDateString(scheduleDriverlessPlanTimePre.getTripEndTime()));
+				}
+				drPlan.setFirstStationId(scheduleDriverlessPlanTimePre.getFirstStationId());
+				drPlan.setLastStationId(scheduleDriverlessPlanTimePre.getLastStationId());
+			}
 
 			if (drBusList != null && !drBusList.isEmpty()) {
 				if (inoutList == null || inoutList.isEmpty()) {
