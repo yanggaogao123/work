@@ -43,7 +43,7 @@ export default {
       mockMode: false,
       chartDatas: [[], [], [], [], [], []],
       labelData: [],
-      url: `${process.env.VUE_APP_BUS_API}/schedule-driverless/dataService/list`
+      url: `${process.env.VUE_APP_BUS_API}/dataService/list`,
     };
   },
   async mounted() {
@@ -346,7 +346,6 @@ export default {
         return negative ? -target : target;
       };
       try {
-
         const mockResponse = await axios.post(
           this.url,
           {
@@ -357,10 +356,17 @@ export default {
             data: {
               routeId: this.routeId || "101",
             },
+          },
+          {
+            headers: {
+              "Content-Type": "application/json;charset=UTF-8",
+            },
           }
         );
 
-        const sortResponse = mockResponse.data.data.list.sort((a, b) => {
+        const response = JSON.parse(mockResponse.data.data);
+        const listData = response && response.list ? response.list : [];
+        const sortResponse = listData.sort((a, b) => {
           const aHour = a.fragment.split(":")[0] || 0;
           const bHour = b.fragment.split(":")[0] || 0;
           return aHour - bHour;
