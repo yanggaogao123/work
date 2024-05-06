@@ -1,11 +1,11 @@
 package com.gci.schedule.driverless.component;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gci.schedule.driverless.util.HttpClientUtils;
 import com.gci.schedule.driverless.util.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
@@ -29,12 +29,12 @@ public class DataServiceComponent {
     public String invoke(JSONObject params) {
         try {
             log.info("大数据请求信息，请求参数:{}", params);
-            JSONObject jsonObject = HttpClientUtils.httpPost2(DATA_SERVICE_URL, params);
-            log.info("大数据请求信息，请求结果:{}", (Objects.isNull(jsonObject) ? null : jsonObject.toJSONString()));
+            String jsonObject = HttpUtils.Post(DATA_SERVICE_URL, params.toJSONString());
+            log.info("大数据请求信息，请求结果:{}", (StringUtils.isEmpty(jsonObject) ? null : jsonObject));
             if (Objects.isNull(jsonObject)) {
                 return null;
             }
-            return jsonObject.toJSONString();
+            return jsonObject;
         } catch (Exception e) {
             log.error("大数据请求异常", e);
         }

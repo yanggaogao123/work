@@ -99,7 +99,7 @@ public class HttpClientUtils
         JSONObject jsonResult = new JSONObject();
         HttpPost httpPost = new HttpPost(url);
         // 设置请求和传输超时时间
-        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build();
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(30000).build();
         httpPost.setConfig(requestConfig);
         try {
             if (null != jsonParam) {
