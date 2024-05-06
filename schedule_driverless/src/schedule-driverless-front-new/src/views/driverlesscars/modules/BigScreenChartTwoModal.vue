@@ -319,18 +319,12 @@ export default {
           },
         });
 
-        const upChartData = dayFlowResponse.retData.list
+        const upChartData = dayFlowResponse.data.data.list
           .filter((item) => item.direction === "0")
           .sort((a, b) => a.station_order - b.station_order);
-        const downChartData = dayFlowResponse.retData.list
+        const downChartData = dayFlowResponse.data.data.list
           .filter((item) => item.direction === "1")
           .sort((a, b) => a.station_order - b.station_order);
-        // const upChartData = dayFlowResponse.retData.list
-        //   .filter((item) => item.direction === "0")
-        //   .sort((a, b) => a.station_order - b.station_order);
-        // const downChartData = dayFlowResponse.retData.list
-        //   .filter((item) => item.direction === "1")
-        //   .sort((a, b) => a.station_order - b.station_order);
 
         const getNumberValue = (value, negative = false) => {
           let target = 0;
