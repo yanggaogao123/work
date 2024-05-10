@@ -283,7 +283,7 @@ export default {
           },
           {
             type: "line",
-            stack: "BC",
+            // stack: "BC",
             name: seriesName[4],
             smooth: false,
             lineStyle: {
@@ -306,7 +306,7 @@ export default {
           },
           {
             type: "line",
-            stack: "BC",
+            // stack: "BC",
             name: seriesName[5],
             smooth: false,
             lineStyle: {
