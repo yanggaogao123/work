@@ -77,6 +77,7 @@ public class ScheduleGenerateTest {
 	public RouteSchedule generate(){
 		System.out.println("排班开始："+scheduleParam.getRouteId()+"\t"+DateFormatUtil.DATE.getDateString(scheduleParam.getRunDate()));
 		routeSchedule=new RouteSchedule(scheduleParam);
+		routeSchedule.checkBusQueue(null);
 		printWasteTime(Direction.UP.getValue());
 		printWasteTime(Direction.DOWN.getValue());
 		if(!scheduleParam.isLoopLine()) {

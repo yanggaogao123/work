@@ -68,6 +68,8 @@ public class ScheduleParamPreset {
 
 	private Integer busNumberDriverless;
 
+	private ScheduleParamPreset scheduleParamPresetRelation;
+
 	public Integer getCover() {
 		return cover;
 	}
@@ -283,6 +285,14 @@ public class ScheduleParamPreset {
 
 	public void setBusNumberDriverless(Integer busNumberDirverless) {
 		this.busNumberDriverless = busNumberDirverless;
+	}
+
+	public ScheduleParamPreset getScheduleParamPresetRelation() {
+		return scheduleParamPresetRelation;
+	}
+
+	public void setScheduleParamPresetRelation(ScheduleParamPreset scheduleParamPresetRelation) {
+		this.scheduleParamPresetRelation = scheduleParamPresetRelation;
 	}
 
 	@Override

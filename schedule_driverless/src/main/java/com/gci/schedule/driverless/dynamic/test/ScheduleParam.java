@@ -121,6 +121,10 @@ public class ScheduleParam {
 
 	private Map<Long, RouteSta> routeStaMap;
 
+	private List<ScheduleFixChangeTripTime> changeTripTimeList = new ArrayList<>();
+
+	private ScheduleFixChangeTripTime changeTripTimeNew = null;
+
 	static {
 		//二巴一分
 		/*routeIdTestList.add(12630L);//652路
@@ -2282,7 +2286,7 @@ public class ScheduleParam {
 			highSectionPassenger.setCurrentNumber(currentNumber);
 		} else {
 			if (highSectionPassenger.getCurrentNumberRealTime() > 0 && highSectionPassenger.getOrderNumber() != null) {
-				double currentNumberShort = highSectionPassenger.getCurrentNumberRealTime() * 1;
+				double currentNumberShort = highSectionPassenger.getCurrentNumberRealTime() * 0.3;
 				int shortTimes = 0;
 				RouteSta routeSta = null;
 				for (int i = routeStationPassengerList.size() - 1; i >= 0; i--) {
@@ -3115,5 +3119,20 @@ public class ScheduleParam {
 
 	public void setRouteStaMap(Map<Long, RouteSta> routeStaMap) {
 		this.routeStaMap = routeStaMap;
+	}
+
+	public List<ScheduleFixChangeTripTime> getChangeTripTimeList() {
+		return changeTripTimeList;
+	}
+
+	public void addChangeTripTimeList(ScheduleFixChangeTripTime changeTripTime) {
+		this.changeTripTimeList.add(changeTripTime);
+	}
+
+	public void removeChangeTripTimeList() {
+		if (this.changeTripTimeNew != null) {
+			this.changeTripTimeList.remove(changeTripTimeNew);
+			this.changeTripTimeNew = null;
+		}
 	}
 }

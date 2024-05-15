@@ -31,15 +31,17 @@ public class ScheduleGenerateB4Peek4Full {
 		int busNumberDown=0;
 		int busNumberSingleDown=0;
 		for(Bus bus:tripMap.keySet()) {
-			if(bus.getStartDirection()==Direction.UP.getValue()) {
-				busNumberUp++;
-				if(bus.isSingleClass()) {
-					busNumberSingleUp++;
-				}
-			}else {
-				busNumberDown++;
-				if(bus.isSingleClass()) {
-					busNumberSingleDown++;
+			if (bus.getStartOrderNumber() <= 1000) {
+				if (bus.getStartDirection() == Direction.UP.getValue()) {
+					busNumberUp++;
+					if (bus.isSingleClass()) {
+						busNumberSingleUp++;
+					}
+				} else {
+					busNumberDown++;
+					if (bus.isSingleClass()) {
+						busNumberSingleDown++;
+					}
 				}
 			}
 		}
@@ -552,9 +554,18 @@ public class ScheduleGenerateB4Peek4Full {
 		int directionReverse=1-direction;
 		Date firstTimeReverse=scheduleParam.getFirstTime(directionReverse);
 		List<Date> obuTimeList=getObuTimeList4FirstRound(direction);
+		List<Trip> tripRunList = routeSchedule.getBusQueue(1 - direction);
+		for (Trip trip : tripRunList) {
+			Date lastObuTime = obuTimeList.get(obuTimeList.size() - 1);
+			Bus bus = trip.getBus();
+			if (bus.getStartOrderNumber() > 1000 && !trip.getNextObuTimeMin().after(lastObuTime)) {
+				busNumber++;
+			}
+		}
+
 		List<Trip> firstPlanTimeList=null;
 		if(obuTimeList.size()==busNumber) {
-			firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList);
+			firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList, tripRunList);
 		}else if(obuTimeList.size()<busNumber) {//还有车多
 			Date firstTime=scheduleParam.getFirstTime(direction);
 			Date obuTimeNext=getObuTimeNext(directionReverse, firstTimeReverse);//获取对面头车到达后最计划发班时间
@@ -574,16 +585,16 @@ public class ScheduleGenerateB4Peek4Full {
 					obuTimeList.add(obuTime);
 					obuTime=DateUtil.getDateAddMinute(obuTime, 5);
 				}
-				firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList);
+				firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList, tripRunList);
 			}else {
 				Date firstPlanObuTimeLatest=scheduleParam.getFirstPlanObuTimeLatest(direction);
 				if(firstPlanObuTimeLatest==null) {//不能反插，只能增加班次
-					firstPlanTimeList=getFirstPlanTimeList(direction, busNumber, obuTimeNext);
+					firstPlanTimeList=getFirstPlanTimeList(direction, busNumber, obuTimeNext, tripRunList);
 				}else {
 					if(!firstPlanObuTimeLatest.after(obuTimeNext)) {//需要在对面头车到之前发完
-						firstPlanTimeList=getFirstPlanTimeList(direction, busNumber, obuTimeNext);
+						firstPlanTimeList=getFirstPlanTimeList(direction, busNumber, obuTimeNext, tripRunList);
 					}else {
-						firstPlanTimeList=getFirstPlanTimeList4Late(direction, firstPlanObuTimeLatest);
+						firstPlanTimeList=getFirstPlanTimeList4Late(direction, firstPlanObuTimeLatest, tripRunList);
 					}
 				}
 			}
@@ -591,7 +602,7 @@ public class ScheduleGenerateB4Peek4Full {
 			Date obuTimeNext=scheduleParam.getMinObuTimeNext(directionReverse, firstTimeReverse);
 			obuTimeList=getObuTimeList(direction, obuTimeNext);
 			if(obuTimeList.size()==busNumber) {//按最小停站计算，车刚好匹配上
-				firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList);
+				firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList, tripRunList);
 			}else {//只能减少班次
 				Date firstTime=scheduleParam.getFirstTime(direction);
 				obuTimeList=new ArrayList<Date>();
@@ -610,23 +621,34 @@ public class ScheduleGenerateB4Peek4Full {
 						busNumber--;
 					}
 				}
-				firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList);
+				firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList, tripRunList);
 			}
 		}
 		return firstPlanTimeList;
 	}
 	
-	private List<Trip> getFirstPlanTimeList(int direction,int busNumber,Date obuTimeNext){
+	private List<Trip> getFirstPlanTimeList(int direction,int busNumber,Date obuTimeNext, List<Trip> tripRunList){
 		List<Date> obuTimeList=getFirstPlanTimeListIncrease(direction, busNumber, obuTimeNext);
-		List<Trip> firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList);
+		List<Trip> firstPlanTimeList=getFirstPlanTimeList(direction, obuTimeList, tripRunList);
 		return firstPlanTimeList;
 	}
 	
-	private List<Trip> getFirstPlanTimeList(int direction,List<Date> obuTimeList){
+	private List<Trip> getFirstPlanTimeList(int direction,List<Date> obuTimeList, List<Trip> tripRunList){
 		int busOrderNumber=1;
 		List<Trip> firstPlanTimeList=new ArrayList<Trip>();
 		for(Date obuTime:obuTimeList) {
-			Bus bus=new Bus(direction, busOrderNumber);
+			Bus bus = null;
+			if (tripRunList != null && tripRunList.size() > 0) {
+				Trip trip = tripRunList.get(0);
+				if (!trip.getNextObuTimeMin().after(obuTime)
+						&& trip.getBus() != null && trip.getBus().getStartOrderNumber() > 1000) {
+					bus = trip.getBus();
+					tripRunList.remove(0);
+				}
+			}
+			if (bus == null) {
+				bus = new Bus(direction, busOrderNumber);
+			}
 			Trip trip=new Trip(bus, direction, obuTime, scheduleParam, null);
 			firstPlanTimeList.add(trip);
 			busOrderNumber++;
@@ -638,7 +660,7 @@ public class ScheduleGenerateB4Peek4Full {
 	 * 计算出车时间(有单班晚出)
 	 * @return
 	 */
-	private List<Trip> getFirstPlanTimeList4Late(int direction,Date firstPlanObuTimeLatest) {
+	private List<Trip> getFirstPlanTimeList4Late(int direction,Date firstPlanObuTimeLatest, List<Trip> tripRunList) {
 		int busNumber=busNumberMap.get(direction);
 		int busNumberSingle=busNumberSingleMap.get(direction);//预设的单班车数
 		int busNumberDouble=busNumber-busNumberSingle;
@@ -708,7 +730,18 @@ public class ScheduleGenerateB4Peek4Full {
 			Date obuTime=obuTimeList.get(i);
 			obuTime=planTimeAdjust(obuTime);
 			if(i<busNumberFirst||(busNumberLate>0&&(i-busNumberFirst)%2==1)) {//出车方向
-				Bus bus=new Bus(direction, busOrderNumber);
+				Bus bus = null;
+				if (tripRunList != null && tripRunList.size() > 0) {
+					Trip trip = tripRunList.get(0);
+					if (!trip.getNextObuTimeMin().after(obuTime)
+							&& trip.getBus() != null && trip.getBus().getStartOrderNumber() > 1000) {
+							bus = trip.getBus();
+						tripRunList.remove(0);
+					}
+				}
+				if (bus == null) {
+					bus = new Bus(direction, busOrderNumber);
+				}
 				Trip trip=new Trip(bus, direction, obuTime, scheduleParam, null);
 				firstPlanTimeList.add(trip);
 				busOrderNumber++;
@@ -718,7 +751,18 @@ public class ScheduleGenerateB4Peek4Full {
 			}else {//对向车过来跑
 				if(busOrderNumberReverse>busNumberReverse)
 					break;
-				Bus bus=new Bus(directionReverse, busOrderNumberReverse);
+				Bus bus = null;
+				if (tripRunList != null && tripRunList.size() > 0) {
+					Trip trip = tripRunList.get(0);
+					if (!trip.getNextObuTimeMin().after(obuTime)
+							&& trip.getBus() != null && trip.getBus().getStartOrderNumber() > 1000) {
+							bus = trip.getBus();
+						tripRunList.remove(0);
+					}
+				}
+				if (bus == null) {
+					bus = new Bus(directionReverse, busOrderNumberReverse);
+				}
 				Trip trip=new Trip(bus, direction, obuTime, scheduleParam, null);
 				firstPlanTimeList.add(trip);
 				busOrderNumberReverse++;

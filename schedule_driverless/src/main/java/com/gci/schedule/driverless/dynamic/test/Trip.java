@@ -72,6 +72,8 @@ public class Trip implements Cloneable{
 
 	private ScheduleParamsDrInoutTime inoutTime;
 
+	private boolean isVirtual = false;
+
 	public Trip() {}
 	
 	public Trip(Bus bus, Date tripBeginTime, ScheduleParam scheduleParam, RouteStaTurn routeStaTurn) {
@@ -482,6 +484,14 @@ public class Trip implements Cloneable{
 
 	public void setInoutTime(ScheduleParamsDrInoutTime inoutTime) {
 		this.inoutTime = inoutTime;
+	}
+
+	public boolean isVirtual() {
+		return isVirtual;
+	}
+
+	public void setVirtual(boolean virtual) {
+		isVirtual = virtual;
 	}
 }
 

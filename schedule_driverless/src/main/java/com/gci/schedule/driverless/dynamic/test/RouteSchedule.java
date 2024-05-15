@@ -1,6 +1,6 @@
 package com.gci.schedule.driverless.dynamic.test;
 
-import com.gci.schedule.driverless.dynamic.bean.ScheduleParamShift;
+import com.gci.schedule.driverless.dynamic.bean.*;
 import com.gci.schedule.driverless.dynamic.enums.Direction;
 import com.gci.schedule.driverless.dynamic.enums.ShiftType;
 import com.gci.schedule.driverless.dynamic.exception.MyException;
@@ -78,6 +78,45 @@ public class RouteSchedule implements Cloneable{
 		busOrderUp=0;
 		busOrderDown=0;
 		tripMap.clear();
+		for (ScheduleFixChangeTripTime changeTripTime : scheduleParam.getChangeTripTimeList()) {
+			changeTripTime.setAdd(false);
+		}
+	}
+
+	public void checkBusQueue(Trip tripAdd) {
+		int startOrderNumber = 1000;
+		for (ScheduleFixChangeTripTime scheduleFixChangeTripTime : scheduleParam.getChangeTripTimeList()) {
+			if (scheduleFixChangeTripTime.isAdd()) {
+				continue;
+			}
+			if ((tripAdd != null &&scheduleFixChangeTripTime.getDirection() == tripAdd.getDirection()
+					&& tripAdd.getNextObuTimeMin().after(scheduleFixChangeTripTime.getBeginTime())) ||
+					(tripAdd == null && scheduleFixChangeTripTime.getBeginTime().before(DateUtil.getDateHM("1000")))) {
+				scheduleFixChangeTripTime.setAdd(true);
+				Trip trip = new Trip();
+				Date beginTime = DateUtil.getDateAddMinute(scheduleFixChangeTripTime.getBeginTime(), -1);
+				trip.setTripBeginTime(beginTime);
+				trip.setDirection(1 - scheduleFixChangeTripTime.getDirection());
+				trip.setTripEndTime(scheduleFixChangeTripTime.getBeginTime());
+				trip.setNextObuTimeMin(scheduleFixChangeTripTime.getBeginTime());
+				Bus bus = new Bus(scheduleFixChangeTripTime.getDirectionOut(), ++startOrderNumber);
+				trip.setBus(bus);
+				trip.setVirtual(true);
+
+				if(scheduleParam.isLoopLine()&&!scheduleParam.isLoopLineDouble()&&
+						!scheduleParam.isTwoLoopLine()) {
+					if(!trip.isShortLine())//非长线不加入队列
+						busQueueDown.add(trip);
+				}else {
+					if(trip.getDirection()==Direction.UP.getValue()&&
+							!trip.isShortLine()) {//非长线不加入队列
+						busQueueUp.add(trip);
+					}else if(trip.getDirection()==Direction.DOWN.getValue()&&
+							!trip.isShortLine())//非长线不加入队列
+						busQueueDown.add(trip);
+				}
+			}
+		}
 	}
 	
 	public RouteSchedule(ScheduleParam scheduleParam, int busOrderUp, int busOrderDown) {
@@ -192,6 +231,7 @@ public class RouteSchedule implements Cloneable{
 				busQueueDown.add(trip);
 		}
 		checkTripQuit(trip);
+		checkBusQueue(trip);
 		return true;
 	}
 	
@@ -636,6 +676,16 @@ public class RouteSchedule implements Cloneable{
 			busQueue = getBusQueueUp();
 		}else {
 			busQueue = getBusQueueDown();
+		}
+		Iterator<Trip> it = busQueue.iterator();
+		while (it.hasNext()) {
+			Trip trip = it.next();
+			if (!trip.isVirtual() && trip.getBus() != null && trip.getBus().getStartOrderNumber() > 1000) {
+				if (trip.getDirection() == trip.getBus().getStartDirection()) {
+					trip.setQuitMark(true);
+					it.remove();
+				}
+			}
 		}
 		for(int i=0;i<busQueue.size()-1;i++) {
 			Trip trip=busQueue.get(i);
@@ -1214,6 +1264,88 @@ public class RouteSchedule implements Cloneable{
 		tripList=getTripList(Direction.DOWN.getValue());
 		tripListSort(tripList);
 	}
-	
+
+	public List<ScheduleFixCheckTripTime> checkTripFixMinClasses() {
+		Map<Integer, List<Trip>> tripListMap = new HashMap<>();
+		tripListMap.put(Direction.UP.getValue(), new ArrayList<>());
+		tripListMap.put(Direction.DOWN.getValue(), new ArrayList<>());
+		tripMap.forEach((bus, tripList) -> {
+			for (Trip trip : tripList) {
+				if (tripListMap.containsKey(trip.getDirection()) && !trip.isShortLine()) {
+					tripListMap.get(trip.getDirection()).add(trip);
+				}
+			}
+		});
+
+		tripListMap.get(Direction.UP.getValue()).sort(new TripBeginTimeComparator());
+		tripListMap.get(Direction.DOWN.getValue()).sort(new TripBeginTimeComparator());
+		List<ScheduleFixCheckTripTime> unFixList = new ArrayList<>();
+		tripListMap.forEach((tripDirection, tripList) -> {
+			ScheduleFixCheckTripTime preCheck = null;
+			ScheduleParamsClasses pre = null;
+			Date tripTimePre = null;
+			for (Trip trip : tripList) {
+				if (pre != null && tripTimePre != null) {
+					int interval = DateUtil.getMinuteInterval(tripTimePre, trip.getTripBeginTime());
+					if (interval > pre.getMaxDispatchInterval()) {
+						if (preCheck != null && preCheck.getEndTime().equals(tripTimePre)) {
+							preCheck.setEndTime(trip.getTripBeginTime());
+						} else {
+							ScheduleFixCheckTripTime check = new ScheduleFixCheckTripTime(tripDirection, tripTimePre, trip.getTripBeginTime(), pre.getRouteId(), 1);
+							unFixList.add(check);
+//							preCheck = check;
+						}
+					}
+				}
+				tripTimePre = trip.getTripBeginTime();
+				pre = scheduleParam.getScheduleParamsClasses(trip.getTripBeginTime(), trip.getDirection());
+			}
+		});
+		return unFixList;
+	}
+
+	public List<ScheduleFixCheckTripTime> checkTripFixPassenger() {
+		Map<Integer, List<Trip>> tripListMap = new HashMap<>();
+		tripListMap.put(Direction.UP.getValue(), new ArrayList<>());
+		tripListMap.put(Direction.DOWN.getValue(), new ArrayList<>());
+		tripMap.forEach((bus, tripList) -> {
+			for (Trip trip : tripList) {
+				if (tripListMap.containsKey(trip.getDirection()) && !trip.isShortLine()) {
+					tripListMap.get(trip.getDirection()).add(trip);
+				}
+			}
+		});
+
+		tripListMap.get(Direction.UP.getValue()).sort(new TripBeginTimeComparator());
+		tripListMap.get(Direction.DOWN.getValue()).sort(new TripBeginTimeComparator());
+		List<ScheduleFixCheckTripTime> unFixList = new ArrayList<>();
+		tripListMap.forEach((tripDirection, tripList) -> {
+			List<Trip> checkList = new ArrayList<>();
+			for (int i = 0; i < tripList.size(); i++) {
+				Trip trip = tripList.get(i);
+				checkList.add(trip);
+				RouteStationPassenger passenger = scheduleParam.getHighSectionPassenger(trip.getDirection(), trip.getTripBeginTime());
+				RouteStationPassenger passengerNext = null;
+				Trip tripNext = null;
+				if (i + 1 < tripList.size()) {
+					tripNext = tripList.get(i + 1);
+					passengerNext = scheduleParam.getHighSectionPassenger(tripNext.getDirection(), tripNext.getTripBeginTime());
+				}
+				if (passenger != null && passenger.getCurrentNumber() > 0 && (passengerNext == null || passenger != passengerNext)) {
+					double passengerAvg = passenger.getCurrentNumber() * 1.0 / checkList.size();
+					int vehicleContent = scheduleParam.getVehicleContent();
+					if (vehicleContent > 0) {
+						double ratio = passengerAvg / vehicleContent * 100;
+						ScheduleParamsAnchor anchor =scheduleParam.getScheduleParamsAnchor(trip.getDirection(), trip.getTripBeginTime());
+						if (anchor != null && ratio > anchor.getBusOccupancy()) {
+							unFixList.add(new ScheduleFixCheckTripTime(tripDirection, checkList.get(0).getTripBeginTime(), tripNext.getTripBeginTime(), anchor.getRouteId(), 2));
+						}
+					}
+					checkList.clear();
+				}
+			}
+		});
+		return unFixList;
+	}
 }
 

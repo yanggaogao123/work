@@ -113,6 +113,109 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
     @Override
     public SchedulePlanResult generate(ScheduleParamPreset scheduleParamPreset) {
 		long beginTimeMillis=System.currentTimeMillis();
+		ScheduleParam scheduleParam=new ScheduleParam();
+		SchedulePlan4Mj schedulePlan4Mj=new SchedulePlan4Mj();
+		getScheduleParam(scheduleParamPreset, scheduleParam, schedulePlan4Mj);
+
+		RouteSchedule routeSchedule = null;
+		SchedulePlanResult schedulePlanResult = new SchedulePlanResult();
+		if (scheduleParamPreset.getScheduleParamPresetRelation() != null) {
+			scheduleParamPreset.getScheduleParamPresetRelation().setRunDate(scheduleParamPreset.getRunDate());
+			scheduleParamPreset.getScheduleParamPresetRelation().setStartWorkRunDate(scheduleParamPreset.getStartWorkRunDate());
+			scheduleParamPreset.getScheduleParamPresetRelation().setReferenceRunDate(scheduleParamPreset.getReferenceRunDate());
+			scheduleParamPreset.getScheduleParamPresetRelation().setPassengeReferenceRunDate(scheduleParamPreset.getPassengeReferenceRunDate());
+			scheduleParamPreset.getScheduleParamPresetRelation().setRunningTimeReferenceRunDate(scheduleParamPreset.getRunningTimeReferenceRunDate());
+
+			ScheduleParam scheduleParamRelation=new ScheduleParam();
+			SchedulePlan4Mj schedulePlan4MjRelation=new SchedulePlan4Mj();
+			getScheduleParam(scheduleParamPreset.getScheduleParamPresetRelation(), scheduleParamRelation, schedulePlan4MjRelation);
+
+			System.out.println("生成开始：" + (System.currentTimeMillis() - beginTimeMillis));
+
+			boolean flag = false;
+			List<ScheduleFixCheckTripTime> skipList = new ArrayList<>();
+			Map<Integer, Integer> relationMap = new HashMap<>();
+			relationMap.put(0, 1);
+			do {
+				flag = false;
+//				ScheduleGenerateTest scheduleGenerateMain = new ScheduleGenerateTest(scheduleParam);
+//				ScheduleGenerateTest scheduleGenerateRelation = new ScheduleGenerateTest(scheduleParamRelation);
+				ScheduleFixChangeTripTime changeTripTime = new ScheduleFixChangeTripTime(DateUtil.getDateHM("1200"), 1, 0, 1, false);
+				scheduleParam.addChangeTripTimeList(changeTripTime);
+				routeSchedule = new ScheduleGenerateTest(scheduleParam).generate();//todo
+				RouteSchedule routeScheduleRelation = new ScheduleGenerateTest(scheduleParamRelation).generate();//todo
+
+				List<ScheduleFixCheckTripTime> fixCheckTripTimeListMain = routeSchedule.checkTripFixMinClasses();
+				List<ScheduleFixCheckTripTime> fixCheckTripTimeListRelation = routeScheduleRelation.checkTripFixMinClasses();
+
+//				int index = 0;
+//				for (int i = 0; i < fixCheckTripTimeListMain.size(); i++) {
+//					ScheduleFixCheckTripTime scheduleFixCheckTripTime = fixCheckTripTimeListMain.get(i);
+//					if (skipList.contains(scheduleFixCheckTripTime)) {
+//						continue;
+//					}
+//					Date beginTime = scheduleFixCheckTripTime.getBeginTime();
+//					Integer relationDirection = relationMap.get(scheduleFixCheckTripTime.getDirection());
+//					if (relationDirection == null) {
+//						Trip tripAdd = null;
+//						for (Trip trip : routeSchedule.getTripList(1 - scheduleFixCheckTripTime.getDirection())) {
+//							if (trip.getNextObuTimeMin().before(scheduleFixCheckTripTime.getBeginTime())) {
+//								if (tripAdd == null || tripAdd.getTripBeginTime().before(trip.getTripBeginTime())) {
+//									tripAdd = trip;
+//								}
+//							}
+//						}
+//						beginTime = tripAdd.getTripBeginTime();
+//						relationDirection = relationMap.get(tripAdd.getDirection());
+//					}
+//					int directionOut = 1 - relationDirection;
+//					if (relationMap.get(directionOut) != null) {
+//						directionOut = relationDirection;
+//					}
+//					//add bus
+//					ScheduleFixChangeTripTime changeTripTime = new ScheduleFixChangeTripTime(beginTime, relationDirection, directionOut, 1, false);
+//					scheduleParam.addChangeTripTimeList(changeTripTime);
+//					routeSchedule = new ScheduleGenerateTest(scheduleParam).generate();
+//					List<ScheduleFixCheckTripTime> fixCheckTripTimeListMainNew = routeSchedule.checkTripFixMinClasses();
+//
+//					if (fixCheckTripTimeListMainNew.size() < fixCheckTripTimeListMain.size()) {
+//						fixCheckTripTimeListMain = fixCheckTripTimeListMainNew;
+//						i = -1;
+//					} else {
+//						skipList.add(scheduleFixCheckTripTime);
+//					}
+//				}
+
+
+//				List<ScheduleFixCheckTripTime> c = routeSchedule.checkTripFixPassenger();
+//				List<ScheduleFixCheckTripTime> d = routeScheduleRelation.checkTripFixPassenger();
+
+				schedulePlanResult.setScheduleParam(scheduleParam);
+				schedulePlanResult.setScheduleParamPreset(scheduleParamPreset);
+				schedulePlanResult.setSchedulePlan4Mj(schedulePlan4Mj);
+				schedulePlanResult.setRouteSchedule(routeSchedule);
+				System.out.println("生成结束：" + (System.currentTimeMillis() - beginTimeMillis));
+
+				System.out.println(1);
+			} while (flag);
+			System.out.println("生成结束：" + (System.currentTimeMillis() - beginTimeMillis));
+		} else {
+			System.out.println("生成开始：" + (System.currentTimeMillis() - beginTimeMillis));
+			routeSchedule = new ScheduleGenerateTest(scheduleParam).generate();//todo
+			if (routeSchedule.getTripMap().size() > 99) {
+				throw new MyException("-10", "生成计划配车超过99台，请确认排班参数设置是否正确");
+			}
+
+			schedulePlanResult.setScheduleParam(scheduleParam);
+			schedulePlanResult.setScheduleParamPreset(scheduleParamPreset);
+			schedulePlanResult.setSchedulePlan4Mj(schedulePlan4Mj);
+			schedulePlanResult.setRouteSchedule(routeSchedule);
+			System.out.println("生成结束：" + (System.currentTimeMillis() - beginTimeMillis));
+		}
+		return schedulePlanResult;
+    }
+
+	private void getScheduleParam(ScheduleParamPreset scheduleParamPreset, ScheduleParam scheduleParam, SchedulePlan4Mj schedulePlan4Mj) {
 		Long routeId=scheduleParamPreset.getRouteId();
 		Date runDate=scheduleParamPreset.getRunDate();
 		Route route= routeDynamicService.getRouteByRouteId(routeId);
@@ -121,14 +224,14 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 		}
 		scheduleParamPreset.setRoute(route);
 		//根据线路Id和星期几获取模板Id zyj
-        //周日：1，周一:2...
-        Calendar calendar=DateUtil.getCalendar(runDate);
-        Integer templateId = scheduleParamPreset.getTemplateId();
-        if(templateId==null)
+		//周日：1，周一:2...
+		Calendar calendar=DateUtil.getCalendar(runDate);
+		Integer templateId = scheduleParamPreset.getTemplateId();
+		if(templateId==null)
 			templateId= scheduleTemplateDetailDynamicMapper.getTemplateIdByRouteIdAndDay(routeId.intValue(),calendar.get(Calendar.DAY_OF_WEEK));
-        if(templateId==null)
+		if(templateId==null)
 			throw new MyException("-1", "没有对应排班参数模板");
-        scheduleParamPreset.setTemplateId(templateId);
+		scheduleParamPreset.setTemplateId(templateId);
 		if(scheduleParamPreset.getBusNumberPreset()!=null||scheduleParamPreset.getBusNumberUp()!=null
 				||scheduleParamPreset.getBusNumberDown()!=null) {
 			scheduleParamPreset.setCreateType(1);//预设生成
@@ -137,13 +240,11 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 				throw new MyException("-1", "请先生成最优计划");
 			}
 		}
-        ScheduleParam scheduleParam=new ScheduleParam();
-        scheduleParam.setRouteId(routeId);
-        SchedulePlan4Mj schedulePlan4Mj=new SchedulePlan4Mj();
-        scheduleParam.setSimulationService(simulationDynamicService);
-        scheduleParam.setRunDate(runDate);
-        //获取末班车时间
-        String result=  routeDynamicService.getRouteUpDownInfo(routeId.intValue());
+		scheduleParam.setRouteId(routeId);
+		scheduleParam.setSimulationService(simulationDynamicService);
+		scheduleParam.setRunDate(runDate);
+		//获取末班车时间
+		String result=  routeDynamicService.getRouteUpDownInfo(routeId.intValue());
 		JSONObject json = JSONObject.parseObject(result);
 		JSONArray retData=json.getJSONArray("retData");
 		for(int i=0;i<retData.size();i++) {
@@ -158,31 +259,31 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 		}
 		List<ScheduleParamsAnchor> scheduleParamsAnchorList = scheduleParamsAnchorDynamicMapper.getByTemplateId(templateId);//停站时间配置
 		scheduleParam.setScheduleParamsAnchorList(scheduleParamsAnchorList);
-        List<ScheduleParamsEat> scheduleParamsEatList = scheduleParamsEatDynamicMapper.getByTemplateId(templateId);//吃饭配置
-        scheduleParam.setScheduleParamsEatList(scheduleParamsEatList);
-        ScheduleParamsSingle scheduleParamsSingle = scheduleParamsSingleDynamicService.getByTemplateId(templateId);//单班设置
-        scheduleParam.setScheduleParamsSingle(scheduleParamsSingle);
-        ScheduleParamsRoute scheduleParamsRoute = scheduleParamsRouteDynamicMapper.getByTemplateId(templateId);//线路设置
-        scheduleParam.setScheduleParamsRoute(scheduleParamsRoute);
-        List<ScheduleParamsClasses> scheduleParamsClassesList = scheduleParamsClassesDynamicMapper.getByTemplateId(templateId);
-        scheduleParam.setScheduleParamsClassesList(scheduleParamsClassesList);
-        Integer enduranceMileage= scheduleParamsEnduranceDynamicService.getEnduranceMileageByTemplateId(templateId);//续航里程
-        scheduleParam.setEnduranceMileage(enduranceMileage);
-        List<ScheduleParamsEndurance> elecSupplySettingList= scheduleParamsEnduranceDynamicService.getByTemplateId(templateId);//补电参数设置
-        scheduleParam.setElecSupplySettingList(elecSupplySettingList);
-        Integer vehicleContent = scheduleParamsRoute.getVehicleContent();//车内容量
-        vehicleContent = (vehicleContent == null || vehicleContent == 0) ? 105 : vehicleContent;
-        scheduleParam.setVehicleContent(vehicleContent);
+		List<ScheduleParamsEat> scheduleParamsEatList = scheduleParamsEatDynamicMapper.getByTemplateId(templateId);//吃饭配置
+		scheduleParam.setScheduleParamsEatList(scheduleParamsEatList);
+		ScheduleParamsSingle scheduleParamsSingle = scheduleParamsSingleDynamicService.getByTemplateId(templateId);//单班设置
+		scheduleParam.setScheduleParamsSingle(scheduleParamsSingle);
+		ScheduleParamsRoute scheduleParamsRoute = scheduleParamsRouteDynamicMapper.getByTemplateId(templateId);//线路设置
+		scheduleParam.setScheduleParamsRoute(scheduleParamsRoute);
+		List<ScheduleParamsClasses> scheduleParamsClassesList = scheduleParamsClassesDynamicMapper.getByTemplateId(templateId);
+		scheduleParam.setScheduleParamsClassesList(scheduleParamsClassesList);
+		Integer enduranceMileage= scheduleParamsEnduranceDynamicService.getEnduranceMileageByTemplateId(templateId);//续航里程
+		scheduleParam.setEnduranceMileage(enduranceMileage);
+		List<ScheduleParamsEndurance> elecSupplySettingList= scheduleParamsEnduranceDynamicService.getByTemplateId(templateId);//补电参数设置
+		scheduleParam.setElecSupplySettingList(elecSupplySettingList);
+		Integer vehicleContent = scheduleParamsRoute.getVehicleContent();//车内容量
+		vehicleContent = (vehicleContent == null || vehicleContent == 0) ? 105 : vehicleContent;
+		scheduleParam.setVehicleContent(vehicleContent);
 		List<RouteSta> routeStaList = routeStationDynamicService.getRouteStaListByRouteId(routeId);
-        scheduleParam.setRouteStaList(routeStaList);
+		scheduleParam.setRouteStaList(routeStaList);
 		Map<Long, RouteSta> routeStaMap = new HashMap<>();
 		for (RouteSta routeSta : routeStaList) {
 			routeStaMap.put(routeSta.getRouteStationId(), routeSta);
 		}
 		scheduleParam.setRouteStaMap(routeStaMap);
-        if(isLoopLine(scheduleParam)) {
+		if(isLoopLine(scheduleParam)) {
 			scheduleParam.setLoopLine(true);
-        }else {
+		}else {
 			Integer startDirection=null;
 			if(!scheduleParam.isAppearDirection(Direction.UP.getValue())) {
 				startDirection=Direction.DOWN.getValue();
@@ -194,7 +295,7 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 				scheduleParam.setTripBeginTimeB4FirstTime(beginTime);
 			}
 		}
-        if(!scheduleParam.isTwoLoopLine()) {
+		if(!scheduleParam.isTwoLoopLine()) {
 			if(DateUtil.getDateHM(scheduleParam.getUpLatestTime()).
 					before(DateUtil.getDateHM(scheduleParam.getUpFirstTime()))&&
 					routeId!=3110) {
@@ -207,9 +308,9 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 				throw new MyException("-1", "夜班车线路请选择定点班车");
 			}
 		}
-        //周转时间
-        List<RouteWasteTime> routeWasteTimeList = null;
-        if(scheduleParamPreset.getReferenceRunDate()!=null||scheduleParamPreset.getRunningTimeReferenceRunDate()!=null) {
+		//周转时间
+		List<RouteWasteTime> routeWasteTimeList = null;
+		if(scheduleParamPreset.getReferenceRunDate()!=null||scheduleParamPreset.getRunningTimeReferenceRunDate()!=null) {
 			Date runningTimeReferenceRunDate=scheduleParamPreset.getRunningTimeReferenceRunDate();
 			if(runningTimeReferenceRunDate==null) {
 				runningTimeReferenceRunDate=scheduleParamPreset.getReferenceRunDate();
@@ -221,11 +322,11 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 				throw new MyException("-1", "周转时间参考日期有误"+DateFormatUtil.SIMPLE_DATE.getDateString(runningTimeReferenceRunDate));
 			}
 			routeWasteTimeList= routeWasteTimeDynamicMapper.queryByRouteHistory(routeId,runningTimeReferenceRunDate);
-        }else{
+		}else{
 			routeWasteTimeList= routeWasteTimeDynamicMapper.queryByRoute(routeId,runDate);
-        }
-        System.out.println("routeWasteTimeList.size()"+routeWasteTimeList.size());
-        if(routeWasteTimeList.isEmpty()) {
+		}
+		System.out.println("routeWasteTimeList.size()"+routeWasteTimeList.size());
+		if(routeWasteTimeList.isEmpty()) {
 			System.out.println("周转时间空，自动更新");
 			if(scheduleParamPreset.getRunningTimeReferenceRunDate()!=null) {//按参考日期取不到
 				routeWasteTimeList= routeWasteTimeDynamicMapper.queryByRoute(routeId,runDate);//取平均
@@ -243,14 +344,14 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 					}
 				}
 			}
-        }
-        scheduleParam.setRouteWasteTimeList(routeWasteTimeList);
-        schedulePlan4Mj.setRouteWasteTimeList(routeWasteTimeList);
-        for(RouteWasteTime routeWasteTime:routeWasteTimeList) {
+		}
+		scheduleParam.setRouteWasteTimeList(routeWasteTimeList);
+		schedulePlan4Mj.setRouteWasteTimeList(routeWasteTimeList);
+		for(RouteWasteTime routeWasteTime:routeWasteTimeList) {
 			System.out.println(routeWasteTime.getRunTimeNum()+"_"+routeWasteTime.getDirection()+"\t"+routeWasteTime.getWasteTime());
-        }
-        RouteStationPassengerInfo passengerInfoUp=null;
-        RouteStationPassengerInfo passengerInfoDown=null;
+		}
+		RouteStationPassengerInfo passengerInfoUp=null;
+		RouteStationPassengerInfo passengerInfoDown=null;
 //		if(scheduleParamPreset.isCompetitiveRoute()){
 //			try {
 //				Map<Integer, RouteStationPassengerInfo> routeStationPassengerInfoMap = scheduleCompetePlanService.getStationPassengerList(scheduleParam,scheduleParamPreset);
@@ -307,21 +408,21 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 					}
 				}
 				//上行客流
-                passengerInfoUp = repStationPassengerDynamicService.dealWithRouteStationPassengerInfo(routeStationPassengerListUp, calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.UP.getStringValue(), routeId);
+				passengerInfoUp = repStationPassengerDynamicService.dealWithRouteStationPassengerInfo(routeStationPassengerListUp, calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.UP.getStringValue(), routeId);
 				//下行客流
-                passengerInfoDown= repStationPassengerDynamicService.dealWithRouteStationPassengerInfo(routeStationPassengerListDown, calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.DOWN.getStringValue(), routeId);
+				passengerInfoDown= repStationPassengerDynamicService.dealWithRouteStationPassengerInfo(routeStationPassengerListDown, calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.DOWN.getStringValue(), routeId);
 			}else {//按指定日期取不到，取默认
 				//上行客流
-                passengerInfoUp = repStationPassengerDynamicService.getRouteStationPassangerInfo(calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.UP.getStringValue(), routeId);
+				passengerInfoUp = repStationPassengerDynamicService.getRouteStationPassangerInfo(calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.UP.getStringValue(), routeId);
 				//下行客流
-                passengerInfoDown = repStationPassengerDynamicService.getRouteStationPassangerInfo(calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.DOWN.getStringValue(), routeId);
+				passengerInfoDown = repStationPassengerDynamicService.getRouteStationPassangerInfo(calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.DOWN.getStringValue(), routeId);
 			}
-        }else {
+		}else {
 			//上行客流
-            passengerInfoUp = repStationPassengerDynamicService.getRouteStationPassangerInfo(calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.UP.getStringValue(), routeId);
+			passengerInfoUp = repStationPassengerDynamicService.getRouteStationPassangerInfo(calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.UP.getStringValue(), routeId);
 			//下行客流
-            passengerInfoDown = repStationPassengerDynamicService.getRouteStationPassangerInfo(calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.DOWN.getStringValue(), routeId);
-        }
+			passengerInfoDown = repStationPassengerDynamicService.getRouteStationPassangerInfo(calendar.get(Calendar.DAY_OF_WEEK)+"", Direction.DOWN.getStringValue(), routeId);
+		}
 
 		Map<Integer, RouteStationPassengerInfo> passengerInfoMap=new HashMap<Integer, RouteStationPassengerInfo>();
 		passengerInfoMap.put(0, passengerInfoUp);
@@ -329,14 +430,6 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 		scheduleParam.setPassengerInfoMap(passengerInfoMap);
 		scheduleParam.setScheduleParamPreset(scheduleParamPreset);
 		if (scheduleParamPreset.getRouteIdDriverless() != null && scheduleParamPreset.getBusNumberDriverless() != null) {
-			/**
-			 * 	    @Autowired
-			 *    private ScheduleParamsDriverlessMapper scheduleParamsDriverlessMapper;
-			 *    @Autowired
-			 *    private ScheduleParamsDrInoutMapper scheduleParamsDrInoutMapper;
-			 *    @Autowired
-			 *    private ScheduleParamsDrRouteSubMapper scheduleParamsDrRouteSubMapper;
-			 * */
 			List<ScheduleParamsDriverless> driverlessList = scheduleParamsDriverlessMapper.getByTemplateId(templateId);
 			List<ScheduleParamsDrInout> inoutList = scheduleParamsDrInoutMapper.getByTemplateId(templateId);
 			List<ScheduleParamsDrRouteSub> routeSubList = scheduleParamsDrRouteSubMapper.getByTemplateId(templateId);
@@ -461,29 +554,29 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 			}
 		}
 
-        scheduleParam.initLatePeakPassengerDirection(passengerInfoMap);
-        List<RouteStaTurn> routeStaTurnList= routeStaTurnDynamicMapper.getRouteStaTurnList(routeId,templateId);//掉头短线首末站
-        scheduleParam.setRouteStaTurnList(routeStaTurnList);
-        //满载率
-        List<ScheduleParamsAnchor> anchorParamList = scheduleParamsAnchorDynamicService.getByTemplateId(templateId);
-        //最低发班要求
-        //List<ScheduleParamsClasses> classesParamlist=scheduleParamsClassesService.getByTemplateId(templateId);
-        boolean calculateByHour=true;//最低发班要求为一小时一班
-        for(ScheduleParamsClasses scheduleParamsClasses:scheduleParam.getScheduleParamsClassesList()) {
+		scheduleParam.initLatePeakPassengerDirection(passengerInfoMap);
+		List<RouteStaTurn> routeStaTurnList= routeStaTurnDynamicMapper.getRouteStaTurnList(routeId,templateId);//掉头短线首末站
+		scheduleParam.setRouteStaTurnList(routeStaTurnList);
+		//满载率
+		List<ScheduleParamsAnchor> anchorParamList = scheduleParamsAnchorDynamicService.getByTemplateId(templateId);
+		//最低发班要求
+		//List<ScheduleParamsClasses> classesParamlist=scheduleParamsClassesService.getByTemplateId(templateId);
+		boolean calculateByHour=true;//最低发班要求为一小时一班
+		for(ScheduleParamsClasses scheduleParamsClasses:scheduleParam.getScheduleParamsClassesList()) {
 			if(scheduleParamsClasses.getClassesNumMin()>2||
 					(scheduleParamsClasses.getClassesNumMin()==0&&
 							scheduleParamsClasses.getMaxDispatchInterval()<30)) {
 				calculateByHour=false;
 				break;
 			}
-        }
-        if(scheduleParam.isTestLineFull())
+		}
+		if(scheduleParam.isTestLineFull())
 			calculateByHour=false;
-        if(scheduleParam.isLoopLineDouble()||scheduleParam.isTwoLoopLine()) {
+		if(scheduleParam.isLoopLineDouble()||scheduleParam.isTwoLoopLine()) {
 			calculateByHour=false;
-        }
-        scheduleParam.setCalculateByHour(calculateByHour);
-        if(scheduleParam.isTestLineFull()||!scheduleParam.isCalculateByHour()) {
+		}
+		scheduleParam.setCalculateByHour(calculateByHour);
+		if(scheduleParam.isTestLineFull()||!scheduleParam.isCalculateByHour()) {
 			for(ScheduleParamsAnchor anchorParam:anchorParamList) {//满载率设置
 				if(scheduleParam.getFirstTime(Integer.valueOf(anchorParam.getDirection()))==null) {//环线
 					continue;
@@ -623,22 +716,22 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 					}
 					scheduleParam.addDispatchRule(hmBeginTime, hmEndTime, Integer.valueOf(anchorParam.getDirection()), longClassesNum, minLongClassesNum, shortLineSchedule, emptyBusCutOver);
 				}
-            }
-            //printShortLine(shortLineClassesNumberList);
-            //补充尾车客流
-            if(scheduleParam.getLatestTime(Direction.UP.getValue())!=null)
+			}
+			//printShortLine(shortLineClassesNumberList);
+			//补充尾车客流
+			if(scheduleParam.getLatestTime(Direction.UP.getValue())!=null)
 				getHighSectionPassenger(DateUtil.getCalendar(scheduleParam.getLatestTime(Direction.UP.getValue())),Direction.UP.getValue(), passengerInfoMap,schedulePlan4Mj,scheduleParam);
-            if(scheduleParam.getLatestTime(Direction.DOWN.getValue())!=null)
+			if(scheduleParam.getLatestTime(Direction.DOWN.getValue())!=null)
 				getHighSectionPassenger(DateUtil.getCalendar(scheduleParam.getLatestTime(Direction.DOWN.getValue())),Direction.DOWN.getValue(), passengerInfoMap,schedulePlan4Mj,scheduleParam);
-            scheduleParam.scheduleHalfHourSort();
-        }
-        scheduleParam.setNextScheduleHalfHour();
-        for(ScheduleHalfHour scheduleHalfHour:scheduleParam.getScheduleHalfHourList()) {
+			scheduleParam.scheduleHalfHourSort();
+		}
+		scheduleParam.setNextScheduleHalfHour();
+		for(ScheduleHalfHour scheduleHalfHour:scheduleParam.getScheduleHalfHourList()) {
 			if(scheduleHalfHour.getEmptyBusCutOver()!=null&&scheduleHalfHour.getShortLineSchedule()!=null) {
 				System.out.println(scheduleHalfHour.getDirection()+"\t"+scheduleHalfHour.getRunTime()+"\t"+scheduleHalfHour.getEmptyBusCutOver().getFirstRouteStaName()+"\t"+scheduleHalfHour.getShortLineSchedule().getRouteStationName()+"\t"+scheduleHalfHour.getEmptyBusCutOver().getClassesNumberCutOver());
 			}
-        }
-        if(scheduleParam.isLoopLine()) {
+		}
+		if(scheduleParam.isLoopLine()) {
 			if(scheduleParamPreset.getBusNumberUp()!=null&&scheduleParamPreset.getBusNumberUp()==0) {
 				if(scheduleParamPreset.getBusNumberDown()!=null&&scheduleParamPreset.getBusNumberDown()!=0) {//预设车数写到下行了
 					scheduleParamPreset.setBusNumberUp(scheduleParamPreset.getBusNumberDown());
@@ -654,14 +747,14 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 					//throw new MyException("-1", "环线请不要设置下行配车数");
 				}
 			}
-        }
-        if("0".equals(scheduleParamsRoute.getUpDirection())&&"0".equals(scheduleParamsRoute.getDownDirection())) {
+		}
+		if("0".equals(scheduleParamsRoute.getUpDirection())&&"0".equals(scheduleParamsRoute.getDownDirection())) {
 			//throw new MyException("-1", "请在运营参数设置选择出车总站");
 			scheduleParamsRoute.setUpDirection("1");
 			if(!scheduleParam.isLoopLine())
 				scheduleParamsRoute.setDownDirection("1");
-        }
-        if(scheduleParamPreset.getBusNumberUp()!=null&&scheduleParamPreset.getBusNumberDown()!=null
+		}
+		if(scheduleParamPreset.getBusNumberUp()!=null&&scheduleParamPreset.getBusNumberDown()!=null
 				&&scheduleParamPreset.getSingleBusNumberUp()!=null&&scheduleParamPreset.getSingleBusNumberDown()!=null) {
 			if(scheduleParamPreset.getSingleBusNumberUp()>scheduleParamPreset.getBusNumberUp()) {
 				scheduleParamPreset.setBusNumberUp(scheduleParamPreset.getSingleBusNumberUp()+scheduleParamPreset.getBusNumberUp());
@@ -675,8 +768,8 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 					scheduleParamPreset.getSingleBusNumberUp()+scheduleParamPreset.getSingleBusNumberDown()) {
 				throw new MyException("-1", "系统暂不支持全单班配车排班");
 			}
-        }
-        if(scheduleParamPreset.getBusNumberUp()!=null) {
+		}
+		if(scheduleParamPreset.getBusNumberUp()!=null) {
 			if(scheduleParamPreset.getBusNumberUp()>50) {
 				throw new MyException("-1", "请检查预设配车数是否正确"+scheduleParamPreset.getBusNumberUp());
 			}
@@ -689,8 +782,8 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 					scheduleParam.setMiddleStopBeginOrderNumber(earliestBusNumber);
 				}
 			}
-        }
-        if(scheduleParamPreset.getBusNumberDown()!=null) {
+		}
+		if(scheduleParamPreset.getBusNumberDown()!=null) {
 			if(scheduleParamPreset.getBusNumberDown()>50) {
 				throw new MyException("-1", "请检查预设配车数是否正确"+scheduleParamPreset.getBusNumberDown());
 			}
@@ -703,8 +796,8 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 					scheduleParam.setMiddleStopBeginOrderNumber(earliestBusNumber);
 				}
 			}
-        }
-        if(scheduleParamPreset.getShiftList()!=null) {
+		}
+		if(scheduleParamPreset.getShiftList()!=null) {
 			for(ScheduleShiftPreset shift:scheduleParamPreset.getShiftList()) {
 				if(shift.getBusNumber()!=null&&shift.getBusNumberUp()==null&&shift.getBusNumberDown()==null) {//按总车数来分配上下行车数
 					if(scheduleParam.isLoopLine()) {//环线
@@ -731,10 +824,10 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 						throw new MyException("-1", "请设置"+(shiftType==null?shift.getShiftType():shiftType.getDesc()));
 					}
 				}
-            }
-        }
-        Integer busNumberPreset=scheduleParamPreset.getBusNumberPreset();//预设配车数
-        if(scheduleParamPreset.getBusNumberUp()!=null&&scheduleParamPreset.getBusNumberDown()!=null) {
+			}
+		}
+		Integer busNumberPreset=scheduleParamPreset.getBusNumberPreset();//预设配车数
+		if(scheduleParamPreset.getBusNumberUp()!=null&&scheduleParamPreset.getBusNumberDown()!=null) {
 			int busNumberNormalUp=scheduleParamPreset.getBusNumberUp();
 			int busNumberNormalDown=scheduleParamPreset.getBusNumberDown();
 			if(scheduleParamPreset.getShiftList()!=null) {
@@ -803,30 +896,15 @@ public class SchedulePlanServiceImpl implements SchedulePlanService {
 			scheduleParamPreset.setBusNumberDown(busNumberNormalDown);
 			busNumberPreset=scheduleParamPreset.getBusNumberUp()+scheduleParamPreset.getBusNumberDown();
 			scheduleParamPreset.setBusNumberPreset(busNumberPreset);
-        }
+		}
 		//计划生成
-        if(scheduleParamPreset.getStartWorkRunDate()!=null) {//预设配车设置-使用日期
+		if(scheduleParamPreset.getStartWorkRunDate()!=null) {//预设配车设置-使用日期
 			List<SchedulePlan> schedulePlanList= schedulePlanDynamicMapper.getSchedulePlanList(routeId, scheduleParamPreset.getStartWorkRunDate());
 			if(schedulePlanList.isEmpty())
 				throw new MyException("-1", DateFormatUtil.DATE.getDateString(scheduleParamPreset.getStartWorkRunDate())+"没有排班记录");
 			scheduleParam.setSchedulePlanReference(schedulePlanList);
-        }
-
-        RouteSchedule routeSchedule=null;
-        System.out.println("生成开始："+(System.currentTimeMillis()-beginTimeMillis));
-		routeSchedule = new ScheduleGenerateTest(scheduleParam).generate();//todo
-        if(routeSchedule.getTripMap().size()>99) {
-			throw new MyException("-10", "生成计划配车超过99台，请确认排班参数设置是否正确");
-        }
-
-		SchedulePlanResult schedulePlanResult=new SchedulePlanResult();
-		schedulePlanResult.setScheduleParam(scheduleParam);
-		schedulePlanResult.setScheduleParamPreset(scheduleParamPreset);
-		schedulePlanResult.setSchedulePlan4Mj(schedulePlan4Mj);
-		schedulePlanResult.setRouteSchedule(routeSchedule);
-		System.out.println("生成结束："+(System.currentTimeMillis()-beginTimeMillis));
-		return schedulePlanResult;
-    }
+		}
+	}
 
 	public void generateDriverlessCheckUnRun(List<ScheduleParamsDrBus> drBusList) {
 		for (int i = 0; i < drBusList.size(); i++) {
