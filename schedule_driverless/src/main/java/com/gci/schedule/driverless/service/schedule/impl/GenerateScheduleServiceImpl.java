@@ -367,7 +367,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
     public R generateSupportSchedule(GenerateScheduleParams2 params2) {
         boolean isLoopRoute = BsData.isLoopRoute(params2.getRouteId());
         if(isLoopRoute && Objects.nonNull(params2.getBusNumberDown()) && params2.getBusNumberDown()>0){
-            return R.error("换线不存在下行车辆，无法生成计划！");
+            return R.error("环线不存在下行车辆，无法生成计划！");
         }
         long startTime = System.currentTimeMillis();
         Date preSevenDate = getPreSevenDate(params2);
@@ -392,7 +392,16 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
         Integer maxPassengerNum = stationPassengerList.stream().sorted(Comparator.comparing(StationPassenger::getCurpeople).reversed())
                 .collect(Collectors.toList()).get(0).getCurpeople();
 //        Integer maxPassengerNum = 300;
-        List<RouteWasteTime> routeWasteTimeList = null;
+        //获取通用周转时间
+        Calendar wasteCal = Calendar.getInstance();
+        wasteCal.setTime(params2.getPassengerData());
+        Integer wasteApplyDay = wasteCal.get(Calendar.DAY_OF_WEEK);
+        if(Objects.nonNull(params2.getTurnaroundData())){
+            Calendar wasteCal02 = Calendar.getInstance();
+            wasteCal02.setTime(params2.getTurnaroundData());
+            wasteApplyDay = wasteCal02.get(Calendar.DAY_OF_WEEK);
+        }
+        List<RouteWasteTime> routeWasteTimeList = routeWasteTimeMapper.queryByRouteIdAndRunDayNum(params2.getRouteId(),wasteApplyDay);
         GenerateScheduleParams params = getGenerateScheduleParams(params2,stationPassengerList,routeWasteTimeList);
         if(Objects.isNull(params)){
             log.info("【排班计划】-排班参数信息查询失败，routeId:{}",params2.getRouteId());
@@ -571,7 +580,15 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                 log.info("【排班计划】-支援车客流信息不存在，routeId:{}",params2.getSupportRouteId());
                 return R.error("支援车客流信息不存在");
             }
-            List<RouteWasteTime> reduceRouteWasteTimeList = null;
+            Calendar reduceWasteCal = Calendar.getInstance();
+            reduceWasteCal.setTime(params2.getSupportPassengerData());
+            Integer reduceWasteApplyDay = reduceWasteCal.get(Calendar.DAY_OF_WEEK);
+            if(Objects.nonNull(params2.getTurnaroundData())){
+                Calendar reduceWasteCal02 = Calendar.getInstance();
+                reduceWasteCal02.setTime(params2.getSupportTurnaroundData());
+                reduceWasteApplyDay = reduceWasteCal02.get(Calendar.DAY_OF_WEEK);
+            }
+            List<RouteWasteTime> reduceRouteWasteTimeList = routeWasteTimeMapper.queryByRouteIdAndRunDayNum(params2.getRouteId(),reduceWasteApplyDay);
             reduceParams = getGenerateScheduleParams(reduceParams2,supportStationPassengerList,reduceRouteWasteTimeList);
             //上行减车
             Integer upReduceBusNum;
@@ -984,6 +1001,27 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
         return R.ok("操作成功").put("data",resultMap);
     }
 
+    private Double getFullTime(List<RouteWasteTime> list,Date date,String direction){
+        List<RouteWasteTime> routeWasteTimeList = list.stream().filter(e -> e.getDirection().equals(direction)).collect(Collectors.toList());
+        Map<Integer, RouteWasteTime> wasteMap = routeWasteTimeList.stream().collect(Collectors.toMap(RouteWasteTime::getRunTimeNum, Function.identity()));
+        int hNum = Convert.toInt(DateUtil.date2Str(date,"HH"));
+        int mNum = Convert.toInt(DateUtil.date2Str(date,"mm"));
+        int runNum;
+        if(mNum<15){
+            runNum = hNum*4;
+        }else if(mNum>=15&&mNum<30){
+            runNum = hNum*4 + 1;
+        }else if(mNum>=30&&mNum<45){
+            runNum = hNum*4 + 2;
+        }else {
+            runNum = hNum*4 + 3;
+        }
+        RouteWasteTime routeWasteTime = wasteMap.get(runNum);
+        if(Objects.isNull(routeWasteTime)){
+            return null;
+        }
+        return routeWasteTime.getWasteTime()*60d;
+    }
     /**
      *
      * @param params
@@ -1006,18 +1044,17 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
         RouteSta upLastRouteSta = routeStaList.stream().filter(r -> r.getStationMark().equals(StationMark.UP_LAST.getValue()))
                 .collect(Collectors.toList()).get(0);
         //获取上行周转时间
-        Double upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.UP.getValue()),
-                upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), params.getUpFristDate());
+        /*Double upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.UP.getValue()),
+                upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), params.getUpFristDate());*/
+        Double upFullTime = getFullTime(routeWasteTimeList,params.getUpFristDate(),Constant.Direction.UP);
+        if(Objects.isNull(upFullTime)){
+            upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.UP.getValue()),
+                    upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), params.getUpFristDate());
+        }
         RouteSta downFirstRouteSta = null;
         RouteSta downLastRouteSta = null;
         Double downFullTime = 0d;
 
-        //todo 优化周转时间的统计
-        if(!CollectionUtils.isEmpty(routeWasteTimeList)){
-            List<RouteWasteTime> upRouteWasteTimeList = routeWasteTimeList.stream().filter(e -> e.getDirection().equals("0")).collect(Collectors.toList());
-            List<RouteWasteTime> downRouteWasteTimeList = routeWasteTimeList.stream().filter(e -> e.getDirection().equals("1")).collect(Collectors.toList());
-
-        }
         boolean isLoopRoute = BsData.isLoopRoute(params.getRouteId());
         if(!isLoopRoute){
             downFirstRouteSta = routeStaList.stream().filter(r -> r.getStationMark().equals(StationMark.DOWN_FIRST.getValue()))
@@ -1025,8 +1062,13 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             downLastRouteSta = routeStaList.stream().filter(r -> r.getStationMark().equals(StationMark.DOWN_LAST.getValue()))
                     .collect(Collectors.toList()).get(0);
             //获取下行周转时间
-            downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.DOWN.getValue()),
-                    downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), params.getDownFirstDate());
+           /* downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.DOWN.getValue()),
+                    downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), params.getDownFirstDate());*/
+            downFullTime = getFullTime(routeWasteTimeList,params.getDownFirstDate(),Constant.Direction.DOWN);
+            if(Objects.isNull(downFullTime)){
+                downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), Convert.toStr(Direction.DOWN.getValue()),
+                        downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), params.getDownFirstDate());
+            }
         }
 
         Double distance=getTripDistance(upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), routeStaList);
@@ -1162,6 +1204,11 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                                 schedule.setPlanTime(params.getDownLastDate());
                             }
                         }
+
+                        Double upFullTimeTemp = getFullTime(routeWasteTimeList,schedule.getPlanTime(),upDirection);
+                        if(Objects.nonNull(upFullTimeTemp)){
+                            upFullTime = upFullTimeTemp;
+                        }
                         schedule.setTripEndTime(new Date(schedule.getPlanTime().getTime()+Convert.toLong(upFullTime)*1000));
 
                         if(upDirection.equals(Convert.toStr(Direction.UP.getValue()))){
@@ -1238,6 +1285,10 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                         schedule.setStartDirection(Convert.toStr(Direction.UP.getValue()));
                         schedule.setPlanTime(new Date(upFirstDate.getTime()+upInterval*i));
                         schedule.setTimeStamp(new Date(upFirstDate.getTime()+upInterval*i).getTime());
+                        Double upFullTimeTemp = getFullTime(routeWasteTimeList,schedule.getPlanTime(),upDirection);
+                        if(Objects.nonNull(upFullTimeTemp)){
+                            upFullTime = upFullTimeTemp;
+                        }
                         schedule.setTripEndTime(new Date(schedule.getPlanTime().getTime()+Convert.toLong(upFullTime)*1000));
                         schedule.setServiceType("1");
                         schedule.setServiceName("全程");
@@ -1439,6 +1490,10 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                     schedule.setStartDirection(Convert.toStr(Direction.DOWN.getValue()));
                     schedule.setPlanTime(new Date(downFirstDate.getTime()+downInterval*j));
                     schedule.setTimeStamp(new Date(downFirstDate.getTime()+downInterval*j).getTime());
+                    Double downFullTimeTemp = getFullTime(routeWasteTimeList,schedule.getPlanTime(),downDirection);
+                    if(Objects.nonNull(downFullTimeTemp)){
+                        downFullTime = downFullTimeTemp;
+                    }
                     schedule.setTripEndTime(new Date(schedule.getPlanTime().getTime()+Convert.toLong(downFullTime)*1000));
                     schedule.setServiceType("1");
                     schedule.setServiceName("全程");
@@ -1587,29 +1642,48 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
 
             }
 
-
-            if(upDirection.equals(Convert.toStr(Direction.UP.getValue()))){
-                upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), upDirection,
-                        upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), upFirstDate);
-            }else if(!isLoopRoute){
-                upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), upDirection,
-                        downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), upFirstDate);
-            }
-
             if(!isLoopRoute){
                 upFirstDate = new Date(lastDwonPlanTime);
                 downFirstDate = new Date(lastUpPlanTime);
                 upDirection = upDirection.equals(Convert.toStr(Direction.UP.getValue()))?Convert.toStr(Direction.DOWN.getValue()):Convert.toStr(Direction.UP.getValue());
                 downDirection = downDirection.equals(Convert.toStr(Direction.DOWN.getValue()))?Convert.toStr(Direction.UP.getValue()):Convert.toStr(Direction.DOWN.getValue());
-                if(downDirection.equals(Convert.toStr(Direction.DOWN.getValue()))){
+                /*if(downDirection.equals(Convert.toStr(Direction.DOWN.getValue()))){
                     downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), downDirection,
                             downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), downFirstDate);
                 }else {
                     downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), downDirection,
                             upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), downFirstDate);
+                }*/
+                downFullTime = getFullTime(routeWasteTimeList,downFirstDate,downDirection);
+                if(Objects.isNull(downFullTime)){
+                    if(downDirection.equals(Convert.toStr(Direction.DOWN.getValue()))){
+                        downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), downDirection,
+                                downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), downFirstDate);
+                    }else {
+                        downFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), downDirection,
+                                upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), downFirstDate);
+                    }
                 }
             }else {
                 upFirstDate = new Date(lastUpPlanTime);
+            }
+
+            /*if(upDirection.equals(Convert.toStr(Direction.UP.getValue()))){
+                upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), upDirection,
+                        upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), upFirstDate);
+            }else if(!isLoopRoute){
+                upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), upDirection,
+                        downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), upFirstDate);
+            }*/
+            upFullTime = getFullTime(routeWasteTimeList,upFirstDate,upDirection);
+            if(Objects.isNull(upFullTime)){
+                if(upDirection.equals(Convert.toStr(Direction.UP.getValue()))){
+                    upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), upDirection,
+                            upFirstRouteSta.getRouteStationId(), upLastRouteSta.getRouteStationId(), upFirstDate);
+                }else if(!isLoopRoute){
+                    upFullTime = scheduleServerService.getIntersiteTime(params.getRouteId(), upDirection,
+                            downFirstRouteSta.getRouteStationId(), downLastRouteSta.getRouteStationId(), upFirstDate);
+                }
             }
 
             //排班结束
@@ -1748,7 +1822,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             }
 
         }
-        //获取通用周转时间
+        /*//获取通用周转时间
         Calendar wasteCal = Calendar.getInstance();
         wasteCal.setTime(params2.getPassengerData());
         Integer wasteApplyDay = wasteCal.get(Calendar.DAY_OF_WEEK);
@@ -1756,8 +1830,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
             Calendar wasteCal02 = Calendar.getInstance();
             wasteCal02.setTime(params2.getTurnaroundData());
             wasteApplyDay = wasteCal02.get(Calendar.DAY_OF_WEEK);
-        }
-        routeWasteTimeList = routeWasteTimeMapper.queryByRouteIdAndRunDayNum(params2.getRouteId(),wasteApplyDay);
+        }*/
 
         if(Objects.equals(params2.getPlanType(),1) && Objects.nonNull(stationPassengerList)){
             //最优计划参数配置
@@ -1801,7 +1874,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                     Integer downPassengerNum = downStationPassengerList.stream().mapToInt(StationPassenger::getCurpeople).sum();
                     Integer extralBusNum01 = BigDecimal.valueOf(downPassengerNum/scheduleParamsRoute.getVehicleContent()).setScale(0,BigDecimal.ROUND_UP).intValue();
                     Integer extralBusNum02 = BigDecimal.valueOf((Convert.toInt(params.getUpFristTime()) - Convert.toInt(params.getDownFirstTime()))/60d*avgClassesNumMin).setScale(0,BigDecimal.ROUND_UP).intValue();
-                    Integer extralBusNum = extralBusNum01>extralBusNum02?extralBusNum01:extralBusNum02;
+                    Integer extralBusNum = extralBusNum01>extralBusNum02 && extralBusNum01<totalBusNum?extralBusNum01:extralBusNum02;
                     upBusNum = BigDecimal.valueOf((totalBusNum-extralBusNum)/2d).setScale(0,BigDecimal.ROUND_UP).intValue();
                     downBusNum = BigDecimal.valueOf((totalBusNum-extralBusNum)/2d).setScale(0,BigDecimal.ROUND_DOWN).intValue() + extralBusNum;
                 }else {
@@ -1809,7 +1882,7 @@ public class GenerateScheduleServiceImpl implements GenerateScheduleService {
                     Integer upPassengerNum = upStationPassengerList.stream().mapToInt(StationPassenger::getCurpeople).sum();
                     Integer extralBusNum01 = BigDecimal.valueOf(upPassengerNum/scheduleParamsRoute.getVehicleContent()).setScale(0,BigDecimal.ROUND_UP).intValue();
                     Integer extralBusNum02 = BigDecimal.valueOf((Convert.toInt(params.getDownFirstTime()) - Convert.toInt(params.getUpFristTime()))/60d*avgClassesNumMin).setScale(0,BigDecimal.ROUND_UP).intValue();
-                    Integer extralBusNum = extralBusNum01>extralBusNum02?extralBusNum01:extralBusNum02;
+                    Integer extralBusNum = extralBusNum01>extralBusNum02 && extralBusNum01<totalBusNum?extralBusNum01:extralBusNum02;
                     upBusNum = BigDecimal.valueOf((totalBusNum-extralBusNum)/2d).setScale(0,BigDecimal.ROUND_DOWN).intValue() + extralBusNum;
                     downBusNum = BigDecimal.valueOf((totalBusNum-extralBusNum)/2d).setScale(0,BigDecimal.ROUND_UP).intValue();
                 }
