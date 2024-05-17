@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.ScheduleParamsDrRouteSubMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.dynamic.bean.ScheduleParamsDrRouteSub">
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="TEMPLATE_ID" jdbcType="DECIMAL" property="templateId" />
+    <result column="UPDATE_USER" jdbcType="DECIMAL" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="FIRST_ROUTE_STA_ID" jdbcType="DECIMAL" property="firstRouteStaId" />
+    <result column="LAST_ROUTE_STA_ID" jdbcType="DECIMAL" property="lastRouteStaId" />
+    <result column="DIRECTION" jdbcType="DECIMAL" property="direction" />
+    <result column="FIRST_ROUTE_STA_NAME" jdbcType="VARCHAR" property="firstRouteStaName" />
+    <result column="LAST_ROUTE_STA_NAME" jdbcType="VARCHAR" property="lastRouteStaName" />
+    <result column="TURN_AROUND_TIME" jdbcType="DECIMAL" property="turnAroundTime" />
+    <result column="ROUTE_SUB_ID" jdbcType="DECIMAL" property="routeSubId" />
+    <result column="ROUTE_SUB_NAME" jdbcType="VARCHAR" property="routeSubName" />
+    <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType" />
+    <result column="SERVICE_NAME" jdbcType="VARCHAR" property="serviceName" />
+    <result column="NEXT_FIRST_ROUTE_STA_ID" jdbcType="DECIMAL" property="nextFirstRouteStaId" />
+    <result column="NEXT_FIRST_ROUTE_STA_NAME" jdbcType="VARCHAR" property="nextFirstRouteStaName" />
+    <result column="FIRST_STATION_ID" jdbcType="DECIMAL" property="firstStationId" />
+    <result column="LAST_STATION_ID" jdbcType="DECIMAL" property="lastStationId" />
+  </resultMap>
+
+  <select id="getByTemplateId" resultMap="BaseResultMap" parameterType="map">
+    select * from BS_SCHEDULE_PARAMS_DR_ROUTESUB
+    where template_id = #{templateId, jdbcType=VARCHAR}
+  </select>
+</mapper>

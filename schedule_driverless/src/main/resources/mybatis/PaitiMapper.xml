@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.PaitiMapper">
+
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.paiti.PaitiDataVO">
+        <result column="BUS_NAME" property="busName"/>
+        <result column="START_ORDER_NUMBER" property="startOrderNumber"/>
+        <result column="ROUTE_NAME" property="routeName"/>
+        <result column="STOP_PLACE_NAME" property="stopPlaceName"/>
+        <result column="FROM_STATION_NAME" property="fromStationName"/>
+        <result column="START_TIME" property="startTime"/>
+        <result column="CK_TIME" property="ckTime"/>
+        <result column="START_DIRECTION" property="startDirection"/>
+        <result column="SHIFT_TYPE" property="shiftType"/>
+        <result column="ROUTE_CODE" property="routeCode"/>
+        <result column="USER_NAME" property="userName"/>
+        <result column="CHECK_OUT_TIME" property="checkOutTime"/>
+        <result column="ORGAN_NAME" property="organName"/>
+        <result column="RUN_DATE" property="runDate"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+    </resultMap>
+
+
+    <resultMap id="busMap" type="com.gci.schedule.driverless.bean.paiti.Bus">
+        <result column="BUS_NAME" property="busName"/>
+        <result column="ORGAN_ID" property="organId"/>
+    </resultMap>
+
+    <resultMap id="routeMap" type="com.gci.schedule.driverless.bean.paiti.Route">
+        <result column="ROUTE_CODE" property="routeCode"/>
+        <result column="ORGAN_ID" property="organId"/>
+    </resultMap>
+
+    <select id="list" resultMap="BaseResultMap">
+        select t.*,tt.organ_name from dy_paiti_data t
+        left join bs_schedule_route_config tt
+        on t.route_code = tt.route_code
+        <where>
+            <if test="key != null and key != ''">
+                and tt.ROUTE_NAME like '%' || #{key} || '%'
+            </if>
+            <if test="ids != null">
+                and (tt.organ_id in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+                or tt.organ_run_id in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+                )
+            </if>
+            <if test="runDate != null">
+                and t.run_date = #{runDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="routeCode != null and routeCode != '' ">
+                and t.route_code = #{routeCode,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by tt.organ_id,t.ROUTE_CODE,t.START_ORDER_NUMBER,t.START_DIRECTION
+    </select>
+
+
+    <delete id="del">
+        delete from dy_paiti_data t where t.route_code = #{routeCode,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="list">
+        insert into dy_paiti_data t
+        (
+            BUS_NAME,START_ORDER_NUMBER,
+            ROUTE_NAME,STOP_PLACE_NAME,
+            FROM_STATION_NAME,START_TIME,
+            CK_TIME,START_DIRECTION,
+            SHIFT_TYPE,ROUTE_CODE,
+            USER_NAME,CHECK_OUT_TIME,RUN_DATE
+        )
+        <foreach collection="list" item="item" separator="union all" >
+            select
+            #{item.busName,jdbcType=VARCHAR},
+            #{item.startOrderNumber,jdbcType=DECIMAL},
+            #{item.routeName,jdbcType=VARCHAR},
+            #{item.stopPlaceName,jdbcType=VARCHAR},
+            #{item.fromStationName,jdbcType=VARCHAR},
+            #{item.startTime,jdbcType=VARCHAR},
+            #{item.ckTime,jdbcType=VARCHAR},
+            #{item.startDirection,jdbcType=VARCHAR},
+            #{item.shiftType,jdbcType=DECIMAL},
+            #{item.routeCode,jdbcType=DECIMAL},
+            #{item.userName,jdbcType=DECIMAL},
+            #{item.checkOutTime,jdbcType=DECIMAL},
+            #{item.runDate,jdbcType=DATE}
+            from dual
+        </foreach>
+    </insert>
+
+    <select id="queryDicheBusList" resultMap="busMap">
+        select t.bus_name,tt.organ_id
+        from apts.bs_bus t
+        left join bs_schedule_route_config tt on t.route_id = tt.route_id
+        where tt.organ_id in (2,4,5,6,2481)
+        order by tt.organ_id,tt.route_code,t.bus_name
+    </select>
+
+
+    <select id="queryDicheRouteList" resultMap="routeMap">
+        select t.route_code,t.organ_id
+        from bs_schedule_route_config t
+        where t.organ_id in (2,4,5,6,2481)
+        order by t.organ_id,t.route_code
+    </select>
+
+    <select id="queryDicheRecentDataList"  resultMap="BaseResultMap">
+        select
+        t.run_date,t.route_code
+        from
+        (
+            select
+            t.run_date,
+            t.route_code,
+            row_number() over (partition by t.route_code order by t.run_date desc) as r
+            from
+            (
+                select distinct t.run_date,t.route_code from dy_paiti_data t
+                order by t.run_date desc,t.route_code
+            ) t
+        )
+        t where t.r = 1
+    </select>
+
+
+    <select id="querySchedulePlanExist"  resultType="string">
+        select
+        case when tt.plan != 0 and tt.bus !=0 and tt.plan - tt.bus = 0 then 200
+        else 500 end as result
+        from
+        (
+            select
+            count(t.bus_code) as plan , count(t.bus_name) as bus
+            from
+            (
+                select
+                distinct t.bus_code,t.bus_name
+                from DY_SCHEDULE_PLAN t where t.route_code = #{routeCode,jdbcType=VARCHAR} and t.plan_date = #{runDate,jdbcType=TIMESTAMP}
+            ) t
+        ) tt
+    </select>
+</mapper>

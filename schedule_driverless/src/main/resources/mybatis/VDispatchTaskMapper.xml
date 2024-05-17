@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.VDispatchTaskMapper">
+
+    <resultMap id="simpleResultMap" type="com.gci.schedule.driverless.bean.bs.VDispatchTask">
+        <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId"/>
+        <result column="ROUTESUB_ID" jdbcType="DECIMAL" property="routeSubId"/>
+        <result column="FIRST_STATION_ID" jdbcType="DECIMAL" property="firstStationId"/>
+        <result column="LAST_STATION_ID" jdbcType="DECIMAL" property="lastStationId"/>
+        <result column="DIRECTION" jdbcType="VARCHAR" property="direction"/>
+        <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType"/>
+        <result column="ROUTE_SUB_NAME" jdbcType="VARCHAR" property="routeSubName"/>
+        <result column="FIRST_ROUTE_STA_ID" jdbcType="DECIMAL" property="firstRouteStaId"/>
+        <result column="LAST_ROUTE_STA_ID" jdbcType="DECIMAL" property="lastRouteStaId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ROUTE_ID
+        ,ROUTESUB_ID,FIRST_STATION_ID,LAST_STATION_ID,DIRECTION,SERVICE_TYPE,ROUTE_SUB_NAME
+    </sql>
+
+    <select id="getByRouteSubId" resultMap="simpleResultMap">
+        select t.ROUTE_ID,
+               t.ROUTESUB_ID,
+               t.FIRST_STATION_ID,
+               t.LAST_STATION_ID,
+               t.DIRECTION,
+               t.SERVICE_TYPE,
+               t.ROUTE_SUB_NAME,
+               vt.FIRST_ROUTE_STA_ID,
+               vt.LAST_ROUTE_STA_ID
+        from apts.V_DISPATCH_TASK t
+                 left join apts.v_task vt on t.ROUTESUB_ID = vt.ROUTESUB_ID
+        where t.ROUTESUB_ID = #{routeSubId}
+    </select>
+
+    <select id="selectByRouteId" resultMap="simpleResultMap">
+        select t.ROUTE_ID,
+               t.ROUTESUB_ID,
+               t.FIRST_STATION_ID,
+               t.LAST_STATION_ID,
+               t.DIRECTION,
+               t.SERVICE_TYPE,
+               t.ROUTE_SUB_NAME,
+               vt.FIRST_ROUTE_STA_ID,
+               vt.LAST_ROUTE_STA_ID
+        from apts.V_DISPATCH_TASK t
+                 left join apts.v_task vt on t.ROUTESUB_ID = vt.ROUTESUB_ID
+        where t.ROUTE_ID = #{routeId}
+    </select>
+
+</mapper>

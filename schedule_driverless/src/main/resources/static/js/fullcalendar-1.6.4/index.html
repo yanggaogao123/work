@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='fullcalendar/fullcalendar.css' rel='stylesheet' />
+<link href='fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='lib/jquery.min.js'></script>
+<script src='lib/jquery-ui.custom.min.js'></script>
+<script src='fullcalendar/fullcalendar.min.js'></script>
+<script>
+
+	$(document).ready(function() {
+	
+		var date = new Date();
+		var d = date.getDate();
+		var m = date.getMonth();
+		var y = date.getFullYear();
+		
+		$('#calendar').fullCalendar({			buttonText: {				today: '今天',				month: '月视图',				week: '周视图',				day: '日视图'			},			allDayText: "全天",			timeFormat: {				'': 'H:mm{-H:mm}'			},			weekMode: "variable",			columnFormat: {				month: 'dddd',				week: 'dddd M-d',				day: 'dddd M-d'			},			titleFormat: {				month: 'yyyy年 MMMM月',				week: "[yyyy年] MMMM月d日 { '&#8212;' [yyyy年] MMMM月d日}",				day: 'yyyy年 MMMM月d日 dddd'			},			monthNames: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],			dayNames: ["星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],			header: {				left: 'prevYear,prev,today,next,nextYear',				center: 'title',				right: 'month'			},			dayClick: function(date, allDay, jsEvent, view) {			  // 此处可以进行弹窗、后台通信等处理			  // 本例仅在日历中添加一个新日程				alert(date+allDay);				debugger;			 },			//events: function (start, end, callback) {				//...			//},			events: [				{					title: 'All Day Event2222',					start: new Date(y, m, 1)				},				{					title: 'Long Event',					start: new Date(y, m, d-5),					end: new Date(y, m, d-2)				},				{					id: 999,					title: 'Repeating Event',					start: new Date(y, m, d-3, 16, 0),					allDay: false				},				{					id: 999,					title: 'Repeating Event',					start: new Date(y, m, d+4, 16, 0),					allDay: false				},				{					title: 'Meeting',					start: new Date(y, m, d, 10, 30),					allDay: false				},				{					title: 'Lunch',					start: new Date(y, m, d, 12, 0),					end: new Date(y, m, d, 14, 0),					allDay: false				},				{					title: 'Birthday Party',					start: new Date(y, m, d+1, 19, 0),					end: new Date(y, m, d+1, 22, 30),					allDay: false				},				{					title: 'Click for Google',					start: new Date(y, m, 28),					end: new Date(y, m, 29),					url: 'http://google.com/'				}			]		});
+		
+	});
+
+</script>
+<style>
+
+	body {
+		margin-top: 40px;
+		text-align: center;
+		font-size: 14px;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		}
+
+	#calendar {
+		width: 900px;
+		margin: 0 auto;
+		}
+
+</style>
+</head>
+<body>
+<div id='calendar'></div>
+</body>
+</html>

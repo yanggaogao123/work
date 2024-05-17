@@ -1,0 +1,400 @@
+排班计划:
+LIST:dpdb.dispatch.plan.route_id={routeId}.direction={direction}
+{
+    "busId": 3005647,
+    "direction": 1,
+    "dispatchPlanId": 43845275,
+    "firstRouteStaId": 1112520,
+    "firstStationId": 10006398,
+    "lastPlanTime": "2020-08-10 12:59:00",
+    "lastRouteStaId": 1112522,
+    "lastServiceType": 1,
+    "busFirstPlan": 0,//是否为头计划(0:否 1:是)
+    "planTime": "2020-08-10 13:13:00",
+    "planType": 0,
+    "routeId": 35654,
+    "serviceType": 1,
+    "status": 0,
+    "taskId": -15661,
+    "tripEndTime": "2020-08-10 13:57:00"
+}
+
+调度开关:
+HASH:dpdb.dispatch.auto.route.switch
+key:{routeCode}
+value:1 //0全关 1只开首轮 2只开到站 3全开
+
+首轮失班:
+LIST:dpdb.dispatch.plan.lostbus
+{
+    "routeId": 98,
+    "busId": 2131313,
+    "busName": "A345",
+    "runDate": "2020-04-08",//运营日期
+    "operateTime": "2020-04-08 09:00:00"//操作时间
+}
+
+线路调度员：
+HASH:dpdb.dispatch.route.despatcher
+key:{routeId}
+value:
+{
+    "userId": 32620,
+    "userName": "自动调度",
+    "ckTime": "2020-04-08 11:29:00"
+}
+
+到站车辆计划发班：
+HASH:dpdb.dispatch.plan.forecast.route_id={routeId}
+key:{direction}
+value:
+[
+	{
+	    "busId": 3015222,
+	    "busName": "0698",
+	    "planType": "0",					 //计划类型 1:首轮 0:到站
+	    "planTime": "2021-01-25 17:07:00",   //预计发班时间
+	    "arrivalTime": "2021-01-25 17:00:00" //预计到站时间
+    }
+]
+
+首轮运行计划：
+HASH:dpdb.dispatch.runstatus.route_id={routeId}.direction={direction}
+key:{busId}
+value:
+{
+    "firstStationId": "10004450",
+    "firstStationName": "镇龙新总站",
+    "busId": 19234232,
+    "busName": "2061",
+    "schePlanTime": "2020-05-13 21:00:00", //排班计划时间
+    "resetPlanTime": "2020-05-13 21:05:00",//首轮重算时间
+    "realPlanTime": "2020-05-13 21:05:00", //实际发班时间
+    "ckType": "1",
+    "ckTime": "2020-05-13 20:00:00",
+    "distance": "700.13213123",
+    "updateTime": "2020-05-13 20:00:00"
+}
+
+出场计划:
+LIST:dpdb.dispatch.parking.plan.route_id={routeId}
+{
+    "routeId": 94,
+    "direction": 0,
+    "busId": 3007091,
+    "firstStationId": 225801,
+    "latitude": 23.180091,
+    "longitude": 113.245717,
+    "taskId": -784943
+}
+
+非运营任务(车仔图红色):
+HASH:dpdb.dispatch.nonrun.task.route_id={routeId}
+key:{busId}
+value:
+{
+    "routeId": 94,
+    "busId": 19234232,
+    "busName": "2061",
+    "serviceType": 1,                   //任务类型
+    "taskId":-223424,                   //taskId
+    "startTime": "2020-05-13 20:00:00", //时间
+    "remark":"晚上20点补点",             //备注
+    "firstStationId": 234232,           //任务开始站点ID
+    "status":0,                         //0字体绿色:备注后默认值；1红色:即将收车
+    "green2RedLog":""                   //绿变红日志
+}
+
+营运任务(车仔图粉色):
+HASH:dpdb.dispatch.run.task.route_id={routeId}
+key:{busId}
+value:
+{
+    "nonrun":{
+        "routeId": 94,
+        "busId": 19234232,
+        "busName": "2061",
+        "serviceType": 1,                   //任务类型
+        "taskId":-223424,                   //taskId
+        "startTime": "2020-05-13 20:00:00", //时间
+        "remark":"晚上20点补点",             //备注
+        "firstStationId": 234232,           //任务开始站点ID
+        "status":0                          //0蓝色:备注后默认值；1红色:即将收车
+    }
+    "routeId": 55,
+    "direction": "1",
+    "busId": 3017987,
+    "busName": "5846",
+    "serviceType": 10,
+    "firstStationId": 10001796,
+    "taskId": -1137816,
+    "minStop": 5,                             //最小停站时间
+    "enterOrder": 1,                          //是否按车位发班  0:否 1:是
+    "tripBeginTime": "2020-10-09 14:31:02",   //路单开始时间
+    "twoLongOneShort": 0,   				  //是否两长一短  0:否 1:是
+    "cycleTask": 0,                           //是否循环任务  0:否 1:是
+    "returnFullLine",                         //回总站是否跑全程  0:否 1:是
+    "backRunTask":{                           //回程任务
+    	"direction": "0",
+    	"serviceType": 10,
+	    "firstStationId": 10001796,
+	    "taskId": -1137816,
+	    "minStop": 5
+    }
+    "remark": "",
+    "userId": "35560",
+    "createType": 0, //0:人工创建-车仔图粉色框 1:系统创建-车仔图粉色闪框
+    "createTime": "2020-10-09 14:31:02"
+}
+twoLongOneShort默认为1；
+cycleTask默认为0；
+cycleTask为1时twoLongOneShort只能为0；
+切换线路cycleTask只能为0；
+cycleTask为0时backRunTask不用填；
+cycleTask为1时backRunTask选填(来回预案)；
+填backRunTask时保证direction和backRunTask.direction不能同方向(环线除外)
+
+吃饭车辆:
+HASH:dpdb.dispatch.eat.bus.route_id={routeId}
+key:{busId}
+value:
+{
+    "routeId": 94,
+    "busId": 19234232,
+    "busName": "2061",
+    "upBeginTime": "11:07",      //上行吃饭开始时间
+    "downBeginTime": "11:25",    //下行吃饭开始时间
+    "upEatTime",				 //上行吃饭时间
+	"downEatTime",			     //下行吃饭时间
+    "arrivalTime": "yyyy-MM-dd HH:mm:ss",
+    "tripEatStatus": 1,          //本躺吃饭状态: 1:需要吃饭 0:不需要吃饭
+    "eatStatus": 1,              //总的吃饭状态: 1:需要吃饭 0:不需要吃饭
+    "operateTime": "2020-05-13 20:00:00"
+}
+
+蓝色(右键显示不吃饭操作): tripEatStatus为1、eatStatus为1
+灰色(右键显示吃饭操作): tripEatStatus为0、eatStatus为1
+不显示(右键显示吃饭操作): eatStatus为0
+
+右键-吃饭操作: tripEatStatus、eatStatus更新为1
+右键-不吃饭操作: tripEatStatus、eatStatus更新为0
+(车当前方向的反方向有“吃饭开始时间”才能设置 右键-吃饭操作)
+
+初始化数据：eatStatus全部为1，tripEatStatus全部为0
+
+每三分钟更新tripEatStatus：本躺到站预测大于吃饭开始时间，更新为1
+
+tripEatStatus为1的车才考虑预留吃饭时间
+
+tripEatStatus为1的车到站后吃不了饭，tripEatStatus更新为0
+
+tripEatStatus为1的车到站后吃得了饭，tripEatStatus、eatStatus更新为0
+
+收尾停场车辆设置:
+HASH:dpdb.dispatch.tail.parking.route_id={routeId}
+key:{direction}
+value:
+[
+    {
+        "routeId": 94,
+        "busId": 19234232,
+        "busName": "2061",
+        "direction": 0,
+        "operateTime": "2020-05-13 20:00:00"
+    }
+]
+
+尾车车辆:
+HASH:dpdb.dispatch.tail.bus.route_id={routeId}
+key:{direction}
+value:
+{
+    "routeId": 94,
+    "busId": 19234232,
+    "busName": "2061",
+    "direction": 0,
+    "operateTime": "2020-05-13 20:00:00"
+}
+
+尾车最后一轮未发车辆:
+HASH:dpdb.dispatch.last.round.bus.route_id={routeId}
+key:{direction}
+value:
+[
+    {
+        "routeId": 94,
+        "direction": 0,
+        "busId": 19234232,
+        "busName": "2061",
+        "operateTime": "2020-05-13 20:00:00"
+    },
+    {
+        "routeId": 94,
+        "direction": 0,
+        "busId": 19234233,
+        "busName": "2062",
+        "operateTime": "2020-05-13 20:00:00"
+    }
+]
+
+尾二等待尾车设置:
+HASH:dpdb.dispatch.tail2.bus.route_id={routeId}
+key:{direction}
+value:
+{
+    "routeId": 94,
+    "busId": 19234232,
+    "busName": "2061",
+    "direction": 0,
+    "waitTailBus": 0, //尾二是否等尾车再发班 1:是 0:否
+    "operateTime": "2020-05-13 20:00:00"
+}
+
+发班参数设置
+HASH:dpdb.dispatch.parameter.settings
+key:{routeId}
+value:
+{
+    "routeId": 11910,
+    "maxDispatchInterval": 30,
+    "upMinEatTime": 15,
+    "downMinEatTime": 15,
+    "brokenMinStop": 2,   //断位最小停站
+    "waitTailBus": 0,     //尾二是否等尾车再发班 1:是 0:否
+    "ensureTailBusByShortLine": 0, //短线保尾车 1:是 0:否
+    "userId": "10542"
+    "userName": "1388",
+    "operateTime": "2021-03-08 10:47:31"
+}
+
+调车位设置:
+HASH:dpdb.dispatch.adjust.position.route_id={routeId}
+key:{busId}
+value:
+{
+    "routeId": 55,
+    "direction": "1",
+    "busId": 3017987,
+    "busName": "5846",
+    "tripBeginTime": "2020-10-09 14:31:02",//路单开始时间
+    "afterBusId": 3017987,
+    "afterBusName": "5846",
+    "userId": "35560",
+    "createTime": "2020-10-09 14:31:02"
+}
+
+发班提示:
+HASH:dpdb.dispatch.hint.route_id={routeId}
+key:{direction}
+value:
+[
+    {
+        "hintCode": "FR",							//提示编码
+        "hint": "首轮/到站自动发班已关闭，请打开开关",  //提示内容
+        "hintSeconds": 60,						    //提示秒
+        "createTime": "2020-10-09 14:31:02"         //创建时间
+    },
+    {
+        "hintCode": "TW",
+        "hint": "正在等待XXXX到站进行调位",
+        "hintSeconds": 60,
+        "createTime": "2020-10-09 14:31:02"
+    }
+]
+当前时间大于(创建时间+提示秒),不显示发班提示
+
+发班重打时间:
+HASH:dpdb.dispatch.redispatch
+key:{routeId}
+{
+    "routeId": 710,
+    "reDispatchList": [
+        {
+            "id": "1",
+            "direction": "0",
+            "busId": 3017987,
+            "busName": "5834",
+            "serviceType": 1,
+            "serviceName": "全程",
+            "tripBeginTime": "2020-10-09 14:31:00",
+            "newTripBeginTime": "2020-10-09 14:35:00"
+        },
+        {
+            "id": "2",
+            "direction": "1",
+            "busId": 3043989,
+            "busName": "5846",
+            "serviceType": 1,
+            "serviceName": "全程",
+            "tripBeginTime": "2020-10-09 14:31:00",
+            "newTripBeginTime": "2020-10-09 14:35:00"
+        }
+    ],
+    "countDown": 60,
+    "expireTime": "2020-10-09 14:29:00"
+    "createTime": "2020-10-09 14:26:00"
+}
+发班重打接口：
+POST http://10.87.106.1:8081/dispatch-auto/redispatch
+{"routeId":710,"ids":["1","2","3"]}
+
+定点头车:
+HASH:dpdb.dispatch.regular.bus.route_id={routeId}
+key:{direction}
+value:
+{
+    "routeId": 94,
+    "busId": 19234232,
+    "busName": "2061",
+    "direction": 0,
+    "beginTime": "2020-05-13 20:00:00",
+    "endTime": "2020-05-13 20:00:00"
+    "operateTime": "2020-05-13 20:00:00"
+}
+
+发班模式切换:
+HASH:dpdb.dispatch.calcul.percent
+key: {routeId}
+value: 1         //0:三台车发班 1:所有车均衡发班
+
+首轮车位匹配切换：
+HASH:dpdb.dispatch.fr.plan
+key:{routeId}
+value: 1        //0:默认,1:首轮车位匹配
+
+自动发班最后下发的调度指令:
+HASH:dpdb.dispatch.last.dispatch.route_id={routeId}
+key:{busId}
+value:
+{
+    "busId": 1911574,
+    "direction": "1",
+    "dispatchAuto": "1",
+    "mark": "è\u0087ªå\u008a¨å\u008f\u0091ç\u008f\u00ad|1005|3472:1009|3537:1026|3536:1031",
+    "obuId": 911574,
+    "planDate": "20210510",
+    "routeCode": "00010",
+    "routeId": 427,
+    "startTime": "1014",
+    "taskId": -840804,
+    "userId": 18880
+}
+自动发班下发调度后，保存调度入参到'自动发班最后下发的调度指令'，简图已调度右键重发根据busId获取'getByBusEx'、'自动发班最后下发的调度指令',对比planDate、startTime、taskId是否一致，一致重发调度入参dispatchAuto为1，调度入参其它参数从'自动发班最后下发的调度指令'取；不一致，dispatchAuto为0，调度入参其它参数从'getByBusEx'取。
+
+复行:
+HASH:dpdb.dispatch.resumerun.route_id={routeId}
+key:{busId}
+value:
+{
+    "routeId": 55,
+    "direction": "1",
+    "firstStationId": 10001796,
+    "busId": 3017987,
+    "busName": "5846",
+    "canAdvance": "0", //可提前 0:不可 1:可
+    "expectHowLong": "20",
+    "expectResumeRunTime": "2020-10-09 15:00:00",
+    "remark": "",
+    "userId": "35560",
+    "createTime": "2020-10-09 14:31:02"
+}

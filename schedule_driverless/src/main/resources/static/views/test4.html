@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- 引入 ECharts 文件 -->
+    <script src="../plugins/chart3.js"></script>
+</head>
+<body>  
+<canvas id="canvasNode" width="1500" height="600"></canvas>
+<script   language="javascript">
+    var canvasNode = document.getElementById('canvasNode')
+    var cor={};
+    cor.XInfo=["车位1","车位2","车位3","车位4","车位5","车位6","车位1","车位2","车位3","车位4","车位5","车位6"];//y轴的对应每个节点的信息，属性必须为XInfo
+    cor.YInfo=['6:00', '6:30','7:00','7:30', '8:00','9:30', '9:00','9:30', '10:00','10:30', '11:00','11:30', '12:00','12:30', '13:00','13:30', '14:00','14:30', '15:00','15:30', '16:00','16:30', '17:00','17:30', '18:00','18:30', '19:00','19:30', '20:00','20:30', '21:00','21:30', '22:00'];//x轴每个节点的信息 属性必须为YInfo
+    cor.percent=[0.2,0.4,0.13,0.35,0.7,0.51,0.3,0.91];//x轴每个节点占y轴最大 的百分比 属性必须为 percet
+    cor.color=['black'];//可以不写 属性必须为color
+    cor.Xf = [
+        {
+            name: '车位1',
+            timelist : [
+                {
+                    start: '6:30',
+                    end : '7:22'
+                },
+                {
+                    start: '7:32',
+                    end : '8:40'
+                },{
+                    start: '8:50',
+                    end : '10:03'
+                }
+            ]
+        },
+        {
+            name: '车位2',
+            timelist : [
+                {
+                    start: '6:45',
+                    end : '7:37'
+                },
+                {
+                    start: '7:47',
+                    end : '8:55'
+                },{
+                    start: '9:10',
+                    end : '10:15'
+                }
+            ]
+        },
+        {
+            name: '车位2',
+            timelist : [
+                {
+                    start: '6:45',
+                    end : '7:37'
+                },
+                {
+                    start: '7:47',
+                    end : '8:55'
+                },{
+                    start: '9:10',
+                    end : '10:15'
+                }
+            ]
+        },
+        {
+            name: '车位2',
+            timelist : [
+                {
+                    start: '6:45',
+                    end : '7:37'
+                },
+                {
+                    start: '7:47',
+                    end : '8:55'
+                },{
+                    start: '9:10',
+                    end : '10:15'
+                }
+            ]
+        },
+        {
+            name: '车位2',
+            timelist : [
+                {
+                    start: '6:45',
+                    end : '7:37'
+                },
+                {
+                    start: '7:47',
+                    end : '8:55'
+                },{
+                    start: '9:10',
+                    end : '10:15'
+                }
+            ]
+        },
+        {
+            name: '车位2',
+            timelist : [
+                {
+                    start: '6:45',
+                    end : '7:37'
+                },
+                {
+                    start: '7:47',
+                    end : '8:55'
+                },{
+                    start: '9:10',
+                    end : '10:15'
+                }
+            ]
+        },
+        {
+            name: '车位2',
+            timelist : [
+                {
+                    start: '6:45',
+                    end : '7:37'
+                },
+                {
+                    start: '7:47',
+                    end : '8:55'
+                },{
+                    start: '9:10',
+                    end : '10:15'
+                }
+            ]
+        },
+        {
+            name: '车位2',
+            timelist : [
+                {
+                    start: '6:45',
+                    end : '7:37'
+                },
+                {
+                    start: '7:47',
+                    end : '8:55'
+                },{
+                    start: '9:10',
+                    end : '10:15'
+                }
+            ]
+        }
+     ]
+    canvas.drawBarChart(canvasNode,cor);
+</script>
+
+</body>  
+</html>

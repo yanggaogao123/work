@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.ScheduleParamsDriverlessMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.dynamic.bean.ScheduleParamsDriverless">
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="DOUBLE_RUN_MAX" jdbcType="DECIMAL" property="doubleRunMax" />
+    <result column="UP_DIRECTION" jdbcType="VARCHAR" property="upDirection" />
+    <result column="DOWN_DIRECTION" jdbcType="VARCHAR" property="downDirection" />
+    <result column="VEHICLE_CONTENT" jdbcType="DECIMAL" property="vehicleContent" />
+    <result column="END_DIRECTION" jdbcType="DECIMAL" property="endDirection" />
+    <result column="UP_BEGIN_NUM" jdbcType="DECIMAL" property="upBeginNum" />
+    <result column="DOWN_BEGIN_NUM" jdbcType="DECIMAL" property="downBeginNum" />
+    <result column="TEMPLATE_ID" jdbcType="DECIMAL" property="templateId" />
+    <result column="UPDATE_USER" jdbcType="DECIMAL" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="UP_FIRST_TIME" jdbcType="VARCHAR" property="upFirstTime" />
+    <result column="UP_LATEST_TIME" jdbcType="VARCHAR" property="upLatestTime" />
+    <result column="DOWN_FIRST_TIME" jdbcType="VARCHAR" property="downFirstTime" />
+    <result column="DOWN_LATEST_TIME" jdbcType="VARCHAR" property="downLatestTime" />
+    <result column="ANCHOR_DURATION_MIN" jdbcType="DECIMAL" property="anchorDurationMin" />
+  </resultMap>
+
+  <select id="getByTemplateId" resultMap="BaseResultMap" parameterType="map">
+    select * from BS_SCHEDULE_PARAMS_DRIVERLESS
+    where template_id = #{templateId, jdbcType=VARCHAR}
+  </select>
+</mapper>

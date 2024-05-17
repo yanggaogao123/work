@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.RouteMapper">
+    <resultMap id="routeMap" type="com.gci.schedule.driverless.bean.scheduleD.Route">
+        <result column="route_id" jdbcType="DECIMAL" property="routeId" />
+        <result column="route_code" jdbcType="VARCHAR" property="routeCode" />
+        <result column="route_name" jdbcType="VARCHAR" property="routeName" />
+        <result column="organ_id" jdbcType="DECIMAL" property="organId" />
+    </resultMap>
+
+    <select id="getListByOrganId" resultMap="routeMap" >
+        select r.route_id,r.route_code,r.route_name,r.organ_id from apts.bs_route r
+        where r.organ_id in (
+            select o.organ_id from apts.bs_organ o
+            connect by prior o.organ_id = o.parent_organ_id
+            start with o.organ_id = #{organId}
+        )
+        order by r.sort
+    </select>
+
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.ScheduleParamsEnduranceDynamicMapper">
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.dynamic.bean.ScheduleParamsEndurance">
+        <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId"/>
+        <result column="TEMPLATE_ID" jdbcType="DECIMAL" property="templateId"/>
+        <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser"/>
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime"/>
+
+        <result column="STATION_ID" jdbcType="DECIMAL" property="stationId"/>
+        <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName"/>
+        <result column="BEGIN_TIME" jdbcType="VARCHAR" property="beginTime"/>
+        <result column="END_TIME" jdbcType="VARCHAR" property="endTime"/>
+        <result column="BUS_NUMBER" jdbcType="DECIMAL" property="busNumber"/>
+        <result column="SUPPLY_TIME" jdbcType="DECIMAL" property="supplyTime"/>
+    </resultMap>
+
+    <select id="getByTemplateId" resultMap="BaseResultMap" parameterType="map">
+        select * from BS_SCHEDULE_PARAMS_ENDURANCE where template_id = #{templateId, jdbcType=DECIMAL}
+    </select>
+
+    <select id="getEnduranceMileageByTemplateId" resultType="java.lang.Integer">
+        select endurance_mileage from BS_SCHEDULE_PARAMS_ROUTE where TEMPLATE_ID=#{templateId}
+    </select>
+
+</mapper>

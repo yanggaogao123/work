@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyChargeLoginfDetailMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.DyChargeLoginfDetail">
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="CHARGE_LOGINF_ID" jdbcType="DECIMAL" property="chargeLoginfId" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, CHARGE_LOGINF_ID, REMARK, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DY_CHARGE_LOGINF_DETAIL
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from DY_CHARGE_LOGINF_DETAIL
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.bs.DyChargeLoginfDetail">
+    insert into DY_CHARGE_LOGINF_DETAIL (ID, CHARGE_LOGINF_ID, REMARK, 
+      UPDATE_TIME)
+    values (SEQ_DY_CHARGE_LOGINF_DETAIL.nextval, #{chargeLoginfId,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR},
+      #{updateTime,jdbcType=TIMESTAMP})
+
+    <selectKey keyProperty="id" resultType="Long" order="AFTER">
+      select SEQ_DY_CHARGE_LOGINF_DETAIL.currVal from dual
+    </selectKey>
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.bs.DyChargeLoginfDetail">
+    insert into DY_CHARGE_LOGINF_DETAIL
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="chargeLoginfId != null">
+        CHARGE_LOGINF_ID,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="chargeLoginfId != null">
+        #{chargeLoginfId,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.bs.DyChargeLoginfDetail">
+    update DY_CHARGE_LOGINF_DETAIL
+    <set>
+      <if test="chargeLoginfId != null">
+        CHARGE_LOGINF_ID = #{chargeLoginfId,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.bs.DyChargeLoginfDetail">
+    update DY_CHARGE_LOGINF_DETAIL
+    set CHARGE_LOGINF_ID = #{chargeLoginfId,jdbcType=DECIMAL},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+</mapper>

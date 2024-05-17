@@ -1,0 +1,68 @@
+/*保存*/
+.save {
+    height: 30px;
+    font-size: 12px;
+    background: url('img/save.png') no-repeat;
+    background-size: 100% 100%;
+    border: 0px;
+    cursor: pointer;
+    margin: 4px 0px;
+    padding: 0.2em, 0.4em;
+    margin: 2;
+    width: 84px;
+    margin-top: 2px;
+    margin-left: 5px;
+}
+/*取消*/
+.cancle {
+    height: 30px;
+    font-size: 12px;
+    background: url('img/cancle.png') no-repeat;
+    background-size: 100% 100%;
+    border: 0px;
+    cursor: pointer;
+    margin: 4px 0px;
+    padding: 0.2em, 0.4em;
+    margin: 2;
+    width: 84px;
+    margin-top: 2px;
+    margin-left: 5px;
+}
+
+/*datagrid颜色不改变*/
+.datagrid-row-selected {
+    background: #fcfcfc !important;
+}
+
+/*斜杆start*/
+td[class=first]:before{
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 122px;
+    top: 0;
+    left: 0;
+    background-color: black;
+    display: block;
+    transform: rotate(-66deg);
+    transform-origin: top;
+
+}
+
+span0{
+    display: block;
+    width: 100%;
+    height: 50px;
+    position: relative;
+}
+span1{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+span2{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+/*斜杆end*/

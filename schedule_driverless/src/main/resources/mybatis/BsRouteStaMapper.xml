@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.BsRouteStaMapper">
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.BsRouteSta">
+        <id column="ROUTE_STA_ID" jdbcType="DECIMAL" property="routeStaId"/>
+        <result column="VERSION" jdbcType="DECIMAL" property="version"/>
+        <result column="ARRIVAL_RADIUS" jdbcType="DECIMAL" property="arrivalRadius"/>
+        <result column="BUS_STOP_CODE" jdbcType="VARCHAR" property="busStopCode"/>
+        <result column="BUS_STOP_FLAG" jdbcType="VARCHAR" property="busStopFlag"/>
+        <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser"/>
+        <result column="DATE_CREATED" jdbcType="TIMESTAMP" property="dateCreated"/>
+        <result column="DEPARTURE_RADIUS" jdbcType="DECIMAL" property="departureRadius"/>
+        <result column="LAST_UPDATED" jdbcType="TIMESTAMP" property="lastUpdated"/>
+        <result column="MILEAGE" jdbcType="DECIMAL" property="mileage"/>
+        <result column="ORDER_NUMBER" jdbcType="DECIMAL" property="orderNumber"/>
+        <result column="RECORD_STATUS" jdbcType="VARCHAR" property="recordStatus"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId"/>
+        <result column="ROUTE_STATION_NAME" jdbcType="VARCHAR" property="routeStationName"/>
+        <result column="STATION_ID" jdbcType="DECIMAL" property="stationId"/>
+        <result column="STATION_MARK" jdbcType="VARCHAR" property="stationMark"/>
+        <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser"/>
+        <result column="ROADSEG_ID" jdbcType="DECIMAL" property="roadsegId"/>
+        <result column="OPERATION" jdbcType="VARCHAR" property="operation"/>
+        <result column="IS_ACTIVE" jdbcType="VARCHAR" property="isActive"/>
+        <result column="STATION_ID_BZ" jdbcType="DECIMAL" property="stationIdBz"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ROUTE_STA_ID
+        , VERSION, ARRIVAL_RADIUS, BUS_STOP_CODE, BUS_STOP_FLAG, CREATE_USER,
+    DATE_CREATED, DEPARTURE_RADIUS, LAST_UPDATED, MILEAGE, ORDER_NUMBER, RECORD_STATUS,
+    REMARK, ROUTE_ID, ROUTE_STATION_NAME, STATION_ID, STATION_MARK, UPDATE_USER, ROADSEG_ID,
+    OPERATION, IS_ACTIVE, STATION_ID_BZ
+    </sql>
+
+    <select id="getByRouteStaId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from BS_ROUTE_STA
+        where ROUTE_STA_ID = #{routeStaId,jdbcType=DECIMAL}
+    </select>
+
+    <select id="getByBusStopCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from BS_ROUTE_STA
+        where BUS_STOP_CODE = #{busStopCode} and ROWNUM = 1
+    </select>
+
+    <select id="selectListByRouteId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select ROUTE_ID,
+               STATION_ID,
+               BUS_STOP_CODE,
+               STATION_MARK,
+               ORDER_NUMBER,
+               ROUTE_STA_ID
+        from BS_ROUTE_STA
+        where ROUTE_ID = #{routeId,jdbcType=DECIMAL}
+    </select>
+
+</mapper>

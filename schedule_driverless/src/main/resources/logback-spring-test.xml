@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <!--<contextName>logback</contextName>-->
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <!--<property name="log.path" value="${catalina.base}/logs/${APPDIR}/logs/logback.log" />-->
+    <property name="APPDIR" value="schedule-driverless" />
+    <!--格式化输出：%d:表示日期    %thread:表示线程名     %-5level:级别从左显示5个字符宽度  %msg:日志消息    %n:是换行符-->
+    <property name="CUSTOM_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.sss} %-5level - %msg%n"/>
+
+    <!--输出到文件-->
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.base}/logs/${APPDIR}/info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/${APPDIR}/info/info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{10} Line:%-3L - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 日志记录器，日期滚动记录 -->
+    <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.base}/logs/${APPDIR}/warn.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/${APPDIR}/warn/warn.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{10} Line:%-3L - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--输出到文件-->
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.base}/logs/${APPDIR}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/${APPDIR}/error/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{10} Line:%-3L - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.base}/logs/${APPDIR}/debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/${APPDIR}/debug/debug.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{10} Line:%-3L - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 日志输出级别 -->
+    <root level="INFO">
+        <appender-ref ref="FILE_INFO" />
+        <appender-ref ref="FILE_WARN" />
+        <appender-ref ref="FILE_ERROR" />
+        <appender-ref ref="FILE_DEBUG" />
+    </root>
+</configuration>

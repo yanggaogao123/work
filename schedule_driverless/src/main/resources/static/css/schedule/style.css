@@ -1,0 +1,163 @@
+.rowSelectGray{
+	background-color: #404244;
+}
+
+.rowSelectRed{
+	background-color: #F80606;
+}
+
+.rowSelectYellow{
+	background-color: #F0950E;
+}
+
+.rowSelectBlue{
+	background-color: #0FE9E0;
+}
+
+.table_list { table-layout:fixed; }
+
+table.table_list {
+    border-top: 1px solid #DFDFDF;
+    border-collapse: collapse;
+    margin-bottom: 0em;
+    line-height:1em;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+
+}
+
+.table_list col {
+    /* table-layout:fixed; */
+
+
+}
+
+.table_list tr {
+    border: 0;
+    vertical-align: middle;
+
+
+}
+
+.table_list tr>td:first-child, .table_list tr>th:first-child {
+    padding-left: 1px;
+}
+
+.table_list tr>td:last-child, .table_list tr>th:last-child {
+    padding-right: 1px;
+}
+
+.table_list td{
+
+    line-height: 1.7em;
+    text-align: center;
+    vertical-align: middle;
+    font-size:12px;
+    border: 1px solid #cccccc;
+    /* position: relative; */
+
+}
+
+.table_list th {
+    background-color: #efefef;
+    background-image: -moz-linear-gradient(top, #ffffff, #eaeaea);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #eaeaea));
+    /*
+         filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#ffffff', EndColorStr = '#eaeaea');
+     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#eaeaea')";
+     */
+    color: #666666;
+    font-weight: bold;
+    line-height: 1.7em;
+    padding: 0.2em 1px;
+    font-size:12px;
+    border: 1px solid #cccccc;
+    vertical-align: middle;
+}
+
+
+.table_list tbody tr td {
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+}
+
+.table_list th a {
+    display: block;
+    text-decoration: none;
+}
+
+.table_list th a:link, .table_list th a:visited {
+    color: #666666;
+}
+
+.table_list th a:hover, .table_list th a:focus {
+    color: #333333;
+}
+
+.table_list th.sortable a {
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 1.1em;
+}
+
+.div_parts_left_table
+{
+    width:100%;
+
+    border: 0px #000000 blue;
+
+    overflow: auto;
+
+    background: url('images/main/table_bg_plus.png') repeat;
+}
+
+
+.export_table_list {
+    border-top: 1px solid #DFDFDF;
+    border-collapse: collapse;
+    margin-bottom: 0em;
+    line-height:1em;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+}
+
+.export_table_list tr {
+    border: 0;
+    vertical-align: middle;
+
+
+}
+
+.export_table_list tr>td:first-child, .table_list tr>th:first-child {
+    padding-left: 1px;
+}
+
+.export_table_list tr>td:last-child, .table_list tr>th:last-child {
+    padding-right: 1px;
+}
+
+.export_table_list td{
+
+    line-height: 1.7em;
+    text-align: left;
+    vertical-align: center;
+    font-size:12px;
+    border: 1px solid #cccccc;
+    /* position: relative; */
+
+}
+
+.rowStyleUp{
+	background-color: #73CE46;
+}
+
+.rowStyleDown{
+    background-color: #aeffc4;
+}
+
+.rowStyleFix{
+	background-color: #c1c2c3;
+}

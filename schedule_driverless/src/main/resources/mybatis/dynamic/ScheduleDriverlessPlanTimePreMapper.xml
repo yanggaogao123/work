@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.dynamic.mapper.ScheduleDriverlessPlanTimePreMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.dynamic.bean.ScheduleDriverlessPlanTimePre">
+    <id property="id" column="id" jdbcType="DECIMAL"/>
+    <id property="routeId" column="route_id" jdbcType="DECIMAL"/>
+    <id property="runDate" column="run_date" jdbcType="TIMESTAMP"/>
+    <id property="busId" column="bus_id" jdbcType="DECIMAL"/>
+    <id property="taskId" column="task_id" jdbcType="DECIMAL"/>
+    <id property="tripBeginTime" column="trip_begin_time" jdbcType="TIMESTAMP"/>
+    <id property="tripEndTime" column="trip_end_time" jdbcType="TIMESTAMP"/>
+    <id property="firstStationId" column="first_station_id" jdbcType="DECIMAL"/>
+    <id property="lastStationId" column="last_station_id" jdbcType="DECIMAL"/>
+  </resultMap>
+
+  <select id="getByRouteAndRunDate" resultMap="BaseResultMap" parameterType="map">
+    select p.*, v.first_station_id, v.last_station_id
+    from DY_DRIVERLESS_PLAN_TIME_PRE p
+           left join apts.v_dispatch_task v
+                     on p.TASK_ID = v.routesub_id
+    where p.ROUTE_ID = #{routeId, jdbcType=DECIMAL}
+      and p.RUN_DATE = #{runDate, jdbcType=TIMESTAMP}
+    order by p.trip_begin_time
+  </select>
+</mapper>

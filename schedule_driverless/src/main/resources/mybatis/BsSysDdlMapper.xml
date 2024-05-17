@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.BsSysDdlMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.BsSysDdl">
+    <id column="SYS_DDL_ID" jdbcType="DECIMAL" property="sysDdlId" />
+    <result column="VERSION" jdbcType="DECIMAL" property="version" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+    <result column="DISPLAY_VALUE" jdbcType="VARCHAR" property="displayValue" />
+    <result column="KEY_WORD" jdbcType="VARCHAR" property="keyWord" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="SPARE_VALUE" jdbcType="VARCHAR" property="spareValue" />
+    <result column="SYS_TYPE" jdbcType="VARCHAR" property="sysType" />
+    <result column="SYS_VALUE" jdbcType="VARCHAR" property="sysValue" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    SYS_DDL_ID, VERSION, DESCRIPTION, DISPLAY_VALUE, KEY_WORD, REMARK, SPARE_VALUE, SYS_TYPE, 
+    SYS_VALUE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from BS_SYS_DDL
+    where SYS_DDL_ID = #{sysDdlId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from BS_SYS_DDL
+    where SYS_DDL_ID = #{sysDdlId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.bs.BsSysDdl">
+    insert into BS_SYS_DDL (SYS_DDL_ID, VERSION, DESCRIPTION, 
+      DISPLAY_VALUE, KEY_WORD, REMARK, 
+      SPARE_VALUE, SYS_TYPE, SYS_VALUE
+      )
+    values (#{sysDdlId,jdbcType=DECIMAL}, #{version,jdbcType=DECIMAL}, #{description,jdbcType=VARCHAR}, 
+      #{displayValue,jdbcType=VARCHAR}, #{keyWord,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{spareValue,jdbcType=VARCHAR}, #{sysType,jdbcType=VARCHAR}, #{sysValue,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.bs.BsSysDdl">
+    insert into BS_SYS_DDL
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="sysDdlId != null">
+        SYS_DDL_ID,
+      </if>
+      <if test="version != null">
+        VERSION,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+      <if test="displayValue != null">
+        DISPLAY_VALUE,
+      </if>
+      <if test="keyWord != null">
+        KEY_WORD,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="spareValue != null">
+        SPARE_VALUE,
+      </if>
+      <if test="sysType != null">
+        SYS_TYPE,
+      </if>
+      <if test="sysValue != null">
+        SYS_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="sysDdlId != null">
+        #{sysDdlId,jdbcType=DECIMAL},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=DECIMAL},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="displayValue != null">
+        #{displayValue,jdbcType=VARCHAR},
+      </if>
+      <if test="keyWord != null">
+        #{keyWord,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="spareValue != null">
+        #{spareValue,jdbcType=VARCHAR},
+      </if>
+      <if test="sysType != null">
+        #{sysType,jdbcType=VARCHAR},
+      </if>
+      <if test="sysValue != null">
+        #{sysValue,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.bs.BsSysDdl">
+    update BS_SYS_DDL
+    <set>
+      <if test="version != null">
+        VERSION = #{version,jdbcType=DECIMAL},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="displayValue != null">
+        DISPLAY_VALUE = #{displayValue,jdbcType=VARCHAR},
+      </if>
+      <if test="keyWord != null">
+        KEY_WORD = #{keyWord,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="spareValue != null">
+        SPARE_VALUE = #{spareValue,jdbcType=VARCHAR},
+      </if>
+      <if test="sysType != null">
+        SYS_TYPE = #{sysType,jdbcType=VARCHAR},
+      </if>
+      <if test="sysValue != null">
+        SYS_VSALUE = #{sysValue,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SYS_DDL_ID = #{sysDdlId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.bs.BsSysDdl">
+    update BS_SYS_DDL
+    set VERSION = #{version,jdbcType=DECIMAL},
+      DESCRIPTION = #{description,jdbcType=VARCHAR},
+      DISPLAY_VALUE = #{displayValue,jdbcType=VARCHAR},
+      KEY_WORD = #{keyWord,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      SPARE_VALUE = #{spareValue,jdbcType=VARCHAR},
+      SYS_TYPE = #{sysType,jdbcType=VARCHAR},
+      SYS_VALUE = #{sysValue,jdbcType=VARCHAR}
+    where SYS_DDL_ID = #{sysDdlId,jdbcType=DECIMAL}
+  </update>
+  <select id="selectSysDdlBySysType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from BS_SYS_DDL where SYS_TYPE = #{sysType,jdbcType=VARCHAR}
+  </select>
+</mapper>

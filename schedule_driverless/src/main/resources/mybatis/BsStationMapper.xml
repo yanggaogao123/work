@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.BsStationMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.BsStation">
+    <id column="STATION_ID" jdbcType="DECIMAL" property="stationId" />
+    <result column="VERSION" jdbcType="DECIMAL" property="version" />
+    <result column="AUDIT_RESULT" jdbcType="VARCHAR" property="auditResult" />
+    <result column="AUDIT_TIME" jdbcType="TIMESTAMP" property="auditTime" />
+    <result column="AUDIT_USER" jdbcType="VARCHAR" property="auditUser" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="DATE_CREATED" jdbcType="TIMESTAMP" property="dateCreated" />
+    <result column="DIRECTION" jdbcType="VARCHAR" property="direction" />
+    <result column="IS_ACTIVE" jdbcType="VARCHAR" property="isActive" />
+    <result column="LAST_UPDATED" jdbcType="TIMESTAMP" property="lastUpdated" />
+    <result column="LATITUDE_FIX" jdbcType="FLOAT" property="latitudeFix" />
+    <result column="LATITUDE" jdbcType="FLOAT" property="latitude" />
+    <result column="LATITUDED" jdbcType="FLOAT" property="latituded" />
+    <result column="LATITUDED_DIS" jdbcType="FLOAT" property="latitudedDis" />
+    <result column="LONGITUDE" jdbcType="FLOAT" property="longitude" />
+    <result column="LONGITUDE_FIX" jdbcType="FLOAT" property="longitudeFix" />
+    <result column="LONGITUDED" jdbcType="FLOAT" property="longituded" />
+    <result column="LONGITUDED_DIS" jdbcType="FLOAT" property="longitudedDis" />
+    <result column="PARKING_SPACES" jdbcType="VARCHAR" property="parkingSpaces" />
+    <result column="REGION_CODE" jdbcType="VARCHAR" property="regionCode" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="ROAD_NAME_ID" jdbcType="DECIMAL" property="roadNameId" />
+    <result column="STATION_NAME_ID" jdbcType="DECIMAL" property="stationNameId" />
+    <result column="STATION_ADDRESS" jdbcType="VARCHAR" property="stationAddress" />
+    <result column="STATION_CHANNEL" jdbcType="VARCHAR" property="stationChannel" />
+    <result column="STATION_CODE" jdbcType="VARCHAR" property="stationCode" />
+    <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName" />
+    <result column="STATION_ORDER" jdbcType="DECIMAL" property="stationOrder" />
+    <result column="STATION_TYPE" jdbcType="VARCHAR" property="stationType" />
+    <result column="STREET_CODE" jdbcType="VARCHAR" property="streetCode" />
+    <result column="STATION_ALIAS" jdbcType="VARCHAR" property="stationAlias" />
+    <result column="SORT" jdbcType="DECIMAL" property="sort" />
+    <result column="STATION_POSITION_ID" jdbcType="DECIMAL" property="stationPositionId" />
+    <result column="GPSKEY" jdbcType="VARCHAR" property="gpskey" />
+    <result column="STA_NAME_ID" jdbcType="DECIMAL" property="staNameId" />
+    <result column="LATTITUDE" jdbcType="FLOAT" property="lattitude" />
+    <result column="LATTITUDED" jdbcType="FLOAT" property="lattituded" />
+    <result column="LATTITUDED_DIS" jdbcType="FLOAT" property="lattitudedDis" />
+    <result column="OPERATION" jdbcType="VARCHAR" property="operation" />
+    <result column="RECORD_STATUS" jdbcType="VARCHAR" property="recordStatus" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    STATION_ID, VERSION, AUDIT_RESULT, AUDIT_TIME, AUDIT_USER, CREATE_USER, DATE_CREATED,
+    DIRECTION, IS_ACTIVE, LAST_UPDATED, LATITUDE_FIX, LATITUDE, LATITUDED, LATITUDED_DIS,
+    LONGITUDE, LONGITUDE_FIX, LONGITUDED, LONGITUDED_DIS, PARKING_SPACES, REGION_CODE,
+    REMARK, ROAD_NAME_ID, STATION_NAME_ID, STATION_ADDRESS, STATION_CHANNEL, STATION_CODE,
+    STATION_NAME, STATION_ORDER, STATION_TYPE, STREET_CODE, STATION_ALIAS, SORT, STATION_POSITION_ID,
+    GPSKEY, STA_NAME_ID, LATTITUDE, LATTITUDED, LATTITUDED_DIS, OPERATION, RECORD_STATUS
+  </sql>
+  <select id="getByStationId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from BS_STATION
+    where STATION_ID = #{stationId,jdbcType=DECIMAL}
+  </select>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.LogForecastTimeMapper">
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.LogForecastTime">
+        <result column="RUN_DATE" jdbcType="TIMESTAMP" property="runDate"/>
+        <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId"/>
+        <result column="ROUTE_NAME" jdbcType="VARCHAR" property="routeName"/>
+        <result column="BUS_ID" jdbcType="DECIMAL" property="busId"/>
+        <result column="BUS_NAME" jdbcType="VARCHAR" property="busName"/>
+        <result column="DIRECTION" jdbcType="VARCHAR" property="direction"/>
+        <result column="STATION_ID" jdbcType="DECIMAL" property="stationId"/>
+        <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName"/>
+        <result column="LAST_STATION_ID" jdbcType="DECIMAL" property="lastStationId"/>
+        <result column="LAST_STATION_NAME" jdbcType="VARCHAR" property="lastStationName"/>
+        <result column="SERVICE_TYPE" jdbcType="VARCHAR" property="serviceType"/>
+        <result column="SERVICE_NAME" jdbcType="VARCHAR" property="serviceName"/>
+        <result column="TRIP_BEGIN_TIME" jdbcType="TIMESTAMP" property="tripBeginTime"/>
+        <result column="FORECAST_TIME" jdbcType="TIMESTAMP" property="forecastTime"/>
+        <result column="FORECAST_TYPE" jdbcType="VARCHAR" property="forecastType"/>
+        <result column="RUN_STATUS" jdbcType="VARCHAR" property="runStatus"/>
+        <result column="PREDICT_TIME" jdbcType="DECIMAL" property="predictTime"/>
+        <result column="COUNT" jdbcType="DECIMAL" property="stationCount"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.gci.schedule.driverless.bean.LogForecastTime">
+    insert into SCHEDULES.LOG_FORECAST_TIME (ID, RUN_DATE, ROUTE_ID,
+      ROUTE_NAME, BUS_ID, BUS_NAME, 
+      DIRECTION, STATION_ID, STATION_NAME, 
+      LAST_STATION_ID, LAST_STATION_NAME, SERVICE_TYPE, 
+      SERVICE_NAME, TRIP_BEGIN_TIME, FORECAST_TIME, FORECAST_TYPE,
+      RUN_STATUS,PREDICT_TIME,STATION_COUNT)
+    values (SCHEDULES.SEQ_LOG_FORECAST_TIME_ID.nextval,
+    #{runDate,jdbcType=TIMESTAMP}, #{routeId,jdbcType=DECIMAL},
+      #{routeName,jdbcType=VARCHAR}, #{busId,jdbcType=DECIMAL}, #{busName,jdbcType=VARCHAR}, 
+      #{direction,jdbcType=VARCHAR}, #{stationId,jdbcType=DECIMAL}, #{stationName,jdbcType=VARCHAR}, 
+      #{lastStationId,jdbcType=DECIMAL}, #{lastStationName,jdbcType=VARCHAR}, #{serviceType,jdbcType=VARCHAR}, 
+      #{serviceName,jdbcType=VARCHAR}, #{tripBeginTime,jdbcType=TIMESTAMP}, #{forecastTime,jdbcType=TIMESTAMP}, 
+      #{forecastType,jdbcType=VARCHAR},#{runStatus,jdbcType=VARCHAR}, #{predictTime,jdbcType=DECIMAL},
+      #{stationCount,jdbcType=DECIMAL})
+  </insert>
+
+    <insert id="insertMany">
+        insert into SCHEDULES.LOG_FORECAST_TIME (
+        ID, RUN_DATE, ROUTE_ID,ROUTE_NAME, BUS_ID, BUS_NAME,
+        DIRECTION, STATION_ID, STATION_NAME,LAST_STATION_ID,
+        LAST_STATION_NAME, SERVICE_TYPE,SERVICE_NAME,
+        TRIP_BEGIN_TIME, FORECAST_TIME, FORECAST_TYPE,
+        RUN_STATUS,PREDICT_TIME,STATION_COUNT)
+        select SCHEDULES.SEQ_LOG_FORECAST_TIME_ID.nextval,t.* from (
+        <foreach collection="data" index="index" item="d" separator="union all">
+            select
+            #{d.runDate,jdbcType=TIMESTAMP}, #{d.routeId,jdbcType=DECIMAL},
+            #{d.routeName,jdbcType=VARCHAR}, #{d.busId,jdbcType=DECIMAL}, #{d.busName,jdbcType=VARCHAR},
+            #{d.direction,jdbcType=VARCHAR}, #{d.stationId,jdbcType=DECIMAL}, #{d.stationName,jdbcType=VARCHAR},
+            #{d.lastStationId,jdbcType=DECIMAL}, #{d.lastStationName,jdbcType=VARCHAR},
+            #{d.serviceType,jdbcType=VARCHAR},#{d.serviceName,jdbcType=VARCHAR},
+            #{d.tripBeginTime,jdbcType=TIMESTAMP},#{d.forecastTime,jdbcType=TIMESTAMP},
+            #{d.forecastType,jdbcType=VARCHAR},#{d.runStatus,jdbcType=VARCHAR},
+            #{d.predictTime,jdbcType=DECIMAL},#{d.stationCount,jdbcType=DECIMAL}
+            from dual
+        </foreach>
+        ) t
+    </insert>
+
+</mapper>

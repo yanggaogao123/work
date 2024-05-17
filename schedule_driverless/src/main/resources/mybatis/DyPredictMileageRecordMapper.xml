@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyPredictMileageRecordMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.DyPredictMileageRecord">
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ROUTE_ID" jdbcType="DECIMAL" property="routeId" />
+    <result column="ROUTE_NAME" jdbcType="VARCHAR" property="routeName" />
+    <result column="BUS_ID" jdbcType="DECIMAL" property="busId" />
+    <result column="BUS_NAME" jdbcType="VARCHAR" property="busName" />
+    <result column="DISCHARGE_START_SOC" jdbcType="DECIMAL" property="dischargeStartSoc" />
+    <result column="NOWTIME" jdbcType="TIMESTAMP" property="nowtime" />
+    <result column="MIN_SOC" jdbcType="DECIMAL" property="minSoc" />
+    <result column="PREDICT_MILEAGE" jdbcType="FLOAT" property="predictMileage" />
+    <result column="TRIPLOG_ID" jdbcType="DECIMAL" property="triplogId" />
+    <result column="TOTAL_MILEAGE" jdbcType="FLOAT" property="totalMileage" />
+    <result column="PREDICT_MILEAGE_LOSS" jdbcType="FLOAT" property="predictMileageLoss" />
+    <result column="TOTAL_MILEAGE_LOSS" jdbcType="FLOAT" property="totalMileageLoss" />
+    <result column="OBU_ID" jdbcType="VARCHAR" property="obuId" />
+    <result column="DIRECTION" jdbcType="VARCHAR" property="direction" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ROUTE_ID, ROUTE_NAME, BUS_ID, BUS_NAME, DISCHARGE_START_SOC, NOWTIME, MIN_SOC, 
+    PREDICT_MILEAGE, TRIPLOG_ID, TOTAL_MILEAGE,PREDICT_MILEAGE_LOSS,TOTAL_MILEAGE_LOSS,OBU_ID,DIRECTION
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DY_PREDICT_MILEAGE_RECORD
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from DY_PREDICT_MILEAGE_RECORD
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.bs.DyPredictMileageRecord">
+    insert into DY_PREDICT_MILEAGE_RECORD (ID, ROUTE_ID, ROUTE_NAME, 
+      BUS_ID, BUS_NAME, DISCHARGE_START_SOC, 
+      NOWTIME, MIN_SOC, PREDICT_MILEAGE, 
+      TRIPLOG_ID, TOTAL_MILEAGE,PREDICT_MILEAGE_LOSS,TOTAL_MILEAGE_LOSS,OBU_ID,DIRECTION)
+    values (SEQ_DY_PREDICT_MILEAGE_RECORD.nextval, #{routeId,jdbcType=DECIMAL}, #{routeName,jdbcType=VARCHAR},
+      #{busId,jdbcType=DECIMAL}, #{busName,jdbcType=VARCHAR}, #{dischargeStartSoc,jdbcType=DECIMAL}, 
+      #{nowtime,jdbcType=TIMESTAMP}, #{minSoc,jdbcType=DECIMAL}, #{predictMileage,jdbcType=FLOAT}, 
+      #{triplogId,jdbcType=DECIMAL}, #{totalMileage,jdbcType=FLOAT}, #{predictMileageLoss,jdbcType=FLOAT}, #{totalMileageLoss,jdbcType=FLOAT},
+      #{obuId,jdbcType=VARCHAR},#{direction,jdbcType=VARCHAR})
+    <selectKey keyProperty="id" resultType="Long" order="AFTER">
+      select SEQ_DY_PREDICT_MILEAGE_RECORD.currVal from dual
+    </selectKey>
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.bs.DyPredictMileageRecord">
+    insert into DY_PREDICT_MILEAGE_RECORD
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="routeId != null">
+        ROUTE_ID,
+      </if>
+      <if test="routeName != null">
+        ROUTE_NAME,
+      </if>
+      <if test="busId != null">
+        BUS_ID,
+      </if>
+      <if test="busName != null">
+        BUS_NAME,
+      </if>
+      <if test="dischargeStartSoc != null">
+        DISCHARGE_START_SOC,
+      </if>
+      <if test="nowtime != null">
+        NOWTIME,
+      </if>
+      <if test="minSoc != null">
+        MIN_SOC,
+      </if>
+      <if test="predictMileage != null">
+        PREDICT_MILEAGE,
+      </if>
+      <if test="triplogId != null">
+        TRIPLOG_ID,
+      </if>
+      <if test="totalMileage != null">
+        TOTAL_MILEAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="routeId != null">
+        #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="routeName != null">
+        #{routeName,jdbcType=VARCHAR},
+      </if>
+      <if test="busId != null">
+        #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="busName != null">
+        #{busName,jdbcType=VARCHAR},
+      </if>
+      <if test="dischargeStartSoc != null">
+        #{dischargeStartSoc,jdbcType=DECIMAL},
+      </if>
+      <if test="nowtime != null">
+        #{nowtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="minSoc != null">
+        #{minSoc,jdbcType=DECIMAL},
+      </if>
+      <if test="predictMileage != null">
+        #{predictMileage,jdbcType=FLOAT},
+      </if>
+      <if test="triplogId != null">
+        #{triplogId,jdbcType=DECIMAL},
+      </if>
+      <if test="totalMileage != null">
+        #{totalMileage,jdbcType=FLOAT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.bs.DyPredictMileageRecord">
+    update DY_PREDICT_MILEAGE_RECORD
+    <set>
+      <if test="routeId != null">
+        ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      </if>
+      <if test="routeName != null">
+        ROUTE_NAME = #{routeName,jdbcType=VARCHAR},
+      </if>
+      <if test="busId != null">
+        BUS_ID = #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="busName != null">
+        BUS_NAME = #{busName,jdbcType=VARCHAR},
+      </if>
+      <if test="dischargeStartSoc != null">
+        DISCHARGE_START_SOC = #{dischargeStartSoc,jdbcType=DECIMAL},
+      </if>
+      <if test="nowtime != null">
+        NOWTIME = #{nowtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="minSoc != null">
+        MIN_SOC = #{minSoc,jdbcType=DECIMAL},
+      </if>
+      <if test="predictMileage != null">
+        PREDICT_MILEAGE = #{predictMileage,jdbcType=FLOAT},
+      </if>
+      <if test="triplogId != null">
+        TRIPLOG_ID = #{triplogId,jdbcType=DECIMAL},
+      </if>
+      <if test="totalMileage != null">
+        TOTAL_MILEAGE = #{totalMileage,jdbcType=FLOAT},
+      </if>
+      <if test="predictMileageLoss != null">
+        PREDICT_MILEAGE_LOSS = #{predictMileageLoss,jdbcType=FLOAT},
+      </if>
+      <if test="totalMileageLoss != null">
+        TOTAL_MILEAGE_LOSS = #{totalMileageLoss,jdbcType=FLOAT},
+      </if>
+      <if test="obuId != null">
+        OBU_ID = #{obuId,jdbcType=VARCHAR},
+      </if>
+      <if test="direction != null">
+        DIRECTION = #{direction,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.bs.DyPredictMileageRecord">
+    update DY_PREDICT_MILEAGE_RECORD
+    set ROUTE_ID = #{routeId,jdbcType=DECIMAL},
+      ROUTE_NAME = #{routeName,jdbcType=VARCHAR},
+      BUS_ID = #{busId,jdbcType=DECIMAL},
+      BUS_NAME = #{busName,jdbcType=VARCHAR},
+      DISCHARGE_START_SOC = #{dischargeStartSoc,jdbcType=DECIMAL},
+      NOWTIME = #{nowtime,jdbcType=TIMESTAMP},
+      MIN_SOC = #{minSoc,jdbcType=DECIMAL},
+      PREDICT_MILEAGE = #{predictMileage,jdbcType=FLOAT},
+      TRIPLOG_ID = #{triplogId,jdbcType=DECIMAL},
+      TOTAL_MILEAGE = #{totalMileage,jdbcType=FLOAT}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+</mapper>

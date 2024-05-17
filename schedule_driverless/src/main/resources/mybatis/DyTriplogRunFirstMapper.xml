@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyTriplogRunFirstMapper">
+    <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.schedule.DyTriplogRunFirst">
+        <id column="TRIPLOG_ID" jdbcType="DECIMAL" property="triplogId"/>
+        <result column="BUS_ID" jdbcType="VARCHAR" property="busId"/>
+        <result column="EMPLOYEE_ID" jdbcType="DECIMAL" property="employeeId"/>
+        <result column="EMPLOYEE_NAME" jdbcType="VARCHAR" property="employeeName"/>
+        <result column="FROM_STATION_ID" jdbcType="DECIMAL" property="fromStationId"/>
+        <result column="FROM_STATION_NAME" jdbcType="VARCHAR" property="fromStationName"/>
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <select id="selectByEmployeeId" resultMap="BaseResultMap">
+        select * from DY_TRIPLOG_RUN_FIRST where EMPLOYEE_ID = #{employeeId,jdbcType=DECIMAL}
+    </select>
+    <select id="selectDyTriplogRunFirstList" resultMap="BaseResultMap">
+        select * from DY_TRIPLOG_RUN_FIRST
+    </select>
+</mapper>

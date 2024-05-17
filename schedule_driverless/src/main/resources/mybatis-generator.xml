@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <!-- 数据库驱动包位置 需根据本机路径配置 -->
+    <classPathEntry
+            location="C:\Users\杨高\.m2\repository\com\oracle\ojdbc7\12.1.0.2\ojdbc7-12.1.0.2.jar" />
+    <context id="tts2">
+        <commentGenerator>
+            <property name="suppressAllComments" value="true" />
+        </commentGenerator>
+
+        <jdbcConnection driverClass="oracle.jdbc.OracleDriver"
+                        connectionURL="jdbc:oracle:thin:@10.89.134.108:1521:GJTESTDB"
+                        userId="schedules"
+                        password="schedules">
+        </jdbcConnection>
+
+        <!--实体类-->
+        <javaModelGenerator targetPackage="com.gci.schedule.driverless.bean.scheduleD" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!--XML-->
+        <sqlMapGenerator targetPackage="mybatis" targetProject="src/main/resources">
+        </sqlMapGenerator>
+
+        <!--MAPPER-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.gci.schedule.driverless.mapper" targetProject="src/main/java">
+            <property name="enableSubPackages" value="false" />
+        </javaClientGenerator>
+
+        <!--<table tableName="bs_bus" domainObjectName="BusDemo" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="bs_bus" domainObjectName="BsBus" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="BS_ROUTE" domainObjectName="BsRoute" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="BS_STATION" domainObjectName="BsStation" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="BS_ROUTE_STA" domainObjectName="BsRouteSta" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="v_dispatch_task" domainObjectName="DispatchTask" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="BS_PREPTRIP" domainObjectName="BsPrepTrip" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="BS_ROUTE_TRIP_NUMBER" domainObjectName="BsRouteTripNumber"
+               enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="BS_SYS_DDL" domainObjectName="BsSysDdl" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_STATION_CHARGE_RECORD" domainObjectName="DyStationChargeRecord" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_CHARGE_CONFIG" domainObjectName="DyChargeConfig" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_CHARGE_LOGINF" domainObjectName="DyChargeLoginf" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table tableName="DY_CHARGE_LOGINF_DETAIL" domainObjectName="DyChargeLoginfDetail" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_CHARGE_BIGDATA_RECORD" domainObjectName="DyChargeBigdataRecord" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_CHARGE_STANDBY_BUS" domainObjectName="DyChargeStandbyBus" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_CHANGE_TIME_WINDOW" domainObjectName="DyChangeTimeWindow" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_SCHEDULE_PLAN_DRIVERLESS" domainObjectName="DySchedulePlanDriverless" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_DRIVERLESS_CONFIG" domainObjectName="DyDriverlessConfig" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_DRIVERLESS_PLAN_TIME" domainObjectName="DyDriverlessPlanTime" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_DRIVERLESS_BUS_CONFIG" domainObjectName="DyDriverlessBusConfig_01" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--<table tableName="DY_DRIVERLESS_ROUTE_STA" domainObjectName="DyDriverlessRouteSta" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <table tableName="GIS_ROADNODE" domainObjectName="GisRoadnode" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+    </context>
+</generatorConfiguration>

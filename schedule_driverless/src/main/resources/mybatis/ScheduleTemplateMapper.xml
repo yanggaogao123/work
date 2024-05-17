@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.ScheduleTemplateMapper">
+  <resultMap id="JoinBaseResultMap" type="com.gci.schedule.driverless.bean.scheduleD.ScheduleTemplateJoin">
+        <result column="TEMPLATE_ID" jdbcType="DECIMAL" property="templateId" />
+         <result column="TEMPLATE_NAME" jdbcType="VARCHAR" property="templateName" />
+        <result column="TEMPLATE_NAME_FULL" jdbcType="VARCHAR" property="templateNameFull" />
+        <result column="APPLY_DAY_JOIN" jdbcType="VARCHAR" property="applyDayJoin" />
+  </resultMap>
+  <select id="getJoinTemplateListByRouteId" resultMap="JoinBaseResultMap" parameterType="java.lang.Integer">
+  select t.template_id,t.template_name, t.template_name||'-'||day_join as template_name_full , apply_day_join
+     from bs_schedule_template t
+    left join
+     (select  d.template_id ,d.route_id
+    , wm_concat( decode (d.apply_day ,1,'星期日',2,'星期一' ,3,'星期二' ,4,'星期三' ,5,'星期四' ,6,'星期五' ,7,'星期六' )) as day_join
+    ,wm_concat( d.apply_day ) as apply_day_join
+     from  (select * from  bs_schedule_template_detail  ) d
+    group by d.template_id ,d.route_id ) d2 on t.template_id =d2.template_id and t.route_id = d2.route_id
+    where t.route_id =#{routeId}
+    order by t.update_time desc
+  </select>
+
+
+</mapper>

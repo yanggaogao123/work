@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyChargeBigdataRecordMapper">
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.bs.DyChargeBigdataRecord">
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="BUS_ID" jdbcType="DECIMAL" property="busId" />
+    <result column="BUS_NAME" jdbcType="VARCHAR" property="busName" />
+    <result column="START_SOC" jdbcType="FLOAT" property="startSoc" />
+    <result column="PREDICTMILEAGE" jdbcType="FLOAT" property="predictmileage" />
+    <result column="REMAIN_RUN_MILEAGE" jdbcType="FLOAT" property="remainRunMileage" />
+    <result column="CHARGE_NEED_SOC" jdbcType="FLOAT" property="chargeNeedSoc" />
+    <result column="CHARGE_START_SOC" jdbcType="FLOAT" property="chargeStartSoc" />
+    <result column="CHARGE_END_SOC" jdbcType="FLOAT" property="chargeEndSoc" />
+    <result column="CHARGE_DURATION" jdbcType="FLOAT" property="chargeDuration" />
+    <result column="CHARGE_START_TIME" jdbcType="TIMESTAMP" property="chargeStartTime" />
+    <result column="CHARGE_END_TIME" jdbcType="TIMESTAMP" property="chargeEndTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, BUS_ID, BUS_NAME, START_SOC, PREDICTMILEAGE, REMAIN_RUN_MILEAGE, CHARGE_NEED_SOC, 
+    CHARGE_START_SOC, CHARGE_END_SOC, CHARGE_DURATION, CHARGE_START_TIME, CHARGE_END_TIME, 
+    UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DY_CHARGE_BIGDATA_RECORD
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from DY_CHARGE_BIGDATA_RECORD
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.gci.schedule.driverless.bean.bs.DyChargeBigdataRecord">
+    insert into DY_CHARGE_BIGDATA_RECORD (ID, BUS_ID, BUS_NAME, 
+      START_SOC, PREDICTMILEAGE, REMAIN_RUN_MILEAGE, 
+      CHARGE_NEED_SOC,UPDATE_TIME)
+    values (SEQ_DY_CHARGE_BIGDATA_RECORD.nextval, #{busId,jdbcType=DECIMAL}, #{busName,jdbcType=VARCHAR},
+      #{startSoc,jdbcType=FLOAT}, #{predictmileage,jdbcType=FLOAT}, #{remainRunMileage,jdbcType=FLOAT}, 
+      #{chargeNeedSoc,jdbcType=FLOAT},#{updateTime,jdbcType=TIMESTAMP})
+    <selectKey keyProperty="id" resultType="Long" order="AFTER">
+      select SEQ_DY_CHARGE_BIGDATA_RECORD.currVal from dual
+    </selectKey>
+  </insert>
+  <insert id="insertSelective" parameterType="com.gci.schedule.driverless.bean.bs.DyChargeBigdataRecord">
+    insert into DY_CHARGE_BIGDATA_RECORD
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="busId != null">
+        BUS_ID,
+      </if>
+      <if test="busName != null">
+        BUS_NAME,
+      </if>
+      <if test="startSoc != null">
+        START_SOC,
+      </if>
+      <if test="predictmileage != null">
+        PREDICTMILEAGE,
+      </if>
+      <if test="remainRunMileage != null">
+        REMAIN_RUN_MILEAGE,
+      </if>
+      <if test="chargeNeedSoc != null">
+        CHARGE_NEED_SOC,
+      </if>
+      <if test="chargeStartSoc != null">
+        CHARGE_START_SOC,
+      </if>
+      <if test="chargeEndSoc != null">
+        CHARGE_END_SOC,
+      </if>
+      <if test="chargeDuration != null">
+        CHARGE_DURATION,
+      </if>
+      <if test="chargeStartTime != null">
+        CHARGE_START_TIME,
+      </if>
+      <if test="chargeEndTime != null">
+        CHARGE_END_TIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="busId != null">
+        #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="busName != null">
+        #{busName,jdbcType=VARCHAR},
+      </if>
+      <if test="startSoc != null">
+        #{startSoc,jdbcType=FLOAT},
+      </if>
+      <if test="predictmileage != null">
+        #{predictmileage,jdbcType=FLOAT},
+      </if>
+      <if test="remainRunMileage != null">
+        #{remainRunMileage,jdbcType=FLOAT},
+      </if>
+      <if test="chargeNeedSoc != null">
+        #{chargeNeedSoc,jdbcType=FLOAT},
+      </if>
+      <if test="chargeStartSoc != null">
+        #{chargeStartSoc,jdbcType=FLOAT},
+      </if>
+      <if test="chargeEndSoc != null">
+        #{chargeEndSoc,jdbcType=FLOAT},
+      </if>
+      <if test="chargeDuration != null">
+        #{chargeDuration,jdbcType=FLOAT},
+      </if>
+      <if test="chargeStartTime != null">
+        #{chargeStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="chargeEndTime != null">
+        #{chargeEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gci.schedule.driverless.bean.bs.DyChargeBigdataRecord">
+    update DY_CHARGE_BIGDATA_RECORD
+    <set>
+      <if test="busId != null">
+        BUS_ID = #{busId,jdbcType=DECIMAL},
+      </if>
+      <if test="busName != null">
+        BUS_NAME = #{busName,jdbcType=VARCHAR},
+      </if>
+      <if test="startSoc != null">
+        START_SOC = #{startSoc,jdbcType=FLOAT},
+      </if>
+      <if test="predictmileage != null">
+        PREDICTMILEAGE = #{predictmileage,jdbcType=FLOAT},
+      </if>
+      <if test="remainRunMileage != null">
+        REMAIN_RUN_MILEAGE = #{remainRunMileage,jdbcType=FLOAT},
+      </if>
+      <if test="chargeNeedSoc != null">
+        CHARGE_NEED_SOC = #{chargeNeedSoc,jdbcType=FLOAT},
+      </if>
+      <if test="chargeStartSoc != null">
+        CHARGE_START_SOC = #{chargeStartSoc,jdbcType=FLOAT},
+      </if>
+      <if test="chargeEndSoc != null">
+        CHARGE_END_SOC = #{chargeEndSoc,jdbcType=FLOAT},
+      </if>
+      <if test="chargeDuration != null">
+        CHARGE_DURATION = #{chargeDuration,jdbcType=FLOAT},
+      </if>
+      <if test="chargeStartTime != null">
+        CHARGE_START_TIME = #{chargeStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="chargeEndTime != null">
+        CHARGE_END_TIME = #{chargeEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gci.schedule.driverless.bean.bs.DyChargeBigdataRecord">
+    update DY_CHARGE_BIGDATA_RECORD
+    set BUS_ID = #{busId,jdbcType=DECIMAL},
+      BUS_NAME = #{busName,jdbcType=VARCHAR},
+      START_SOC = #{startSoc,jdbcType=FLOAT},
+      PREDICTMILEAGE = #{predictmileage,jdbcType=FLOAT},
+      REMAIN_RUN_MILEAGE = #{remainRunMileage,jdbcType=FLOAT},
+      CHARGE_NEED_SOC = #{chargeNeedSoc,jdbcType=FLOAT},
+      CHARGE_START_SOC = #{chargeStartSoc,jdbcType=FLOAT},
+      CHARGE_END_SOC = #{chargeEndSoc,jdbcType=FLOAT},
+      CHARGE_DURATION = #{chargeDuration,jdbcType=FLOAT},
+      CHARGE_START_TIME = #{chargeStartTime,jdbcType=TIMESTAMP},
+      CHARGE_END_TIME = #{chargeEndTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+</mapper>

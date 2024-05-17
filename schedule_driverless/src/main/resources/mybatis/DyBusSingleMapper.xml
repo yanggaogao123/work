@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gci.schedule.driverless.mapper.DyBusSingleMapper">
+
+  <resultMap id="BaseResultMap" type="com.gci.schedule.driverless.bean.scheduleD.SingleBus">
+    <result property="routeId" column="ROUTE_ID"></result>
+    <result property="routeCode" column="ROUTE_CODE"></result>
+    <result property="planDate" column="PLAN_DATE"></result>
+    <result property="busId" column="BUS_ID"></result>
+    <result property="busName" column="BUS_NAME"></result>
+    <result property="stationIdStop" column="STATION_ID_STOP"></result>
+    <result property="middleStopTime" column="MIDDLE_STOP_TIME"></result>
+    <result property="offDutyTime" column="OFF_DUTY_TIME"></result>
+    <result property="startDirection" column="START_DIRECTION"></result>
+    <result property="startOrderNumber" column="START_ORDER_NUMBER"></result>
+  </resultMap>
+
+  <update id="updateMountBusData">
+    update DY_BUS_SINGLE t
+    <set>
+      <if test="busId != null">bus_id = #{busId,jdbcType=DECIMAL}, </if>
+      <if test="busName != null">bus_name = #{busName,jdbcType=VARCHAR}, </if>
+    </set>
+    where  t.route_id=#{routeId}
+    and   trunc(plan_date) =trunc(to_date( #{runDate,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'))
+    and  t.start_direction =#{firstDirection,jdbcType=VARCHAR}
+    and  t.start_order_number=#{firstBusNumber,jdbcType=DECIMAL}
+  </update>
+
+  <select id="listByRouteIdAndPlanDate" resultMap="BaseResultMap">
+    select * from DY_BUS_SINGLE where route_id=#{routeId} and plan_date=#{runDate, jdbcType=TIMESTAMP}
+  </select>
+
+
+</mapper>
